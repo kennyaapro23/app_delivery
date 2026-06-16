@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chikenhot - Catálogo y Pedidos</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="dashboard-body">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🍗</div>
+            <div class="sidebar-title">CHIKENHOT</div>
+            <div class="sidebar-subtitle">SISTEMA DE GESTIÓN</div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">PRINCIPAL</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="dashboard-admin.html" class="sidebar-link">
+                        <span class="sidebar-icon">📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">MÓDULOS</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="admin-usuarios.html" class="sidebar-link">
+                        <span class="sidebar-icon">👥</span>
+                        <span>Usuarios</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-catalogo.html" class="sidebar-link active">
+                        <span class="sidebar-icon">📋</span>
+                        <span>Catálogo y Pedidos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-repartidores.html" class="sidebar-link">
+                        <span class="sidebar-icon">🚗</span>
+                        <span>Repartidores</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-pagos.html" class="sidebar-link">
+                        <span class="sidebar-icon">💳</span>
+                        <span>Pagos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-notificaciones.html" class="sidebar-link">
+                        <span class="sidebar-icon">🔔</span>
+                        <span>Notificaciones</span>
+                        <span class="sidebar-badge">3</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">ANÁLISIS</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="admin-reportes.html" class="sidebar-link">
+                        <span class="sidebar-icon">📈</span>
+                        <span>Reportes</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">👤</div>
+            <div class="user-info">
+                <div class="user-name">Administrador</div>
+                <div class="user-email">admin@chikenhot.pe</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-title">
+                <h1>Catálogo y Pedidos</h1>
+                <p>Chikenhot / Productos y Pedidos</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-new" onclick="openModal('formProducto')">+ Nuevo Producto</button>
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="section" style="padding: 0; border-radius: 0; box-shadow: none; margin-bottom: 0;">
+            <div style="display: flex; border-bottom: 2px solid var(--border-color);">
+                <button id="tabProductos" style="padding: 15px 20px; background: var(--primary-color); color: white; border: none; cursor: pointer; font-weight: 600; flex: 1; text-align: left;" onclick="cambiarTab('productos')">📦 Productos</button>
+                <button id="tabPedidos" style="padding: 15px 20px; background: white; color: var(--text-dark); border: none; cursor: pointer; font-weight: 600; flex: 1; text-align: left;" onclick="cambiarTab('pedidos')">📋 Pedidos</button>
+                <button id="tabCategorias" style="padding: 15px 20px; background: white; color: var(--text-dark); border: none; cursor: pointer; font-weight: 600; flex: 1; text-align: left;" onclick="cambiarTab('categorias')">🏷️ Categorías</button>
+            </div>
+        </div>
+
+        <!-- PRODUCTS TABLE -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Productos Disponibles: 24</h2>
+                <span class="section-link">Exportar</span>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>NOMBRE</th>
+                            <th>CATEGORÍA</th>
+                            <th>PRECIO</th>
+                            <th>STOCK</th>
+                            <th>VENDIDOS</th>
+                            <th>ESTADO</th>
+                            <th>ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#P001</td>
+                            <td>🍗 Pollo 1/4</td>
+                            <td>Pollos</td>
+                            <td>S/ 18.50</td>
+                            <td>45</td>
+                            <td>234</td>
+                            <td><span class="badge badge-success">Activo</span></td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Editar</button>
+                                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;">Eliminar</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#P002</td>
+                            <td>🍗 Pollo Entero</td>
+                            <td>Pollos</td>
+                            <td>S/ 45.00</td>
+                            <td>28</td>
+                            <td>187</td>
+                            <td><span class="badge badge-success">Activo</span></td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Editar</button>
+                                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;">Eliminar</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#P003</td>
+                            <td>🍖 Alitas x20</td>
+                            <td>Promociones</td>
+                            <td>S/ 35.00</td>
+                            <td>62</td>
+                            <td>412</td>
+                            <td><span class="badge badge-success">Activo</span></td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Editar</button>
+                                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;">Eliminar</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#P004</td>
+                            <td>🍗 Balde 12 Pzs</td>
+                            <td>Promociones</td>
+                            <td>S/ 125.00</td>
+                            <td>15</td>
+                            <td>89</td>
+                            <td><span class="badge badge-success">Activo</span></td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Editar</button>
+                                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;">Eliminar</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#P005</td>
+                            <td>🍟 Papas Grandes</td>
+                            <td>Acompañamientos</td>
+                            <td>S/ 8.50</td>
+                            <td>8</td>
+                            <td>567</td>
+                            <td><span class="badge badge-warning">Stock Bajo</span></td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Editar</button>
+                                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;">Eliminar</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#P006</td>
+                            <td>🥤 Refresco 2L</td>
+                            <td>Bebidas</td>
+                            <td>S/ 8.50</td>
+                            <td>0</td>
+                            <td>234</td>
+                            <td><span class="badge badge-danger">Agotado</span></td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Editar</button>
+                                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;">Eliminar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TOP SELLING PRODUCTS -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Top 5 Productos Más Vendidos</h2>
+            </div>
+
+            <div style="display: grid; gap: 15px;">
+                <div style="display: flex; align-items: center; padding: 15px; background: var(--light-bg); border-radius: 8px;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; margin-bottom: 5px;">🍟 Papas Grandes</div>
+                        <div style="font-size: 12px; color: var(--text-light);">Vendidas: 567 unidades</div>
+                    </div>
+                    <div style="font-size: 20px; font-weight: 700; color: var(--success-color);">S/ 4,819.50</div>
+                </div>
+                <div style="display: flex; align-items: center; padding: 15px; background: var(--light-bg); border-radius: 8px;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; margin-bottom: 5px;">🍖 Alitas x20</div>
+                        <div style="font-size: 12px; color: var(--text-light);">Vendidas: 412 unidades</div>
+                    </div>
+                    <div style="font-size: 20px; font-weight: 700; color: var(--success-color);">S/ 14,420.00</div>
+                </div>
+                <div style="display: flex; align-items: center; padding: 15px; background: var(--light-bg); border-radius: 8px;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; margin-bottom: 5px;">🍗 Pollo 1/4</div>
+                        <div style="font-size: 12px; color: var(--text-light);">Vendidas: 234 unidades</div>
+                    </div>
+                    <div style="font-size: 20px; font-weight: 700; color: var(--success-color);">S/ 4,329.00</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL: Nuevo Producto -->
+    <div id="formProducto" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nuevo Producto</h2>
+                <button class="modal-close" onclick="closeModal('formProducto')">✕</button>
+            </div>
+            <form class="modal-body" onsubmit="guardarProducto(event)">
+                <div class="form-group">
+                    <label>Nombre del Producto *</label>
+                    <input type="text" placeholder="Ej: Pollo 1/4" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Categoría *</label>
+                        <select required>
+                            <option value="">Seleccionar</option>
+                            <option value="pollos">Pollos</option>
+                            <option value="promociones">Promociones</option>
+                            <option value="acompañamientos">Acompañamientos</option>
+                            <option value="bebidas">Bebidas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Precio (S/) *</label>
+                        <input type="number" placeholder="45.00" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Stock Inicial *</label>
+                        <input type="number" placeholder="50" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Código de Producto</label>
+                        <input type="text" placeholder="P001">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea placeholder="Descripción del producto" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('formProducto')">Cancelar</button>
+                    <button type="submit" class="btn btn-new">Crear Producto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ===== DATOS DE PRODUCTOS =====
+        let productos = [
+            { id: 'P001', nombre: '🍗 Pollo 1/4', categoria: 'Pollos', precio: 18.50, stock: 45, vendidos: 234, estado: 'Activo', descripcion: 'Pollo fresco y delicioso' },
+            { id: 'P002', nombre: '🍗 Pollo Entero', categoria: 'Pollos', precio: 45.00, stock: 28, vendidos: 187, estado: 'Activo', descripcion: 'Pollo completo para la familia' },
+            { id: 'P003', nombre: '🍖 Alitas x20', categoria: 'Promociones', precio: 35.00, stock: 62, vendidos: 412, estado: 'Activo', descripcion: 'Alitas crujientes' },
+            { id: 'P004', nombre: '🍗 Balde 12 Pzs', categoria: 'Promociones', precio: 125.00, stock: 15, vendidos: 89, estado: 'Activo', descripcion: 'Promoción especial' },
+            { id: 'P005', nombre: '🍟 Papas Grandes', categoria: 'Acompañamientos', precio: 8.50, stock: 8, vendidos: 567, estado: 'Stock Bajo', descripcion: 'Papas con sal' },
+            { id: 'P006', nombre: '🥤 Refresco 2L', categoria: 'Bebidas', precio: 8.50, stock: 0, vendidos: 234, estado: 'Agotado', descripcion: 'Refresco frío' }
+        ];
+
+        let productoEditando = null;
+        let tabActual = 'productos';
+
+        function renderizarTabla() {
+            const tbody = document.querySelector('table tbody');
+            tbody.innerHTML = productos.map(p => `
+                <tr>
+                    <td>${p.id}</td>
+                    <td>${p.nombre}</td>
+                    <td>${p.categoria}</td>
+                    <td>S/ ${p.precio.toFixed(2)}</td>
+                    <td>${p.stock}</td>
+                    <td>${p.vendidos}</td>
+                    <td><span class="badge ${p.estado === 'Activo' ? 'badge-success' : p.estado === 'Stock Bajo' ? 'badge-warning' : 'badge-danger'}">${p.estado}</span></td>
+                    <td>
+                        <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;" onclick="editarProducto('${p.id}')">Editar</button>
+                        <button class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;" onclick="eliminarProducto('${p.id}')">Eliminar</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            document.querySelector('.section-title').textContent = `Productos Disponibles: ${productos.length}`;
+        }
+
+        function cambiarTab(tab) {
+            tabActual = tab;
+            document.getElementById('tabProductos').style.background = tab === 'productos' ? 'var(--primary-color)' : 'white';
+            document.getElementById('tabProductos').style.color = tab === 'productos' ? 'white' : 'var(--text-dark)';
+            document.getElementById('tabPedidos').style.background = tab === 'pedidos' ? 'var(--primary-color)' : 'white';
+            document.getElementById('tabPedidos').style.color = tab === 'pedidos' ? 'white' : 'var(--text-dark)';
+            document.getElementById('tabCategorias').style.background = tab === 'categorias' ? 'var(--primary-color)' : 'white';
+            document.getElementById('tabCategorias').style.color = tab === 'categorias' ? 'white' : 'var(--text-dark)';
+
+            // Mostrar/ocultar contenido según tab
+            if (tab === 'productos') {
+                document.querySelector('.section:nth-of-type(2)').style.display = 'block';
+                document.querySelector('.section:nth-of-type(3)').style.display = 'block';
+            } else {
+                document.querySelector('.section:nth-of-type(2)').style.display = 'none';
+                document.querySelector('.section:nth-of-type(3)').style.display = 'none';
+            }
+
+            if (tab === 'pedidos') {
+                alert('📋 Vista de Pedidos (Por desarrollar)');
+            }
+
+            if (tab === 'categorias') {
+                alert('🏷️ Gestión de Categorías (Por desarrollar)');
+            }
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function editarProducto(productId) {
+            const producto = productos.find(p => p.id === productId);
+            if (!producto) return;
+
+            productoEditando = productId;
+            const form = document.querySelector('form');
+
+            form.querySelector('input[placeholder="Ej: Pollo 1/4"]').value = producto.nombre;
+            form.querySelector('select').value = producto.categoria;
+            form.querySelectorAll('input[type="number"]')[0].value = producto.precio;
+            form.querySelectorAll('input[type="number"]')[1].value = producto.stock;
+            form.querySelector('input[placeholder="P001"]').value = producto.id;
+            form.querySelector('textarea').value = producto.descripcion;
+
+            document.getElementById('formProducto').querySelector('h2').textContent = 'Editar Producto';
+            document.getElementById('formProducto').querySelector('button[type="submit"]').textContent = 'Actualizar Producto';
+            openModal('formProducto');
+        }
+
+        function eliminarProducto(productId) {
+            if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+                productos = productos.filter(p => p.id !== productId);
+                renderizarTabla();
+                alert('✅ Producto eliminado exitosamente!');
+            }
+        }
+
+        function guardarProducto(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const nombre = form.querySelector('input[placeholder="Ej: Pollo 1/4"]').value.trim();
+            const categoria = form.querySelector('select').value;
+            const precio = parseFloat(form.querySelectorAll('input[type="number"]')[0].value);
+            const stock = parseInt(form.querySelectorAll('input[type="number"]')[1].value);
+            const codigo = form.querySelector('input[placeholder="P001"]').value.trim();
+            const descripcion = form.querySelector('textarea').value.trim();
+
+            // Validaciones
+            if (!nombre || !categoria || !precio || !stock) {
+                alert('❌ Por favor completa todos los campos requeridos');
+                return;
+            }
+
+            if (precio <= 0) {
+                alert('❌ El precio debe ser mayor a 0');
+                return;
+            }
+
+            if (stock < 0) {
+                alert('❌ El stock no puede ser negativo');
+                return;
+            }
+
+            if (productoEditando) {
+                // Actualizar producto
+                const producto = productos.find(p => p.id === productoEditando);
+                if (producto) {
+                    producto.nombre = nombre;
+                    producto.categoria = categoria;
+                    producto.precio = precio;
+                    producto.stock = stock;
+                    producto.descripcion = descripcion;
+                    
+                    // Actualizar estado según stock
+                    if (stock === 0) {
+                        producto.estado = 'Agotado';
+                    } else if (stock < 10) {
+                        producto.estado = 'Stock Bajo';
+                    } else {
+                        producto.estado = 'Activo';
+                    }
+                }
+                alert('✅ Producto actualizado exitosamente!');
+            } else {
+                // Crear nuevo producto
+                const nuevoId = codigo || ('P' + String(productos.length + 1).padStart(3, '0'));
+                const estado = stock === 0 ? 'Agotado' : stock < 10 ? 'Stock Bajo' : 'Activo';
+                productos.push({
+                    id: nuevoId,
+                    nombre,
+                    categoria,
+                    precio,
+                    stock,
+                    vendidos: 0,
+                    estado,
+                    descripcion
+                });
+                alert('✅ Producto creado exitosamente!');
+            }
+
+            renderizarTabla();
+            closeModal('formProducto');
+            document.getElementById('formProducto').querySelector('h2').textContent = 'Nuevo Producto';
+            document.getElementById('formProducto').querySelector('button[type="submit"]').textContent = 'Crear Producto';
+            form.reset();
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                window.location.href = '../index.html';
+            }
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            renderizarTabla();
+        });
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('formProducto');
+            if (event.target == modal) {
+                closeModal('formProducto');
+            }
+        }
+    </script>
+</body>
+</html>
+

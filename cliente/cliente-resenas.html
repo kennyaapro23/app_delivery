@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chikenhot - Mis Reseñas</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="dashboard-body">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🍗</div>
+            <div class="sidebar-title">CHIKENHOT</div>
+            <div class="sidebar-subtitle">MI CUENTA</div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">MENÚ</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="dashboard-cliente.html" class="sidebar-link"><span class="sidebar-icon">🏠</span><span>Inicio</span></a></li>
+                <li class="sidebar-item"><a href="cliente-pedidos.html" class="sidebar-link"><span class="sidebar-icon">📋</span><span>Mis Pedidos</span></a></li>
+                <li class="sidebar-item"><a href="cliente-favoritos.html" class="sidebar-link"><span class="sidebar-icon">❤️</span><span>Favoritos</span></a></li>
+                <li class="sidebar-item"><a href="cliente-direcciones.html" class="sidebar-link"><span class="sidebar-icon">🗺️</span><span>Mis Direcciones</span></a></li>
+                <li class="sidebar-item"><a href="cliente-pago.html" class="sidebar-link"><span class="sidebar-icon">💳</span><span>Métodos de Pago</span></a></li>
+                <li class="sidebar-item"><a href="cliente-resenas.html" class="sidebar-link active"><span class="sidebar-icon">⭐</span><span>Mis Reseñas</span></a></li>
+                <li class="sidebar-item"><a href="cliente-cupones.html" class="sidebar-link"><span class="sidebar-icon">🎁</span><span>Cupones</span></a></li>
+                <li class="sidebar-item"><a href="cliente-config.html" class="sidebar-link"><span class="sidebar-icon">⚙️</span><span>Configuración</span></a></li>
+            </ul>
+        </div>
+        <div class="sidebar-user">
+            <div class="user-avatar">👤</div>
+            <div class="user-info">
+                <div class="user-name">Juan Cliente</div>
+                <div class="user-email">cliente@chikenhot.pe</div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="header">
+            <div class="header-title">
+                <h1>Mis Reseñas</h1>
+                <p>Opiniones sobre tus compras</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-new" onclick="openModal('formResena')">+ Nueva Reseña</button>
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div style="display: grid; gap: 20px;">
+                <div style="background: var(--light-bg); padding: 20px; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>
+                            <h4>🍗 Combo Familiar</h4>
+                            <p style="font-size: 12px; color: var(--text-light);">Pedido: #1045 - 06/04/2026</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 18px; margin-bottom: 5px;">⭐⭐⭐⭐⭐</div>
+                            <span class="badge badge-success">Excelente</span>
+                        </div>
+                    </div>
+                    <p style="margin: 10px 0;">El combo llegó perfectamente empacado, la comida estaba caliente y deliciosa. El repartidor fue muy amable y puntual. Totalmente recomendado.</p>
+                    <button class="btn btn-secondary" style="margin-top: 10px;">✏️ Editar</button>
+                    <button class="btn btn-danger" style="margin-top: 10px;">🗑️ Eliminar</button>
+                </div>
+
+                <div style="background: var(--light-bg); padding: 20px; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>
+                            <h4>🍖 Alitas x20</h4>
+                            <p style="font-size: 12px; color: var(--text-light);">Pedido: #1035 - 25/03/2026</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 18px; margin-bottom: 5px;">⭐⭐⭐⭐</div>
+                            <span class="badge badge-warning">Bueno</span>
+                        </div>
+                    </div>
+                    <p style="margin: 10px 0;">La comida estaba buena, pero se demoraron un poco más de lo esperado. Sin embargo, el sabor compensó la espera.</p>
+                    <button class="btn btn-secondary" style="margin-top: 10px;">✏️ Editar</button>
+                    <button class="btn btn-danger" style="margin-top: 10px;">🗑️ Eliminar</button>
+                </div>
+
+                <div style="background: var(--light-bg); padding: 20px; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>
+                            <h4>🍗 Pollo Entero</h4>
+                            <p style="font-size: 12px; color: var(--text-light);">Pedido: #1040 - 01/04/2026</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 18px; margin-bottom: 5px;">⭐⭐⭐⭐⭐</div>
+                            <span class="badge badge-success">Excelente</span>
+                        </div>
+                    </div>
+                    <p style="margin: 10px 0;">Excelente servicio de principio a fin. El pollo estaba muy fresco, bien sazonado. Volvería a pedir sin dudarlo.</p>
+                    <button class="btn btn-secondary" style="margin-top: 10px;">✏️ Editar</button>
+                    <button class="btn btn-danger" style="margin-top: 10px;">🗑️ Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL: Nueva/Editar Reseña -->
+    <div id="formResena" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nueva Reseña</h2>
+                <button class="modal-close" onclick="closeModal('formResena')">✕</button>
+            </div>
+            <form class="modal-body" onsubmit="guardarResena(event)">
+                <div class="form-group">
+                    <label>Seleccionar Pedido *</label>
+                    <select required>
+                        <option value="">Seleccionar pedido</option>
+                        <option value="1045">Pedido #1045 - Combo Familiar - 06/04/2026</option>
+                        <option value="1035">Pedido #1035 - Alitas x20 - 25/03/2026</option>
+                        <option value="1040">Pedido #1040 - Pollo Entero - 01/04/2026</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Producto</label>
+                    <input type="text" id="productName" placeholder="Se llena automáticamente" disabled>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Fecha de Compra</label>
+                        <input type="date" disabled id="orderDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Repartidor</label>
+                        <input type="text" placeholder="Diego Rodríguez" disabled>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Calificación *</label>
+                    <div style="display: flex; gap: 15px; font-size: 28px; cursor: pointer; margin-top: 10px;">
+                        <span onclick="setCalificacion(1)" id="star1" style="transition: all 0.2s;">☆</span>
+                        <span onclick="setCalificacion(2)" id="star2" style="transition: all 0.2s;">☆</span>
+                        <span onclick="setCalificacion(3)" id="star3" style="transition: all 0.2s;">☆</span>
+                        <span onclick="setCalificacion(4)" id="star4" style="transition: all 0.2s;">☆</span>
+                        <span onclick="setCalificacion(5)" id="star5" style="transition: all 0.2s;">☆</span>
+                    </div>
+                    <input type="hidden" id="calificacionValue" value="5" required>
+                </div>
+                <div class="form-group">
+                    <label>Tu Reseña *</label>
+                    <textarea placeholder="Comparte tu experiencia con este producto y servicio de entrega..." rows="4" required></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>¿Cuál fue lo mejor? (opcional)</label>
+                        <input type="text" placeholder="Ej: Excelente sabor, entrega rápida">
+                    </div>
+                    <div class="form-group">
+                        <label>¿Qué mejorar? (opcional)</label>
+                        <input type="text" placeholder="Ej: Empaques, temperatura">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" checked> Recomendar este producto
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox"> Incluir foto (opcional)
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('formResena')">Cancelar</button>
+                    <button type="submit" class="btn btn-new">Publicar Reseña</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let calificacionActual = 5;
+
+        function setCalificacion(rating) {
+            calificacionActual = rating;
+            document.getElementById('calificacionValue').value = rating;
+            for (let i = 1; i <= 5; i++) {
+                const star = document.getElementById('star' + i);
+                if (i <= rating) {
+                    star.textContent = '★';
+                    star.style.color = '#FFD700';
+                } else {
+                    star.textContent = '☆';
+                    star.style.color = '#ccc';
+                }
+            }
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+            setCalificacion(5);
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function guardarResena(event) {
+            event.preventDefault();
+            alert('✅ Reseña publicada exitosamente!');
+            closeModal('formResena');
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                window.location.href = '../index.html';
+            }
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('formResena');
+            if (event.target == modal) {
+                closeModal('formResena');
+            }
+        }
+    </script>
+</body>
+</html>
+

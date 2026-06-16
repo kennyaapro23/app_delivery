@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chikenhot - Pagos</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="dashboard-body">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🍗</div>
+            <div class="sidebar-title">CHIKENHOT</div>
+            <div class="sidebar-subtitle">SISTEMA DE GESTIÓN</div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">PRINCIPAL</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="dashboard-admin.html" class="sidebar-link">
+                        <span class="sidebar-icon">📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">MÓDULOS</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="admin-usuarios.html" class="sidebar-link">
+                        <span class="sidebar-icon">👥</span>
+                        <span>Usuarios</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-catalogo.html" class="sidebar-link">
+                        <span class="sidebar-icon">📋</span>
+                        <span>Catálogo y Pedidos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-repartidores.html" class="sidebar-link">
+                        <span class="sidebar-icon">🚗</span>
+                        <span>Repartidores</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-pagos.html" class="sidebar-link active">
+                        <span class="sidebar-icon">💳</span>
+                        <span>Pagos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-notificaciones.html" class="sidebar-link">
+                        <span class="sidebar-icon">🔔</span>
+                        <span>Notificaciones</span>
+                        <span class="sidebar-badge">3</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">ANÁLISIS</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="admin-reportes.html" class="sidebar-link">
+                        <span class="sidebar-icon">📈</span>
+                        <span>Reportes</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">👤</div>
+            <div class="user-info">
+                <div class="user-name">Administrador</div>
+                <div class="user-email">admin@chikenhot.pe</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-title">
+                <h1>Gestión de Pagos</h1>
+                <p>Chikenhot / Finanzas</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-new" onclick="alert('Descargar reportes de pagos...')">📥 Descargar</button>
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-content">
+                    <div class="stat-label">Ingresos Hoy</div>
+                    <div class="stat-value">S/ 4,250</div>
+                    <div class="stat-change positive">↑ 12% vs ayer</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <div class="stat-label">Esta Semana</div>
+                    <div class="stat-value">S/ 28,500</div>
+                    <div class="stat-change positive">↑ 8% vs semana pasada</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-content">
+                    <div class="stat-label">Este Mes</div>
+                    <div class="stat-value">S/ 95,800</div>
+                    <div class="stat-change positive">↑ 5% vs mes pasado</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-content">
+                    <div class="stat-label">Pagos Pendientes</div>
+                    <div class="stat-value">S/ 3,200</div>
+                    <div class="stat-change negative">⚠️ Revisar</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAYMENT METHODS -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Transacciones Recientes</h2>
+                <span class="section-link">Ver todas</span>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#TRANSACCIÓN</th>
+                            <th>CLIENTE</th>
+                            <th>MÉTODO</th>
+                            <th>MONTO</th>
+                            <th>COMISIÓN</th>
+                            <th>FECHA</th>
+                            <th>ESTADO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#TRX001</td>
+                            <td>Juan Aguilar</td>
+                            <td>Tarjeta Débito</td>
+                            <td>S/ 125.00</td>
+                            <td>S/ 2.50</td>
+                            <td>07/04/2026 10:30</td>
+                            <td><span class="badge badge-success">Completado</span></td>
+                        </tr>
+                        <tr>
+                            <td>#TRX002</td>
+                            <td>María Rodríguez</td>
+                            <td>Yape</td>
+                            <td>S/ 85.00</td>
+                            <td>S/ 0.00</td>
+                            <td>07/04/2026 09:15</td>
+                            <td><span class="badge badge-success">Completado</span></td>
+                        </tr>
+                        <tr>
+                            <td>#TRX003</td>
+                            <td>Carlos López</td>
+                            <td>Efectivo</td>
+                            <td>S/ 45.00</td>
+                            <td>S/ 0.00</td>
+                            <td>07/04/2026 08:45</td>
+                            <td><span class="badge badge-success">Completado</span></td>
+                        </tr>
+                        <tr>
+                            <td>#TRX004</td>
+                            <td>Ana Torres</td>
+                            <td>Tarjeta Crédito</td>
+                            <td>S/ 89.90</td>
+                            <td>S/ 3.60</td>
+                            <td>06/04/2026 15:20</td>
+                            <td><span class="badge badge-success">Completado</span></td>
+                        </tr>
+                        <tr>
+                            <td>#TRX005</td>
+                            <td>Pedro Gómez</td>
+                            <td>Plin</td>
+                            <td>S/ 150.00</td>
+                            <td>S/ 0.00</td>
+                            <td>06/04/2026 12:00</td>
+                            <td><span class="badge badge-warning">Pendiente</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PAYMENT BREAKDOWN -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Métodos de Pago - Hoy</h2>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                <div style="background: var(--light-bg); padding: 20px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 10px;">💵</div>
+                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 5px;">Efectivo</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--primary-color);">S/ 1,250.00</div>
+                    <div style="font-size: 12px; color: var(--text-light); margin-top: 10px;">34 transacciones</div>
+                </div>
+
+                <div style="background: var(--light-bg); padding: 20px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 10px;">💳</div>
+                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 5px;">Tarjeta Débito</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--primary-color);">S/ 1,850.00</div>
+                    <div style="font-size: 12px; color: var(--text-light); margin-top: 10px;">28 transacciones</div>
+                </div>
+
+                <div style="background: var(--light-bg); padding: 20px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 10px;">📱</div>
+                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 5px;">Yape/Plin</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--primary-color);">S/ 950.00</div>
+                    <div style="font-size: 12px; color: var(--text-light); margin-top: 10px;">19 transacciones</div>
+                </div>
+
+                <div style="background: var(--light-bg); padding: 20px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 10px;">💳</div>
+                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 5px;">Tarjeta Crédito</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--primary-color);">S/ 200.00</div>
+                    <div style="font-size: 12px; color: var(--text-light); margin-top: 10px;">5 transacciones</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL: Registrar Pago -->
+    <div id="formPago" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Registrar Pago</h2>
+                <button class="modal-close" onclick="closeModal('formPago')">✕</button>
+            </div>
+            <form class="modal-body" onsubmit="guardarPago(event)">
+                <div class="form-group">
+                    <label>Cliente *</label>
+                    <input type="text" placeholder="Nombre del cliente" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Monto (S/) *</label>
+                        <input type="number" placeholder="0.00" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Método de Pago *</label>
+                        <select required>
+                            <option value="">Seleccionar</option>
+                            <option value="efectivo">Efectivo</option>
+                            <option value="debito">Tarjeta Débito</option>
+                            <option value="credito">Tarjeta Crédito</option>
+                            <option value="yape">Yape/Plin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Número de Transacción</label>
+                    <input type="text" placeholder="TRX001">
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea placeholder="Datos de la transacción" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Estado Comisión</label>
+                    <select>
+                        <option value="retener">Retener</option>
+                        <option value="pagar">Pagar</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('formPago')">Cancelar</button>
+                    <button type="submit" class="btn btn-new">Registrar Pago</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function guardarPago(event) {
+            event.preventDefault();
+            alert('✅ Pago registrado exitosamente!');
+            closeModal('formPago');
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                window.location.href = '../index.html';
+            }
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('formPago');
+            if (event.target == modal) {
+                closeModal('formPago');
+            }
+        }
+    </script>
+</body>
+</html>
+

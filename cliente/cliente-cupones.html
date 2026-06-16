@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chikenhot - Cupones</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="dashboard-body">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🍗</div>
+            <div class="sidebar-title">CHIKENHOT</div>
+            <div class="sidebar-subtitle">MI CUENTA</div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">MENÚ</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="dashboard-cliente.html" class="sidebar-link"><span class="sidebar-icon">🏠</span><span>Inicio</span></a></li>
+                <li class="sidebar-item"><a href="cliente-pedidos.html" class="sidebar-link"><span class="sidebar-icon">📋</span><span>Mis Pedidos</span></a></li>
+                <li class="sidebar-item"><a href="cliente-favoritos.html" class="sidebar-link"><span class="sidebar-icon">❤️</span><span>Favoritos</span></a></li>
+                <li class="sidebar-item"><a href="cliente-direcciones.html" class="sidebar-link"><span class="sidebar-icon">🗺️</span><span>Mis Direcciones</span></a></li>
+                <li class="sidebar-item"><a href="cliente-pago.html" class="sidebar-link"><span class="sidebar-icon">💳</span><span>Métodos de Pago</span></a></li>
+                <li class="sidebar-item"><a href="cliente-resenas.html" class="sidebar-link"><span class="sidebar-icon">⭐</span><span>Mis Reseñas</span></a></li>
+                <li class="sidebar-item"><a href="cliente-cupones.html" class="sidebar-link active"><span class="sidebar-icon">🎁</span><span>Cupones</span></a></li>
+                <li class="sidebar-item"><a href="cliente-config.html" class="sidebar-link"><span class="sidebar-icon">⚙️</span><span>Configuración</span></a></li>
+            </ul>
+        </div>
+        <div class="sidebar-user">
+            <div class="user-avatar">👤</div>
+            <div class="user-info">
+                <div class="user-name">Juan Cliente</div>
+                <div class="user-email">cliente@chikenhot.pe</div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="header">
+            <div class="header-title">
+                <h1>Mis Cupones</h1>
+                <p>Promociones y descuentos disponibles</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <h3 style="margin-bottom: 15px;">Cupones Disponibles (3)</h3>
+            <div style="display: grid; gap: 15px;">
+                <div style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%); color: white; padding: 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4 style="margin-bottom: 5px;">DESCUENTO50</h4>
+                        <p style="font-size: 14px; margin: 5px 0;">50% descuento en pedidos mayores a S/ 100</p>
+                        <p style="font-size: 12px; opacity: 0.9;">Válido hasta: 30/06/2026</p>
+                    </div>
+                    <button class="btn" style="background: white; color: #ff6b6b; padding: 10px 20px; font-weight: 600;" onclick="openModal('formAplicarCupon', 'DESCUENTO50')">Usar</button>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #4ecdc4 0%, #44a5a1 100%); color: white; padding: 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4 style="margin-bottom: 5px;">BIENVENIDA</h4>
+                        <p style="font-size: 14px; margin: 5px 0;">S/ 20 de descuento en tu primera compra</p>
+                        <p style="font-size: 12px; opacity: 0.9;">Válido hasta: 31/12/2026</p>
+                    </div>
+                    <button class="btn" style="background: white; color: #4ecdc4; padding: 10px 20px; font-weight: 600;" onclick="openModal('formAplicarCupon', 'BIENVENIDA')">Usar</button>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #ffa502 0%, #ffb84d 100%); color: white; padding: 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4 style="margin-bottom: 5px;">COMBO15</h4>
+                        <p style="font-size: 14px; margin: 5px 0;">15% descuento en combos</p>
+                        <p style="font-size: 12px; opacity: 0.9;">Válido hasta: 15/05/2026</p>
+                    </div>
+                    <button class="btn" style="background: white; color: #ffa502; padding: 10px 20px; font-weight: 600;" onclick="openModal('formAplicarCupon', 'COMBO15')">Usar</button>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h3 style="margin-bottom: 15px;">Cupones Utilizados (2)</h3>
+            <div style="display: grid; gap: 15px;">
+                <div style="background: var(--light-bg); padding: 20px; border-radius: 12px; opacity: 0.6;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <div>
+                            <h4>ENVIO5</h4>
+                            <p style="font-size: 12px; color: var(--text-light);">S/ 5 descuento en envío - Usado: 06/04/2026</p>
+                        </div>
+                        <span class="badge badge-success">Usado</span>
+                    </div>
+                </div>
+                <div style="background: var(--light-bg); padding: 20px; border-radius: 12px; opacity: 0.6;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <div>
+                            <h4>PRIMERAPRUEBA</h4>
+                            <p style="font-size: 12px; color: var(--text-light);">30% descuento - Usado: 01/04/2026</p>
+                        </div>
+                        <span class="badge badge-success">Usado</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL: Aplicar Cupón -->
+    <div id="formAplicarCupon" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Aplicar Cupón</h2>
+                <button class="modal-close" onclick="closeModal('formAplicarCupon')">✕</button>
+            </div>
+            <form class="modal-body" onsubmit="guardarCupon(event)">
+                <div class="form-group">
+                    <label>Código del Cupón *</label>
+                    <input type="text" id="codigoCupon" readonly style="background: var(--light-bg);">
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="descripcionCupon" readonly style="background: var(--light-bg); resize: none;" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Pedido a Aplicar *</label>
+                    <select required>
+                        <option value="">Próximo pedido</option>
+                        <option value="pendiente">Pedido pendiente #P001</option>
+                        <option value="nuevo">Nuevo pedido</option>
+                    </select>
+                </div>
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <p style="font-size: 14px; margin-bottom: 5px;"><strong>Resumen:</strong></p>
+                    <p style="font-size: 12px; margin: 5px 0;">Descuento: <span style="color: var(--success-color); font-weight: 600;" id="montoDescuento">-</span></p>
+                    <p style="font-size: 12px; margin: 5px 0;">Válido hasta: <span id="fechaValida">-</span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('formAplicarCupon')">Cancelar</button>
+                    <button type="submit" class="btn btn-new">Aplicar Cupón</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const cupones = {
+            'DESCUENTO50': { desc: '50% descuento en pedidos mayores a S/ 100', monto: '50%', fecha: '30/06/2026' },
+            'BIENVENIDA': { desc: 'S/ 20 de descuento en tu primera compra', monto: '-S/ 20', fecha: '31/12/2026' },
+            'COMBO15': { desc: '15% descuento en combos', monto: '15%', fecha: '15/05/2026' }
+        };
+
+        function openModal(modalId, codigoCupon = null) {
+            const modal = document.getElementById(modalId);
+            modal.classList.add('show');
+            
+            if (codigoCupon && cupones[codigoCupon]) {
+                document.getElementById('codigoCupon').value = codigoCupon;
+                document.getElementById('descripcionCupon').value = cupones[codigoCupon].desc;
+                document.getElementById('montoDescuento').textContent = cupones[codigoCupon].monto;
+                document.getElementById('fechaValida').textContent = cupones[codigoCupon].fecha;
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function guardarCupon(event) {
+            event.preventDefault();
+            const codigo = document.getElementById('codigoCupon').value;
+            alert(`✅ Cupón ${codigo} aplicado exitosamente!`);
+            closeModal('formAplicarCupon');
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                window.location.href = '../index.html';
+            }
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('formAplicarCupon');
+            if (event.target == modal) {
+                closeModal('formAplicarCupon');
+            }
+        }
+    </script>
+</body>
+</html>
+

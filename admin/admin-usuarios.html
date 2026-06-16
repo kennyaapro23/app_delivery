@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="dashboard-body">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🍗</div>
+            <div class="sidebar-title">CHIKENHOT</div>
+            <div class="sidebar-subtitle">SISTEMA DE GESTIÓN</div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">PRINCIPAL</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="dashboard-admin.html" class="sidebar-link">
+                        <span class="sidebar-icon">📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">MÓDULOS</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="admin-usuarios.html" class="sidebar-link active">
+                        <span class="sidebar-icon">👥</span>
+                        <span>Usuarios</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-catalogo.html" class="sidebar-link">
+                        <span class="sidebar-icon">📋</span>
+                        <span>Catálogo y Pedidos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-repartidores.html" class="sidebar-link">
+                        <span class="sidebar-icon">🚗</span>
+                        <span>Repartidores</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-pagos.html" class="sidebar-link">
+                        <span class="sidebar-icon">💳</span>
+                        <span>Pagos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-notificaciones.html" class="sidebar-link">
+                        <span class="sidebar-icon">🔔</span>
+                        <span>Notificaciones</span>
+                        <span class="sidebar-badge">3</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">ANÁLISIS</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="admin-reportes.html" class="sidebar-link">
+                        <span class="sidebar-icon">📈</span>
+                        <span>Reportes</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">👤</div>
+            <div class="user-info">
+                <div class="user-name">Administrador</div>
+                <div class="user-email">admin@chikenhot.pe</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-title">
+                <h1>Usuarios</h1>
+                <p>Chikenhot / Usuarios</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <!-- FILTERS -->
+        <div class="section" style="margin-bottom: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <input type="text" placeholder="🔍 Buscar por nombre o email..." style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <select style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;">
+                        <option>Filtrar por rol</option>
+                        <option>Cliente</option>
+                        <option>Repartidor</option>
+                        <option>Administrador</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <select style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;">
+                        <option>Estatus</option>
+                        <option>Activo</option>
+                        <option>Inactivo</option>
+                        <option>Suspendido</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- USERS TABLE -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Total de Usuarios: 487</h2>
+                <span class="section-link">Exportar datos</span>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>NOMBRE</th>
+                            <th>EMAIL</th>
+                            <th>TELÉFONO</th>
+                            <th>ROL</th>
+                            <th>FECHA REGISTRO</th>
+                            <th>ESTATUS</th>
+                            <th>ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#U001</td>
+                            <td>Juan Aguilar</td>
+                            <td>juan.aguilar@email.com</td>
+                            <td>987 654 321</td>
+                            <td><span class="badge" style="background: #e3f2fd; color: #1976d2;">Cliente</span></td>
+                            <td>15/02/2026</td>
+                            <td><span class="badge badge-success">Activo</span></td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Editar</button>
+                                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;">Eliminar</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#U002</td>
+                            <td>María Rodríguez</td>
+                            <td>maria.rod@email.com</td>
+                            <td>987 654 322</td>
+                            <td><span class="badge" style="background: #f3e5f5; color: #7b1fa2;">Repartidor</span></td>
+                            <td>20/02/2026</td>
+                            <td><span class="badge badge-success">Activo</span></td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Editar</button>
+                                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;">Eliminar</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#U003</td>
+                            <td>Carlos López</td>
+                            <td>carlos.lopez@email.com</td>
+                            <td>987 654 323</td>
+                            <td><span class="badge" style="background: #e8f5e9; color: #388e3c;">Customer</span></td>
+                            <td>25/02/2026</td>
+                            <td><span class="badge badge-danger">Suspendido</span></td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Editar</button>
+                                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;">Eliminar</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#U004</td>
+                            <td>Ana Torres</td>
+                            <td>ana.torres@email.com</td>
+                            <td>987 654 324</td>
+                            <td><span class="badge" style="background: #e3f2fd; color: #1976d2;">Cliente</span></td>
+                            <td>01/03/2026</td>
+                            <td><span class="badge badge-success">Activo</span></td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Editar</button>
+                                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;">Eliminar</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#U005</td>
+                            <td>Pedro Gómez</td>
+                            <td>pedro.gomez@email.com</td>
+                            <td>987 654 325</td>
+                            <td><span class="badge" style="background: #fff3e0; color: #f57c00;">Admin</span></td>
+                            <td>05/03/2026</td>
+                            <td><span class="badge badge-success">Activo</span></td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Editar</button>
+                                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;">Eliminar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-secondary" style="padding: 8px 12px;">← Anterior</button>
+                <button class="btn" style="background: var(--primary-color); color: white; padding: 8px 12px;">1</button>
+                <button class="btn btn-secondary" style="padding: 8px 12px;">2</button>
+                <button class="btn btn-secondary" style="padding: 8px 12px;">3</button>
+                <button class="btn btn-secondary" style="padding: 8px 12px;">Siguiente →</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL: Nuevo Usuario -->
+    <div id="formUsuario" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nuevo Usuario</h2>
+                <button class="modal-close" onclick="closeModal('formUsuario')">✕</button>
+            </div>
+            <form class="modal-body" onsubmit="guardarUsuario(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre *</label>
+                        <input type="text" placeholder="Juan" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Apellidos *</label>
+                        <input type="text" placeholder="Pérez López" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" placeholder="usuario@chikenhot.pe" required>
+                    </div>
+                    <div class="form-group">
+                        <label>DNI/Documento *</label>
+                        <input type="text" placeholder="12345678" maxlength="15" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Teléfono *</label>
+                        <input type="tel" placeholder="987 654 321" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Rol *</label>
+                        <select required>
+                            <option value="">Seleccionar rol</option>
+                            <option value="cliente">Cliente</option>
+                            <option value="repartidor">Repartidor</option>
+                            <option value="admin">Administrador</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Contraseña *</label>
+                        <input type="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirmar Contraseña *</label>
+                        <input type="password" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('formUsuario')">Cancelar</button>
+                    <button type="submit" class="btn btn-new">Crear Usuario</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ===== DATOS DE USUARIOS =====
+        let usuarios = [
+            { id: 'U001', nombre: 'Juan', apellido: 'Aguilar', email: 'juan.aguilar@email.com', telefono: '987654321', rol: 'Cliente', fechaRegistro: '15/02/2026', estatus: 'Activo', dni: '12345678' },
+            { id: 'U002', nombre: 'María', apellido: 'Rodríguez', email: 'maria.rod@email.com', telefono: '987654322', rol: 'Repartidor', fechaRegistro: '20/02/2026', estatus: 'Activo', dni: '12345679' },
+            { id: 'U003', nombre: 'Carlos', apellido: 'López', email: 'carlos.lopez@email.com', telefono: '987654323', rol: 'Cliente', fechaRegistro: '25/02/2026', estatus: 'Suspendido', dni: '12345680' },
+            { id: 'U004', nombre: 'Ana', apellido: 'Torres', email: 'ana.torres@email.com', telefono: '987654324', rol: 'Cliente', fechaRegistro: '01/03/2026', estatus: 'Activo', dni: '12345681' },
+            { id: 'U005', nombre: 'Pedro', apellido: 'Gómez', email: 'pedro.gomez@email.com', telefono: '987654325', rol: 'Admin', fechaRegistro: '05/03/2026', estatus: 'Activo', dni: '12345682' }
+        ];
+
+        let usuarioEditando = null;
+        let filtroRol = '';
+        let filtroEstatus = '';
+        let busqueda = '';
+
+        function renderizarTabla() {
+            let usuariosFiltrados = usuarios.filter(u => {
+                const coincideBusqueda = u.nombre.toLowerCase().includes(busqueda.toLowerCase()) || 
+                                        u.email.toLowerCase().includes(busqueda.toLowerCase());
+                const coincideRol = filtroRol === '' || u.rol === filtroRol;
+                const coincideEstatus = filtroEstatus === '' || u.estatus === filtroEstatus;
+                return coincideBusqueda && coincideRol && coincideEstatus;
+            });
+
+            const tbody = document.querySelector('table tbody');
+            tbody.innerHTML = usuariosFiltrados.map(u => `
+                <tr>
+                    <td>${u.id}</td>
+                    <td>${u.nombre} ${u.apellido}</td>
+                    <td>${u.email}</td>
+                    <td>${u.telefono}</td>
+                    <td><span class="badge" style="background: ${u.rol === 'Cliente' ? '#e3f2fd' : u.rol === 'Repartidor' ? '#f3e5f5' : '#fff3e0'}; color: ${u.rol === 'Cliente' ? '#1976d2' : u.rol === 'Repartidor' ? '#7b1fa2' : '#f57c00'};">${u.rol}</span></td>
+                    <td>${u.fechaRegistro}</td>
+                    <td><span class="badge ${u.estatus === 'Activo' ? 'badge-success' : 'badge-danger'}">${u.estatus}</span></td>
+                    <td>
+                        <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;" onclick="editarUsuario('${u.id}')">Editar</button>
+                        <button class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;" onclick="eliminarUsuario('${u.id}')">Eliminar</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Actualizar contador
+            document.querySelector('.section-title').textContent = `Total de Usuarios: ${usuariosFiltrados.length}`;
+        }
+
+        function configurarFiltros() {
+            // Búsqueda
+            const searchInput = document.querySelector('input[placeholder="🔍 Buscar por nombre o email..."]');
+            searchInput.addEventListener('input', (e) => {
+                busqueda = e.target.value;
+                renderizarTabla();
+            });
+
+            // Filtro Rol
+            const selectRol = document.querySelectorAll('select')[0];
+            selectRol.addEventListener('change', (e) => {
+                filtroRol = e.target.value;
+                renderizarTabla();
+            });
+
+            // Filtro Estatus
+            const selectEstatus = document.querySelectorAll('select')[1];
+            selectEstatus.addEventListener('change', (e) => {
+                filtroEstatus = e.target.value;
+                renderizarTabla();
+            });
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function openNewUserForm() {
+            usuarioEditando = null;
+            document.getElementById('formUsuario').querySelector('h2').textContent = 'Nuevo Usuario';
+            document.getElementById('formUsuario').querySelector('button[type="submit"]').textContent = 'Crear Usuario';
+            document.querySelector('form').reset();
+            openModal('formUsuario');
+        }
+
+        function editarUsuario(userId) {
+            const usuario = usuarios.find(u => u.id === userId);
+            if (!usuario) return;
+
+            usuarioEditando = userId;
+            const form = document.querySelector('form');
+            
+            form.querySelector('input[placeholder="Juan"]').value = usuario.nombre;
+            form.querySelector('input[placeholder="Pérez López"]').value = usuario.apellido;
+            form.querySelector('input[placeholder="usuario@chikenhot.pe"]').value = usuario.email;
+            form.querySelector('input[placeholder="12345678"]').value = usuario.dni;
+            form.querySelector('input[placeholder="987 654 321"]').value = usuario.telefono;
+            form.querySelector('select').value = usuario.rol;
+
+            document.getElementById('formUsuario').querySelector('h2').textContent = 'Editar Usuario';
+            document.getElementById('formUsuario').querySelector('button[type="submit"]').textContent = 'Actualizar Usuario';
+            openModal('formUsuario');
+        }
+
+        function eliminarUsuario(userId) {
+            if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
+                usuarios = usuarios.filter(u => u.id !== userId);
+                renderizarTabla();
+                alert('✅ Usuario eliminado exitosamente!');
+            }
+        }
+
+        function guardarUsuario(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const nombre = form.querySelector('input[placeholder="Juan"]').value.trim();
+            const apellido = form.querySelector('input[placeholder="Pérez López"]').value.trim();
+            const email = form.querySelector('input[placeholder="usuario@chikenhot.pe"]').value.trim();
+            const dni = form.querySelector('input[placeholder="12345678"]').value.trim();
+            const telefono = form.querySelector('input[placeholder="987 654 321"]').value.trim();
+            const rol = form.querySelector('select').value;
+            const password1 = form.querySelectorAll('input[type="password"]')[0].value;
+            const password2 = form.querySelectorAll('input[type="password"]')[1].value;
+
+            // Validaciones
+            if (!nombre || !apellido || !email || !dni || !telefono || !rol) {
+                alert('❌ Por favor completa todos los campos requeridos');
+                return;
+            }
+
+            if (!email.includes('@')) {
+                alert('❌ Email inválido');
+                return;
+            }
+
+            if (password1.length < 6) {
+                alert('❌ La contraseña debe tener al menos 6 caracteres');
+                return;
+            }
+
+            if (password1 !== password2) {
+                alert('❌ Las contraseñas no coinciden');
+                return;
+            }
+
+            if (usuarioEditando) {
+                // Actualizar usuario existente
+                const usuario = usuarios.find(u => u.id === usuarioEditando);
+                if (usuario) {
+                    usuario.nombre = nombre;
+                    usuario.apellido = apellido;
+                    usuario.email = email;
+                    usuario.dni = dni;
+                    usuario.telefono = telefono;
+                    usuario.rol = rol;
+                }
+                alert('✅ Usuario actualizado exitosamente!');
+            } else {
+                // Crear nuevo usuario
+                const nuevoId = 'U' + String(usuarios.length + 1).padStart(3, '0');
+                const hoy = new Date().toLocaleDateString('es-PE');
+                usuarios.push({
+                    id: nuevoId,
+                    nombre,
+                    apellido,
+                    email,
+                    dni,
+                    telefono,
+                    rol,
+                    fechaRegistro: hoy,
+                    estatus: 'Activo'
+                });
+                alert('✅ Usuario creado exitosamente!');
+            }
+
+            renderizarTabla();
+            closeModal('formUsuario');
+            form.reset();
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                window.location.href = '../index.html';
+            }
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            renderizarTabla();
+            configurarFiltros();
+        });
+
+        // Cerrar modal al hacer click fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('formUsuario');
+            if (event.target == modal) {
+                closeModal('formUsuario');
+            }
+        }
+    </script>
+</body>
+</html>
+

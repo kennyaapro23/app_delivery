@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chikenhot - Mis Ganancias</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="dashboard-body">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🍗</div>
+            <div class="sidebar-title">CHIKENHOT</div>
+            <div class="sidebar-subtitle">REPARTIDOR</div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">MENÚ</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="dashboard-delivery.html" class="sidebar-link"><span class="sidebar-icon">🚗</span><span>Mis Entregas</span></a></li>
+                <li class="sidebar-item"><a href="delivery-mapa.html" class="sidebar-link"><span class="sidebar-icon">🗺️</span><span>Mapa en Vivo</span></a></li>
+                <li class="sidebar-item"><a href="delivery-ganancias.html" class="sidebar-link active"><span class="sidebar-icon">💰</span><span>Mis Ganancias</span></a></li>
+                <li class="sidebar-item"><a href="delivery-calificaciones.html" class="sidebar-link"><span class="sidebar-icon">⭐</span><span>Calificaciones</span></a></li>
+                <li class="sidebar-item"><a href="delivery-notificaciones.html" class="sidebar-link"><span class="sidebar-icon">🔔</span><span>Notificaciones</span></a></li>
+                <li class="sidebar-item"><a href="delivery-config.html" class="sidebar-link"><span class="sidebar-icon">⚙️</span><span>Configuración</span></a></li>
+            </ul>
+        </div>
+        <div class="sidebar-user">
+            <div class="user-avatar">🚴</div>
+            <div class="user-info">
+                <div class="user-name">Diego Rodríguez</div>
+                <div class="user-email">diego@chikenhot.pe</div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="header">
+            <div class="header-title">
+                <h1>Mis Ganancias</h1>
+                <p>Resumen de ingresos</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-new" onclick="alert('Solicitar retiro...')">💵 Solicitar Retiro</button>
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-content">
+                    <div class="stat-label">Hoy</div>
+                    <div class="stat-value">S/ 180</div>
+                    <div class="stat-change positive">12 entregas</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <div class="stat-label">Esta Semana</div>
+                    <div class="stat-value">S/ 1,250</div>
+                    <div class="stat-change positive">↑ 15% vs semana anterior</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-content">
+                    <div class="stat-label">Este Mes</div>
+                    <div class="stat-value">S/ 4,850</div>
+                    <div class="stat-change positive">178 entregas</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🏦</div>
+                <div class="stat-content">
+                    <div class="stat-label">Total Acumulado</div>
+                    <div class="stat-value">S/ 12,450</div>
+                    <div class="stat-change positive">Desde febrero 2026</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Transacciones Recientes</h2>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>FECHA/HORA</th>
+                            <th>#PEDIDO</th>
+                            <th>CLIENTE</th>
+                            <th>MONTO</th>
+                            <th>ESTADO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>07/04/2026 14:30</td>
+                            <td>#1050</td>
+                            <td>Pedro Gómez</td>
+                            <td>S/ 5.00</td>
+                            <td><span class="badge badge-success">Completado</span></td>
+                        </tr>
+                        <tr>
+                            <td>07/04/2026 13:15</td>
+                            <td>#1049</td>
+                            <td>Ana Torres</td>
+                            <td>S/ 5.00</td>
+                            <td><span class="badge badge-success">Completado</span></td>
+                        </tr>
+                        <tr>
+                            <td>07/04/2026 12:45</td>
+                            <td>#1048</td>
+                            <td>Carlos Ruiz</td>
+                            <td>S/ 7.00</td>
+                            <td><span class="badge badge-success">Completado</span></td>
+                        </tr>
+                        <tr>
+                            <td>07/04/2026 11:20</td>
+                            <td>#1047</td>
+                            <td>María López</td>
+                            <td>S/ 6.00</td>
+                            <td><span class="badge badge-success">Completado</span></td>
+                        </tr>
+                        <tr>
+                            <td>07/04/2026 10:00</td>
+                            <td>#1046</td>
+                            <td>Andrea Paz</td>
+                            <td>S/ 5.50</td>
+                            <td><span class="badge badge-success">Completado</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Histórico de Retiros</h2>
+            </div>
+
+            <div style="display: grid; gap: 15px;">
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4>Retiro a Banco</h4>
+                        <p style="font-size: 12px; color: var(--text-light);">Se realizó: 30/03/2026</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 18px; font-weight: 700; color: var(--success-color);">S/ 3,000.00</div>
+                        <span class="badge badge-success">Completado</span>
+                    </div>
+                </div>
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4>Retiro a Banco</h4>
+                        <p style="font-size: 12px; color: var(--text-light);">Se realizó: 15/03/2026</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 18px; font-weight: 700; color: var(--success-color);">S/ 2,500.00</div>
+                        <span class="badge badge-success">Completado</span>
+                    </div>
+                </div>
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4>Retiro a Banco</h4>
+                        <p style="font-size: 12px; color: var(--text-light);">Se realizó: 28/02/2026</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 18px; font-weight: 700; color: var(--success-color);">S/ 2,000.00</div>
+                        <span class="badge badge-success">Completado</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                window.location.href = '../index.html';
+            }
+        }
+    </script>
+</body>
+</html>
+

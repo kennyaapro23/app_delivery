@@ -1,0 +1,33 @@
+# ----- Secrets / environment -----
+.env
+.env.local
+.env.*.local
+*/.env
+*/.env.local
+
+# ----- Python / backend -----
+venv/
+*/venv/
+__pycache__/
+*/__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# ----- Node / frontend -----
+node_modules/
+*/node_modules/
+dist/
+build/
+.cache/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ----- Editor / OS -----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log

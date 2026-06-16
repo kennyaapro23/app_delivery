@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chikenhot - Mis Direcciones</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="dashboard-body">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🍗</div>
+            <div class="sidebar-title">CHIKENHOT</div>
+            <div class="sidebar-subtitle">MI CUENTA</div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">MENÚ</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="dashboard-cliente.html" class="sidebar-link"><span class="sidebar-icon">🏠</span><span>Inicio</span></a></li>
+                <li class="sidebar-item"><a href="cliente-pedidos.html" class="sidebar-link"><span class="sidebar-icon">📋</span><span>Mis Pedidos</span></a></li>
+                <li class="sidebar-item"><a href="cliente-favoritos.html" class="sidebar-link"><span class="sidebar-icon">❤️</span><span>Favoritos</span></a></li>
+                <li class="sidebar-item"><a href="cliente-direcciones.html" class="sidebar-link active"><span class="sidebar-icon">🗺️</span><span>Mis Direcciones</span></a></li>
+                <li class="sidebar-item"><a href="cliente-pago.html" class="sidebar-link"><span class="sidebar-icon">💳</span><span>Métodos de Pago</span></a></li>
+                <li class="sidebar-item"><a href="cliente-resenas.html" class="sidebar-link"><span class="sidebar-icon">⭐</span><span>Mis Reseñas</span></a></li>
+                <li class="sidebar-item"><a href="cliente-cupones.html" class="sidebar-link"><span class="sidebar-icon">🎁</span><span>Cupones</span></a></li>
+                <li class="sidebar-item"><a href="cliente-config.html" class="sidebar-link"><span class="sidebar-icon">⚙️</span><span>Configuración</span></a></li>
+            </ul>
+        </div>
+        <div class="sidebar-user">
+            <div class="user-avatar">👤</div>
+            <div class="user-info">
+                <div class="user-name">Juan Cliente</div>
+                <div class="user-email">cliente@chikenhot.pe</div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="header">
+            <div class="header-title">
+                <h1>Mis Direcciones</h1>
+                <p>Administra tus direcciones de entrega</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-new" onclick="openModal('formDireccion')">+ Agregar Dirección</button>
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div style="display: grid; gap: 15px;">
+                <div style="background: var(--light-bg); padding: 20px; border-radius: 8px; border-left: 4px solid var(--primary-color);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>
+                            <h4 style="margin-bottom: 5px;">🏠 Casa</h4>
+                            <p>Av. Principal 123, La Noria, Ica</p>
+                            <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">Teléfono: 987 654 321</p>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" style="padding: 8px 12px; font-size: 12px;">✏️ Editar</button>
+                            <button class="btn btn-danger" style="padding: 8px 12px; font-size: 12px;">🗑️ Eliminar</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-success" style="width: 100%; margin-top: 10px;">✓ Usar esta dirección</button>
+                </div>
+
+                <div style="background: var(--light-bg); padding: 20px; border-radius: 8px; border-left: 4px solid #ccc;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>
+                            <h4 style="margin-bottom: 5px;">🏢 Trabajo</h4>
+                            <p>Calle Comercio 456, Centro, Ica</p>
+                            <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">Teléfono: 987 654 322</p>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" style="padding: 8px 12px; font-size: 12px;">✏️ Editar</button>
+                            <button class="btn btn-danger" style="padding: 8px 12px; font-size: 12px;">🗑️ Eliminar</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-success" style="width: 100%; margin-top: 10px;">✓ Usar esta dirección</button>
+                </div>
+
+                <div style="background: var(--light-bg); padding: 20px; border-radius: 8px; border-left: 4px solid #ccc;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>
+                            <h4 style="margin-bottom: 5px;">👴 Abuelos</h4>
+                            <p>Valle de Ica 789, San Isidro, Ica</p>
+                            <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">Teléfono: 987 654 323</p>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" style="padding: 8px 12px; font-size: 12px;">✏️ Editar</button>
+                            <button class="btn btn-danger" style="padding: 8px 12px; font-size: 12px;">🗑️ Eliminar</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-success" style="width: 100%; margin-top: 10px;">✓ Usar esta dirección</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL: Nueva Dirección -->
+    <div id="formDireccion" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Agregar Nueva Dirección</h2>
+                <button class="modal-close" onclick="closeModal('formDireccion')">✕</button>
+            </div>
+            <form class="modal-body" onsubmit="guardarDireccion(event)">
+                <div class="form-group">
+                    <label>Tipo de Dirección *</label>
+                    <select required>
+                        <option value="">Seleccionar</option>
+                        <option value="casa">Casa</option>
+                        <option value="trabajo">Trabajo</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Dirección Completa *</label>
+                    <input type="text" placeholder="Av. Principal 123, Apto 4B" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Distrito *</label>
+                        <input type="text" placeholder="San Isidro" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ciudad *</label>
+                        <input type="text" placeholder="Ica" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Teléfono de Contacto *</label>
+                    <input type="tel" placeholder="987 654 321" required>
+                </div>
+                <div class="form-group">
+                    <label>Referencia (Externa)</label>
+                    <textarea placeholder="Ej: Cerca del parque central" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox"> Establecer como dirección predeterminada
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('formDireccion')">Cancelar</button>
+                    <button type="submit" class="btn btn-new">Guardar Dirección</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function guardarDireccion(event) {
+            event.preventDefault();
+            alert('✅ Dirección guardada exitosamente!');
+            closeModal('formDireccion');
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                window.location.href = '../index.html';
+            }
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('formDireccion');
+            if (event.target == modal) {
+                closeModal('formDireccion');
+            }
+        }
+    </script>
+</body>
+</html>
+

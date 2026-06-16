@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chikenhot - Repartidores</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="dashboard-body">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🍗</div>
+            <div class="sidebar-title">CHIKENHOT</div>
+            <div class="sidebar-subtitle">SISTEMA DE GESTIÓN</div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">PRINCIPAL</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="dashboard-admin.html" class="sidebar-link">
+                        <span class="sidebar-icon">📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">MÓDULOS</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="admin-usuarios.html" class="sidebar-link">
+                        <span class="sidebar-icon">👥</span>
+                        <span>Usuarios</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-catalogo.html" class="sidebar-link">
+                        <span class="sidebar-icon">📋</span>
+                        <span>Catálogo y Pedidos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-repartidores.html" class="sidebar-link active">
+                        <span class="sidebar-icon">🚗</span>
+                        <span>Repartidores</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-pagos.html" class="sidebar-link">
+                        <span class="sidebar-icon">💳</span>
+                        <span>Pagos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-notificaciones.html" class="sidebar-link">
+                        <span class="sidebar-icon">🔔</span>
+                        <span>Notificaciones</span>
+                        <span class="sidebar-badge">3</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">ANÁLISIS</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="admin-reportes.html" class="sidebar-link">
+                        <span class="sidebar-icon">📈</span>
+                        <span>Reportes</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">👤</div>
+            <div class="user-info">
+                <div class="user-name">Administrador</div>
+                <div class="user-email">admin@chikenhot.pe</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-title">
+                <h1>Gestión de Repartidores</h1>
+                <p>Chikenhot / Repartidores</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-new" onclick="openModal('formRepartidor')">+ Nuevo Repartidor</button>
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🚗</div>
+                <div class="stat-content">
+                    <div class="stat-label">Total Repartidores</div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-change positive">8 activos ahora</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-content">
+                    <div class="stat-label">Disponibles</div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-change positive">Listos para entregas</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-content">
+                    <div class="stat-label">En Ruta</div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-change positive">Entregas activas</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-content">
+                    <div class="stat-label">Rating Promedio</div>
+                    <div class="stat-value">4.7 / 5</div>
+                    <div class="stat-change positive">Muy bueno</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DRIVERS TABLE -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Repartidores Registrados</h2>
+                <span class="section-link">Exportar datos</span>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>NOMBRE</th>
+                            <th>TELÉFONO</th>
+                            <th>DOCUMENTO</th>
+                            <th>VEHÍCULO</th>
+                            <th>ESTADO</th>
+                            <th>RATING</th>
+                            <th>ENTREGAS</th>
+                            <th>ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#D001</td>
+                            <td>Diego Rodríguez</td>
+                            <td>987 654 321</td>
+                            <td>12345678</td>
+                            <td>Moto Honda CRF</td>
+                            <td><span class="badge badge-success">En ruta</span></td>
+                            <td>⭐⭐⭐⭐⭐</td>
+                            <td>156</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Ver</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#D002</td>
+                            <td>Luis Martínez</td>
+                            <td>987 654 322</td>
+                            <td>12345679</td>
+                            <td>Bicicleta</td>
+                            <td><span class="badge badge-success">Disponible</span></td>
+                            <td>⭐⭐⭐⭐</td>
+                            <td>98</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Ver</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#D003</td>
+                            <td>Juan Pérez</td>
+                            <td>987 654 323</td>
+                            <td>12345680</td>
+                            <td>Moto Yamaha</td>
+                            <td><span class="badge badge-success">En ruta</span></td>
+                            <td>⭐⭐⭐⭐⭐</td>
+                            <td>203</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Ver</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#D004</td>
+                            <td>Carlos Mendoza</td>
+                            <td>987 654 324</td>
+                            <td>12345681</td>
+                            <td>Auto Toyota</td>
+                            <td><span class="badge badge-danger">Offline</span></td>
+                            <td>⭐⭐⭐</td>
+                            <td>45</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Ver</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#D005</td>
+                            <td>Roberto Silva</td>
+                            <td>987 654 325</td>
+                            <td>12345682</td>
+                            <td>Moto Honda</td>
+                            <td><span class="badge badge-success">Disponible</span></td>
+                            <td>⭐⭐⭐⭐⭐</td>
+                            <td>178</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Ver</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- MAP LOCATION -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Ubicación en Vivo de Repartidores</h2>
+                <span class="section-link" onclick="refrescarMapaRepartidores()">🔄 Actualizar</span>
+            </div>
+
+            <!-- Mapá de Repartidores Estilo Google Maps -->
+            <div id="mapaRepartidores" style="background: linear-gradient(to bottom, #e8f5e9, #c8e6c9); height: 500px; border-radius: 8px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border: 2px solid #4caf50; box-shadow: 0 4px 12px rgba(0,0,0,0.15); margin-bottom: 20px;">
+                
+                <!-- Fondo del mapa -->
+                <svg style="position: absolute; width: 100%; height: 100%; top: 0; left: 0;" viewBox="0 0 1200 700">
+                    <!-- Calles principales -->
+                    <rect width="1200" height="700" fill="#f0f0f0"/>
+                    
+                    <!-- Calles -->
+                    <rect x="0" y="300" width="1200" height="50" fill="#ffffff"/>
+                    <line x1="0" y1="315" x2="1200" y2="315" stroke="#ffeb3b" stroke-width="5" stroke-dasharray="25,12"/>
+                    
+                    <rect x="500" y="0" width="50" height="700" fill="#ffffff"/>
+                    <line x1="520" y1="0" x2="520" y2="700" stroke="#ffeb3b" stroke-width="4" stroke-dasharray="20,10"/>
+                    
+                    <!-- Calles secundarias -->
+                    <rect x="0" y="150" width="1200" height="25" fill="#fafafa"/>
+                    <rect x="250" y="0" width="25" height="700" fill="#fafafa"/>
+                    <rect x="750" y="0" width="25" height="700" fill="#fafafa"/>
+                    
+                    <!-- Áreas verdes -->
+                    <circle cx="150" cy="150" r="80" fill="#c8e6c9" opacity="0.6"/>
+                    <circle cx="1050" cy="600" r="90" fill="#c8e6c9" opacity="0.6"/>
+                </svg>
+
+                <!-- Repartidor 1: Diego - En Ruta -->
+                <div style="position: absolute; left: 25%; top: 35%; z-index: 10; cursor: pointer;" onclick="mostrarDetallesRepartidor('D001', 'Diego Rodríguez', 'En ruta', 'Moto Honda CRF', '4.8')">
+                    <div style="width: 50px; height: 50px; background: #FF6B6B; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; border: 3px solid white; box-shadow: 0 2px 8px rgba(255,107,107,0.5); margin: 0 auto 6px; animation: pulse 2s infinite;">🚴</div>
+                    <div style="background: white; padding: 6px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; white-space: nowrap; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">Diego 🔴 En ruta</div>
+                </div>
+
+                <!-- Repartidor 2: Luis - Disponible -->
+                <div style="position: absolute; left: 55%; top: 25%; z-index: 10; cursor: pointer;" onclick="mostrarDetallesRepartidor('D002', 'Luis Martínez', 'Disponible', 'Bicicleta', '4.6')">
+                    <div style="width: 50px; height: 50px; background: #4CAF50; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; border: 3px solid white; box-shadow: 0 2px 8px rgba(76,175,80,0.5); margin: 0 auto 6px; animation: pulse 2.5s infinite;">🚴</div>
+                    <div style="background: white; padding: 6px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; white-space: nowrap; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">Luis 🟢 Disponible</div>
+                </div>
+
+                <!-- Repartidor 3: Juan - En Ruta -->
+                <div style="position: absolute; right: 15%; top: 55%; z-index: 10; cursor: pointer;" onclick="mostrarDetallesRepartidor('D003', 'Juan Pérez', 'En ruta', 'Moto Yamaha', '4.9')">
+                    <div style="width: 50px; height: 50px; background: #FF6B6B; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; border: 3px solid white; box-shadow: 0 2px 8px rgba(255,107,107,0.5); margin: 0 auto 6px; animation: pulse 2s infinite;">🚴</div>
+                    <div style="background: white; padding: 6px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; white-space: nowrap; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">Juan 🔴 En ruta</div>
+                </div>
+
+                <!-- Repartidor 4: Carlos - Offline -->
+                <div style="position: absolute; left: 35%; bottom: 15%; z-index: 10; cursor: pointer;" onclick="mostrarDetallesRepartidor('D004', 'Carlos Mendoza', 'Offline', 'Auto Toyota', '3.8')">
+                    <div style="width: 50px; height: 50px; background: #9E9E9E; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; border: 3px solid white; box-shadow: 0 2px 8px rgba(158,158,158,0.5); margin: 0 auto 6px; opacity: 0.6;">🚴</div>
+                    <div style="background: white; padding: 6px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; white-space: nowrap; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">Carlos ⚫ Offline</div>
+                </div>
+
+                <!-- Repartidor 5: Roberto - Disponible -->
+                <div style="position: absolute; right: 20%; bottom: 25%; z-index: 10; cursor: pointer;" onclick="mostrarDetallesRepartidor('D005', 'Roberto Silva', 'Disponible', 'Moto Honda', '4.7')">
+                    <div style="width: 50px; height: 50px; background: #4CAF50; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; border: 3px solid white; box-shadow: 0 2px 8px rgba(76,175,80,0.5); margin: 0 auto 6px; animation: pulse 2.5s infinite;">🚴</div>
+                    <div style="background: white; padding: 6px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; white-space: nowrap; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">Roberto 🟢 Disponible</div>
+                </div>
+
+                <!-- Leyenda -->
+                <div style="position: absolute; top: 15px; left: 15px; background: white; padding: 12px 16px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 15;">
+                    <div style="font-weight: 700; font-size: 13px; margin-bottom: 10px;">Estados:</div>
+                    <div style="font-size: 12px; line-height: 1.8;">
+                        <div>🔴 <span style="color: #FF6B6B;">En ruta</span> (2 repartidores)</div>
+                        <div>🟢 <span style="color: #4CAF50;">Disponible</span> (2 repartidores)</div>
+                        <div>⚫ <span style="color: #9E9E9E;">Offline</span> (1 repartidor)</div>
+                    </div>
+                </div>
+
+                <!-- Controles del mapa -->
+                <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); z-index: 15; display: flex; flex-direction: column; gap: 8px;">
+                    <button style="width: 40px; height: 40px; background: white; border: 1px solid #ccc; border-radius: 2px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,0.2);" onclick="zoomMasRepartidores()">➕</button>
+                    <button style="width: 40px; height: 40px; background: white; border: 1px solid #ccc; border-radius: 2px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,0.2);" onclick="zoomMenosRepartidores()">➖</button>
+                </div>
+
+                <!-- Estadísticas en tiempo real -->
+                <div style="position: absolute; bottom: 15px; left: 15px; right: 15px; background: white; padding: 12px 16px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 15; display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                    <div style="text-align: center;">
+                        <div style="font-weight: 700; font-size: 18px; color: #FF6B6B;">2</div>
+                        <div style="font-size: 11px; color: #666;">En Ruta</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-weight: 700; font-size: 18px; color: #4CAF50;">2</div>
+                        <div style="font-size: 11px; color: #666;">Disponibles</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-weight: 700; font-size: 18px; color: #2196F3;">5</div>
+                        <div style="font-size: 11px; color: #666;">Total</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-weight: 700; font-size: 18px; color: #FF9800;">48</div>
+                        <div style="font-size: 11px; color: #666;">Entregas Hoy</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de Filtros -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Filtrar por Estado</label>
+                    <select style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;">
+                        <option>Todos</option>
+                        <option>En ruta</option>
+                        <option>Disponible</option>
+                        <option>Offline</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Ordenar por</label>
+                    <select style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;">
+                        <option>Más cercano</option>
+                        <option>Mayor rating</option>
+                        <option>Más entregas</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL: Detalles de Repartidor -->
+    <div id="modalDetallesRepartidor" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2 id="nombreRepartidorModal">Diego Rodríguez</h2>
+                <button class="modal-close" onclick="closeModal('modalDetallesRepartidor')">✕</button>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <!-- Información del Repartidor -->
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 15px;">
+                    <div style="font-size: 48px; flex-shrink: 0;">🚴</div>
+                    <div style="flex: 1;">
+                        <h4 id="repartidorNombreModal">Diego Rodríguez</h4>
+                        <div style="font-size: 13px; color: var(--text-light); margin: 8px 0;">
+                            <p><strong>ID:</strong> <span id="repartidorIdModal">D001</span></p>
+                            <p><strong>Estado:</strong> <span id="repartidorEstadoModal" style="color: #FF6B6B; font-weight: 600;">En ruta</span></p>
+                            <p><strong>Vehículo:</strong> <span id="repartidorVehiculoModal">Moto Honda CRF</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estadísticas -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div style="background: var(--light-bg); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 18px; font-weight: 700; color: var(--primary-color);">
+                            <span id="repartidorRatingModal">4.8</span>/5
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-light);">Rating</div>
+                    </div>
+                    <div style="background: var(--light-bg); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 18px; font-weight: 700; color: var(--primary-color);">156</div>
+                        <div style="font-size: 11px; color: var(--text-light);">Entregas</div>
+                    </div>
+                </div>
+
+                <!-- Ubicación Actual -->
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 10px;">📍 Ubicación Actual</h4>
+                    <p style="font-size: 13px; color: var(--text-light); margin-bottom: 8px;">Calle Principal, 890 - La Noria</p>
+                    <div style="font-size: 12px; line-height: 1.8;">
+                        <p>🔹 Distancia desde restaurante: 2.3 km</p>
+                        <p>🔹 Tiempo estimado de entrega: 12 min</p>
+                        <p>🔹 Velocidad promedio: 25 km/h</p>
+                    </div>
+                </div>
+
+                <!-- Contacto -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <button class="btn btn-primary" style="width: 100%; padding: 10px;">📞 Llamar</button>
+                    <button class="btn btn-primary" style="width: 100%; padding: 10px;">💬 Mensaje</button>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modalDetallesRepartidor')">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="asignarPedido()">Asignar Pedido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function mostrarDetallesRepartidor(id, nombre, estado, vehiculo, rating) {
+            document.getElementById('repartidorIdModal').textContent = id;
+            document.getElementById('repartidorNombreModal').textContent = nombre;
+            document.getElementById('nombreRepartidorModal').textContent = nombre;
+            document.getElementById('repartidorEstadoModal').textContent = estado;
+            document.getElementById('repartidorVehiculoModal').textContent = vehiculo;
+            document.getElementById('repartidorRatingModal').textContent = rating;
+            
+            openModal('modalDetallesRepartidor');
+        }
+
+        function refrescarMapaRepartidores() {
+            alert('🔄 Actualizando ubicaciones de repartidores...');
+        }
+
+        function zoomMasRepartidores() {
+            const mapa = document.getElementById('mapaRepartidores');
+            const currentScale = parseFloat(mapa.style.transform.replace('scale(', '').replace(')', '') || 1);
+            mapa.style.transform = 'scale(' + Math.min(currentScale + 0.2, 2) + ')';
+            mapa.style.transformOrigin = 'center';
+            mapa.style.transition = 'transform 0.3s ease';
+        }
+
+        function zoomMenosRepartidores() {
+            const mapa = document.getElementById('mapaRepartidores');
+            const currentScale = parseFloat(mapa.style.transform.replace('scale(', '').replace(')', '') || 1);
+            mapa.style.transform = 'scale(' + Math.max(currentScale - 0.2, 0.8) + ')';
+            mapa.style.transformOrigin = 'center';
+            mapa.style.transition = 'transform 0.3s ease';
+        }
+
+        function asignarPedido() {
+            alert('✅ Pedido asignado al repartidor');
+            closeModal('modalDetallesRepartidor');
+        }
+
+        // ===== DATOS DE REPARTIDORES =====
+        let repartidores = [
+            { id: 'D001', nombre: 'Diego Rodríguez', telefono: '987654321', documento: '12345678', vehiculo: 'Moto Honda CRF', estado: 'En ruta', rating: 4.8, entregas: 156 },
+            { id: 'D002', nombre: 'Luis Martínez', telefono: '987654322', documento: '12345679', vehiculo: 'Bicicleta', estado: 'Disponible', rating: 4.6, entregas: 98 },
+            { id: 'D003', nombre: 'Juan Pérez', telefono: '987654323', documento: '12345680', vehiculo: 'Moto Yamaha', estado: 'En ruta', rating: 4.9, entregas: 203 },
+            { id: 'D004', nombre: 'Carlos Mendoza', telefono: '987654324', documento: '12345681', vehiculo: 'Auto Toyota', estado: 'Offline', rating: 3.8, entregas: 45 },
+            { id: 'D005', nombre: 'Roberto Silva', telefono: '987654325', documento: '12345682', vehiculo: 'Moto Honda', estado: 'Disponible', rating: 4.7, entregas: 178 }
+        ];
+
+        let repartidorEditando = null;
+
+        function renderizarTabla() {
+            const tbody = document.querySelector('table tbody');
+            tbody.innerHTML = repartidores.map(r => {
+                const estrellas = '⭐'.repeat(Math.floor(r.rating)) + (r.rating % 1 !== 0 ? '✨' : '');
+                return `
+                    <tr>
+                        <td>${r.id}</td>
+                        <td>${r.nombre}</td>
+                        <td>${r.telefono}</td>
+                        <td>${r.documento}</td>
+                        <td>${r.vehiculo}</td>
+                        <td><span class="badge ${r.estado === 'Disponible' ? 'badge-success' : r.estado === 'En ruta' ? 'badge-info' : 'badge-danger'}">${r.estado}</span></td>
+                        <td>${estrellas}</td>
+                        <td>${r.entregas}</td>
+                        <td>
+                            <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;" onclick="mostrarDetallesRepartidor('${r.id}', '${r.nombre}', '${r.estado}', '${r.vehiculo}', '${r.rating}')">Ver</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Actualizar stats
+            const disponibles = repartidores.filter(r => r.estado === 'Disponible').length;
+            const enRuta = repartidores.filter(r => r.estado === 'En ruta').length;
+            const ratingPromedio = (repartidores.reduce((sum, r) => sum + r.rating, 0) / repartidores.length).toFixed(1);
+
+            // Actualizar cards de stats
+            const statCards = document.querySelectorAll('.stat-card .stat-value');
+            statCards[0].textContent = repartidores.length;
+            statCards[1].textContent = disponibles;
+            statCards[2].textContent = enRuta;
+            statCards[3].textContent = ratingPromedio + ' / 5';
+        }
+
+        function mostrarDetallesRepartidor(id, nombre, estado, vehiculo, rating) {
+            const repartidor = repartidores.find(r => r.id === id);
+            if (!repartidor) return;
+
+            // Llenar modal
+            const modal = document.getElementById('modalDetallesRepartidor');
+            modal.querySelector('.modal-header h2').textContent = nombre;
+            modal.querySelector('p').innerHTML = `<strong>ID:</strong> ${id} | <strong>Estado:</strong> ${estado}`;
+
+            const itemsDiv = modal.querySelector('.order-info-grid');
+            itemsDiv.innerHTML = `
+                <div class="order-info-item">
+                    <span class="order-info-label">Teléfono</span>
+                    <span class="order-info-value">${repartidor.telefono}</span>
+                </div>
+                <div class="order-info-item">
+                    <span class="order-info-label">Documento</span>
+                    <span class="order-info-value">${repartidor.documento}</span>
+                </div>
+                <div class="order-info-item">
+                    <span class="order-info-label">Vehículo</span>
+                    <span class="order-info-value">${repartidor.vehiculo}</span>
+                </div>
+                <div class="order-info-item">
+                    <span class="order-info-label">Rating</span>
+                    <span class="order-info-value">⭐ ${repartidor.rating}</span>
+                </div>
+                <div class="order-info-item">
+                    <span class="order-info-label">Total Entregas</span>
+                    <span class="order-info-value">${repartidor.entregas}</span>
+                </div>
+                <div class="order-info-item">
+                    <span class="order-info-label">Estado Actual</span>
+                    <span class="order-info-value" style="color: ${repartidor.estado === 'Disponible' ? '#4CAF50' : repartidor.estado === 'En ruta' ? '#FF9800' : '#F44336'};">${repartidor.estado}</span>
+                </div>
+            `;
+
+            openModal('modalDetallesRepartidor');
+        }
+
+        function refrescarMapaRepartidores() {
+            alert('🔄 Ubicaciones actualizadas desde el servidor');
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function guardarRepartidor(event) {
+            event.preventDefault();
+            alert('✅ Repartidor registrado exitosamente!');
+            closeModal('formRepartidor');
+            event.target.reset();
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                window.location.href = '../index.html';
+            }
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            renderizarTabla();
+        });
+
+        window.onclick = function(event) {
+            const modalDetalles = document.getElementById('modalDetallesRepartidor');
+            const modalForm = document.getElementById('formRepartidor');
+            if (event.target == modalDetalles) {
+                closeModal('modalDetallesRepartidor');
+            }
+            if (event.target == modalForm) {
+                closeModal('formRepartidor');
+            }
+        }
+    </script>
+
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.15); }
+        }
+    </style>
+
+    <!-- MODAL: Nuevo Repartidor -->
+    <div id="formRepartidor" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nuevo Repartidor</h2>
+                <button class="modal-close" onclick="closeModal('formRepartidor')">✕</button>
+            </div>
+            <form class="modal-body" onsubmit="guardarRepartidor(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre *</label>
+                        <input type="text" placeholder="Diego" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Apellidos *</label>
+                        <input type="text" placeholder="Rodríguez García" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" placeholder="diego@chikenhot.pe" required>
+                    </div>
+                    <div class="form-group">
+                        <label>DNI/Documento de Identidad *</label>
+                        <input type="text" placeholder="12345678" maxlength="15" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Teléfono *</label>
+                        <input type="tel" placeholder="987 654 321" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Nacimiento *</label>
+                        <input type="date" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo de Vehículo *</label>
+                        <select required>
+                            <option value="">Seleccionar</option>
+                            <option value="moto">Moto</option>
+                            <option value="bicicleta">Bicicleta</option>
+                            <option value="auto">Auto</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Placa del Vehículo *</label>
+                        <input type="text" placeholder="ABC-1234" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Número de Licencia *</label>
+                        <input type="text" placeholder="123456789" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Número de Seguro *</label>
+                        <input type="text" placeholder="POL-2024-001" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Banco para Depósitos *</label>
+                        <select required>
+                            <option value="">Seleccionar banco</option>
+                            <option value="bcp">Banco BCP</option>
+                            <option value="continental">Banco Continental</option>
+                            <option value="scotiabank">Banco Scotiabank</option>
+                            <option value="interbank">Banco Interbank</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Número de Cuenta *</label>
+                        <input type="text" placeholder="123456789" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('formRepartidor')">Cancelar</button>
+                    <button type="submit" class="btn btn-new">Crear Repartidor</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+

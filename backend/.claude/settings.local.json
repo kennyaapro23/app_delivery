@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem \"c:\\\\Users\\\\kenny\\\\Documents\\\\app_delivery\" -Directory | Where-Object { $_.Name -notin @\\(\"backend\",\"frontend\",\"backend_delivery\"\\) } | Select-Object Name, LastWriteTime | Format-Table)",
+      "PowerShell(Set-Location \"c:\\\\Users\\\\kenny\\\\Documents\\\\app_delivery\\\\backend\"; .\\\\venv\\\\Scripts\\\\python.exe -c \"import psycopg; conn = psycopg.connect\\('postgresql://postgres:123456@localhost:5432/chikenhot_db'\\); cur = conn.cursor\\(\\); cur.execute\\(\\\\\"ALTER TABLE delivery_profiles ADD COLUMN IF NOT EXISTS last_assigned_at TIMESTAMP NULL\\\\\"\\); cur.execute\\(\\\\\"CREATE INDEX IF NOT EXISTS ix_delivery_profiles_last_assigned_at ON delivery_profiles\\(last_assigned_at\\)\\\\\"\\); conn.commit\\(\\); print\\('OK columna creada'\\); conn.close\\(\\)\" 2>&1 | Out-String)",
+      "PowerShell(try { $b = Invoke-RestMethod http://127.0.0.1:8000/health -TimeoutSec 3; Write-Host \"Backend OK: $\\($b | ConvertTo-Json -Compress\\)\" } catch { Write-Host \"Backend DOWN\" }; try { $f = Invoke-WebRequest http://localhost:5173/ -TimeoutSec 3 -UseBasicParsing; Write-Host \"Frontend OK: $\\($f.StatusCode\\)\" } catch { Write-Host \"Frontend DOWN\" })",
+      "PowerShell(try { $b = Invoke-RestMethod http://127.0.0.1:8000/health -TimeoutSec 3; Write-Host \"Backend: OK\" } catch { Write-Host \"Backend: DOWN\" }; try { $f = Invoke-WebRequest http://localhost:5173/ -TimeoutSec 3 -UseBasicParsing; Write-Host \"Frontend: OK \\($\\($f.StatusCode\\)\\)\" } catch { Write-Host \"Frontend: DOWN\" })",
+      "PowerShell($env:PYTHONIOENCODING=\"utf-8\"; Set-Location \"c:\\\\Users\\\\kenny\\\\Documents\\\\app_delivery\\\\backend\"; .\\\\venv\\\\Scripts\\\\python.exe test_full_e2e.py 2>&1 | Out-String)",
+      "PowerShell(try { $r = Invoke-RestMethod \"http://127.0.0.1:8000/api/v1/products/categories?include_inactive=true\" -TimeoutSec 5; Write-Host \"GET /categories?include_inactive=true OK \\($\\($r.Count\\) categorías\\)\" } catch { Write-Host \"FAIL: $_\" })",
+      "PowerShell($env:PYTHONIOENCODING=\"utf-8\"; Set-Location \"c:\\\\Users\\\\kenny\\\\Documents\\\\app_delivery\\\\backend\"; .\\\\venv\\\\Scripts\\\\python.exe test_driver_reg.py 2>&1 | Out-String; Remove-Item test_driver_reg.py -ErrorAction SilentlyContinue)"
+    ]
+  }
+}

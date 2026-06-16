@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chikenhot - Configuración Delivery</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="dashboard-body">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🍗</div>
+            <div class="sidebar-title">CHIKENHOT</div>
+            <div class="sidebar-subtitle">REPARTIDOR</div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">MENÚ</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="dashboard-delivery.html" class="sidebar-link"><span class="sidebar-icon">🚗</span><span>Mis Entregas</span></a></li>
+                <li class="sidebar-item"><a href="delivery-mapa.html" class="sidebar-link"><span class="sidebar-icon">🗺️</span><span>Mapa en Vivo</span></a></li>
+                <li class="sidebar-item"><a href="delivery-ganancias.html" class="sidebar-link"><span class="sidebar-icon">💰</span><span>Mis Ganancias</span></a></li>
+                <li class="sidebar-item"><a href="delivery-calificaciones.html" class="sidebar-link"><span class="sidebar-icon">⭐</span><span>Calificaciones</span></a></li>
+                <li class="sidebar-item"><a href="delivery-notificaciones.html" class="sidebar-link"><span class="sidebar-icon">🔔</span><span>Notificaciones</span></a></li>
+                <li class="sidebar-item"><a href="delivery-config.html" class="sidebar-link active"><span class="sidebar-icon">⚙️</span><span>Configuración</span></a></li>
+            </ul>
+        </div>
+        <div class="sidebar-user">
+            <div class="user-avatar">🚴</div>
+            <div class="user-info">
+                <div class="user-name">Diego Rodríguez</div>
+                <div class="user-email">diego@chikenhot.pe</div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="header">
+            <div class="header-title">
+                <h1>Configuración de Cuenta</h1>
+                <p>Ajusta tu perfil y preferencias</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 style="margin-bottom: 20px;">👤 Información Personal</h3>
+            <div style="display: grid; gap: 15px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Nombre *</label>
+                        <input type="text" value="Diego" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Apellidos *</label>
+                        <input type="text" value="Rodríguez García" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;" required>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" value="diego@chikenhot.pe" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;" required>
+                    </div>
+                    <div class="form-group">
+                        <label>DNI/Documento de Identidad *</label>
+                        <input type="text" value="12345678" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;" required>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Teléfono *</label>
+                        <input type="tel" value="987 654 321" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Nacimiento *</label>
+                        <input type="date" value="1990-05-15" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;" required>
+                    </div>
+                </div>
+                <button class="btn-new" style="width: 100%; padding: 10px;">Guardar Cambios</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 style="margin-bottom: 20px;">🚗 Información del Vehículo</h3>
+            <div style="display: grid; gap: 15px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Tipo de Vehículo</label>
+                        <select style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;">
+                            <option selected>Moto Honda CRF</option>
+                            <option>Bicicleta</option>
+                            <option>Auto</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Placa/Identificador</label>
+                        <input type="text" value="ABC-1234" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Número de Seguro</label>
+                    <input type="text" value="POL-2024-001" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;">
+                </div>
+                <button class="btn-new" style="width: 100%; padding: 10px;">Guardar Cambios</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 style="margin-bottom: 20px;">💳 Información Bancaria</h3>
+            <div style="display: grid; gap: 15px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Banco</label>
+                        <select style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;">
+                            <option selected>Banco BCP</option>
+                            <option>Banco Continental</option>
+                            <option>Banco Scotiabank</option>
+                            <option>Banco Interbank</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Cuenta</label>
+                        <select style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;">
+                            <option selected>Cuenta Corriente</option>
+                            <option>Cuenta Ahorro</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Número de Cuenta</label>
+                    <input type="text" value="**** **** **** 1234" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;">
+                </div>
+                <button class="btn-new" style="width: 100%; padding: 10px;">Guardar Cambios</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 style="margin-bottom: 20px;">🔔 Preferencias de Notificaciones</h3>
+            <div style="display: grid; gap: 15px;">
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4>Nuevos Pedidos</h4>
+                        <p style="font-size: 12px; color: var(--text-light);">Notificaciones en tiempo real</p>
+                    </div>
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" checked style="width: 18px; height: 18px;">
+                        <span style="margin-left: 10px;">Activado</span>
+                    </label>
+                </div>
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4>Oferta de Zonas</h4>
+                        <p style="font-size: 12px; color: var(--text-light);">Cambios de zona disponibles</p>
+                    </div>
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" checked style="width: 18px; height: 18px;">
+                        <span style="margin-left: 10px;">Activado</span>
+                    </label>
+                </div>
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4>Reportes Semanales</h4>
+                        <p style="font-size: 12px; color: var(--text-light);">Resumen de desempeño</p>
+                    </div>
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" checked style="width: 18px; height: 18px;">
+                        <span style="margin-left: 10px;">Activado</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 style="margin-bottom: 20px;">⚖️ Zona de Operación</h3>
+            <div style="background: var(--light-bg); padding: 20px; border-radius: 8px;">
+                <p style="margin-bottom: 15px; font-weight: 600;">Zona Actual: <span style="color: var(--primary-color);">La Noria</span></p>
+                <p style="font-size: 12px; color: var(--text-light); margin-bottom: 15px;">Cambiar de zona puede afectar tus ingresos. Contacta al soporte para cambios.</p>
+                <button class="btn btn-primary" onclick="alert('Enviando solicitud de cambio de zona...')" style="padding: 10px 20px;">Solicitar Cambio</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 style="margin-bottom: 20px;">⚠️ Zona de Peligro</h3>
+            <div style="background: #ffebee; padding: 15px; border-radius: 8px; border-left: 4px solid #f44336;">
+                <h4 style="color: #f44336; margin-bottom: 10px;">Desactivar Cuenta</h4>
+                <p style="font-size: 13px; margin-bottom: 15px;">Puedes detener temporalmente tu actividad como repartidor. Tus datos se conservarán.</p>
+                <button class="btn btn-danger" onclick="alert('¿Deseas desactivar tu cuenta?')" style="padding: 10px 20px;">Desactivar Cuenta</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                window.location.href = '../index.html';
+            }
+        }
+    </script>
+</body>
+</html>
+

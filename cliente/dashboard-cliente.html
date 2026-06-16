@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chikenhot - Dashboard Cliente</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="dashboard-body">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🍗</div>
+            <div class="sidebar-title">CHIKENHOT</div>
+            <div class="sidebar-subtitle">MI CUENTA</div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">MENÚ</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="dashboard-cliente.html" class="sidebar-link active">
+                        <span class="sidebar-icon">🏠</span>
+                        <span>Inicio</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="cliente-pedidos.html" class="sidebar-link">
+                        <span class="sidebar-icon">📋</span>
+                        <span>Mis Pedidos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="cliente-favoritos.html" class="sidebar-link">
+                        <span class="sidebar-icon">❤️</span>
+                        <span>Favoritos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="cliente-direcciones.html" class="sidebar-link">
+                        <span class="sidebar-icon">🗺️</span>
+                        <span>Mis Direcciones</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="cliente-pago.html" class="sidebar-link">
+                        <span class="sidebar-icon">💳</span>
+                        <span>Métodos de Pago</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="cliente-resenas.html" class="sidebar-link">
+                        <span class="sidebar-icon">⭐</span>
+                        <span>Mis Reseñas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="cliente-cupones.html" class="sidebar-link">
+                        <span class="sidebar-icon">🎁</span>
+                        <span>Cupones</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="cliente-config.html" class="sidebar-link">
+                        <span class="sidebar-icon">⚙️</span>
+                        <span>Configuración</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">👤</div>
+            <div class="user-info">
+                <div class="user-name">Juan Cliente</div>
+                <div class="user-email">cliente@chikenhot.pe</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-title">
+                <h1>Bienvenido, Juan</h1>
+                <p>¿Qué te gustaría ordenar hoy?</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-new" onclick="searchProducts()">🔍 Buscar</button>
+                <button class="btn-logout" onclick="toggleCart()" style="position: relative;">
+                    🛒 Carrito (<span id="cartCount">0</span>)
+                </button>
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <!-- QUICK STATS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-content">
+                    <div class="stat-label">Pedidos Totales</div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-change positive">✓ Usuario verificado</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">⏱️</div>
+                <div class="stat-content">
+                    <div class="stat-label">Última Compra</div>
+                    <div class="stat-value">Hace 2 días</div>
+                    <div class="stat-change positive">S/ 125.00</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🎁</div>
+                <div class="stat-content">
+                    <div class="stat-label">Puntos Disponibles</div>
+                    <div class="stat-value">450</div>
+                    <div class="stat-change positive">Canjeable</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">👑</div>
+                <div class="stat-content">
+                    <div class="stat-label">Nivel de Membresía</div>
+                    <div class="stat-value">PLATA</div>
+                    <div class="stat-change positive">Descuentos activos</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTIVE ORDERS -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Pedidos Activos</h2>
+                <span class="section-link">Ver todos</span>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#PEDIDO</th>
+                            <th>FECHA</th>
+                            <th>PRODUCTOS</th>
+                            <th>TOTAL</th>
+                            <th>REPARTIDOR</th>
+                            <th>ESTADO</th>
+                            <th>ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#1050</td>
+                            <td>Hoy 10:30 AM</td>
+                            <td>Pollo entero + Papas + Bebida</td>
+                            <td>S/ 74.20</td>
+                            <td>Diego R.</td>
+                            <td><span class="badge badge-info">En ruta</span></td>
+                            <td>
+                                <button class="btn btn-primary" onclick="openOrderDetails(1050)">Rastrear</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#1049</td>
+                            <td>Hoy 10:15 AM</td>
+                            <td>Alitas x20 + Papas + Salsa</td>
+                            <td>S/ 54.26</td>
+                            <td>—</td>
+                            <td><span class="badge badge-warning">Preparando</span></td>
+                            <td>
+                                <button class="btn btn-primary" onclick="openOrderDetails(1049)">Ver</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FEATURED PRODUCTS -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Productos Destacados</h2>
+                <span class="section-link" onclick="makeOrder()" style="cursor: pointer;">Ver catálogo completo</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; text-align: center; cursor: pointer; transition: var(--transition);" onmouseover="this.style.boxShadow='0 5px 15px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+                    <div style="font-size: 48px; margin-bottom: 10px;">🍗</div>
+                    <h4 style="margin-bottom: 5px; color: var(--text-dark);">Pollo 1/4</h4>
+                    <p style="color: var(--text-light); font-size: 12px; margin-bottom: 10px;">Con arroz y papas</p>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--primary-color); margin-bottom: 10px;">S/ 18.50</div>
+                    <button class="btn btn-primary" style="width: 100%;" onclick="makeOrder()">Agregar</button>
+                </div>
+
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; text-align: center; cursor: pointer; transition: var(--transition);" onmouseover="this.style.boxShadow='0 5px 15px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+                    <div style="font-size: 48px; margin-bottom: 10px;">🍟</div>
+                    <h4 style="margin-bottom: 5px; color: var(--text-dark);">Combo Familiar</h4>
+                    <p style="color: var(--text-light); font-size: 12px; margin-bottom: 10px;">4 cuartos + papas + delivery</p>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--primary-color); margin-bottom: 10px;">S/ 89.90</div>
+                    <button class="btn btn-primary" style="width: 100%;" onclick="makeOrder()">Agregar</button>
+                </div>
+
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; text-align: center; cursor: pointer; transition: var(--transition);" onmouseover="this.style.boxShadow='0 5px 15px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+                    <div style="font-size: 48px; margin-bottom: 10px;">🍖</div>
+                    <h4 style="margin-bottom: 5px; color: var(--text-dark);">Balde 12 Pzs</h4>
+                    <p style="color: var(--text-light); font-size: 12px; margin-bottom: 10px;">Variado con papas y ensalada</p>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--primary-color); margin-bottom: 10px;">S/ 125.00</div>
+                    <button class="btn btn-primary" style="width: 100%;" onclick="makeOrder()">Agregar</button>
+                </div>
+
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; text-align: center; cursor: pointer; transition: var(--transition);" onmouseover="this.style.boxShadow='0 5px 15px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+                    <div style="font-size: 48px; margin-bottom: 10px;">🥤</div>
+                    <h4 style="margin-bottom: 5px; color: var(--text-dark);">Bebidas</h4>
+                    <p style="color: var(--text-light); font-size: 12px; margin-bottom: 10px;">Refresco 2L variados</p>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--primary-color); margin-bottom: 10px;">S/ 8.50</div>
+                    <button class="btn btn-primary" style="width: 100%;" onclick="makeOrder()">Agregar</button>
+                </div>
+
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; text-align: center; cursor: pointer; transition: var(--transition);" onmouseover="this.style.boxShadow='0 5px 15px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+                    <div style="font-size: 48px; margin-bottom: 10px;">🍖</div>
+                    <h4 style="margin-bottom: 5px; color: var(--text-dark);">Alitas X20</h4>
+                    <p style="color: var(--text-light); font-size: 12px; margin-bottom: 10px;">Crujientes y sazonadas</p>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--primary-color); margin-bottom: 10px;">S/ 35.00</div>
+                    <button class="btn btn-primary" style="width: 100%;" onclick="makeOrder()">Agregar</button>
+                </div>
+
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; text-align: center; cursor: pointer; transition: var(--transition);" onmouseover="this.style.boxShadow='0 5px 15px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+                    <div style="font-size: 48px; margin-bottom: 10px;">🍗</div>
+                    <h4 style="margin-bottom: 5px; color: var(--text-dark);">Pollo Entero</h4>
+                    <p style="color: var(--text-light); font-size: 12px; margin-bottom: 10px;">Fresco con papas grande</p>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--primary-color); margin-bottom: 10px;">S/ 45.00</div>
+                    <button class="btn btn-primary" style="width: 100%;" onclick="makeOrder()">Agregar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECENT REVIEWS -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Mi Historial de Compras</h2>
+                <span class="section-link">Ver más</span>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#PEDIDO</th>
+                            <th>FECHA</th>
+                            <th>TOTAL</th>
+                            <th>REPARTIDOR</th>
+                            <th>ESTADO</th>
+                            <th>TU CALIFICACIÓN</th>
+                            <th>ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#1045</td>
+                            <td>15/04/2026</td>
+                            <td>S/ 60.99</td>
+                            <td>Diego R.</td>
+                            <td><span class="badge badge-success">Entregado</span></td>
+                            <td>⭐⭐⭐⭐⭐ (5.0)</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>#1044</td>
+                            <td>14/04/2026</td>
+                            <td>S/ 79.90</td>
+                            <td>Luis M.</td>
+                            <td><span class="badge badge-success">Entregado</span></td>
+                            <td>⭐⭐⭐⭐⭐ (5.0)</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>#1043</td>
+                            <td>13/04/2026</td>
+                            <td>S/ 51.84</td>
+                            <td>Juan P.</td>
+                            <td><span class="badge badge-success">Entregado</span></td>
+                            <td>⭐⭐⭐⭐ (4.5)</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>#1040</td>
+                            <td>10/04/2026</td>
+                            <td>S/ 89.90</td>
+                            <td>Diego R.</td>
+                            <td><span class="badge badge-success">Entregado</span></td>
+                            <td>⭐⭐⭐⭐⭐ (5.0)</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>#1035</td>
+                            <td>05/04/2026</td>
+                            <td>S/ 45.00</td>
+                            <td>Luis M.</td>
+                            <td><span class="badge badge-success">Entregado</span></td>
+                            <td>⭐⭐⭐⭐ (4.0)</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- SHOPPING CART MODAL -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content" style="max-width: 650px;">
+            <div class="modal-header">
+                <div>
+                    <h2>🛒 Tu Carrito de Compras</h2>
+                </div>
+                <button class="modal-close" onclick="closeCartModal()">✕</button>
+            </div>
+            <div class="modal-body" style="max-height: 450px; overflow-y: auto; padding: 20px;">
+                <div id="cartItems"></div>
+                <div id="emptyCart" class="empty-cart-message">
+                    <div class="empty-cart-icon">🛍️</div>
+                    <p>Tu carrito está vacío</p>
+                    <p style="font-size: 13px; margin-top: 5px;">Agrega productos para comenzar</p>
+                </div>
+                <div id="cartSummary" class="cart-summary" style="display: none;">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">S/ 0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Delivery:</span>
+                        <span>S/ 5.00</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total a Pagar:</span>
+                        <span id="cartTotal">S/ 5.00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeCartModal()">Seguir Comprando</button>
+                <button class="btn btn-primary" style="flex: 1;" id="checkoutBtn" onclick="proceedToPayment()" style="display: none;">💳 Proceder al Pago</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAYMENT GATEWAY MODAL -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <div>
+                    <h2>💳 Pasarela de Pagos</h2>
+                </div>
+                <button class="modal-close" onclick="closePaymentModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div style="background: var(--light-bg); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h3 style="margin-top: 0;">Resumen de Orden</h3>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Subtotal:</span>
+                        <span id="paySubtotal">S/ 0.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Delivery:</span>
+                        <span>S/ 5.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; padding-top: 10px; border-top: 1px solid var(--border-color); font-weight: 700; font-size: 16px;">
+                        <span>Total a Pagar:</span>
+                        <span id="payTotal" style="color: var(--primary-color);">S/ 0.00</span>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 15px;">Selecciona Método de Pago:</h4>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: flex; align-items: center; padding: 15px; background: var(--light-bg); border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: var(--transition);" id="creditCardLabel" onmouseover="this.style.borderColor='var(--primary-color)'" onmouseout="this.style.borderColor='transparent'">
+                            <input type="radio" name="paymentMethod" value="tarjeta" onchange="showPaymentForm()" checked>
+                            <span style="margin-left: 10px; font-weight: 600;">💳 Tarjeta de Crédito/Débito</span>
+                        </label>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: flex; align-items: center; padding: 15px; background: var(--light-bg); border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: var(--transition);" onmouseover="this.style.borderColor='var(--primary-color)'" onmouseout="this.style.borderColor='transparent'">
+                            <input type="radio" name="paymentMethod" value="yape" onchange="showPaymentForm()">
+                            <span style="margin-left: 10px; font-weight: 600;">📱 Yape</span>
+                        </label>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: flex; align-items: center; padding: 15px; background: var(--light-bg); border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: var(--transition);" onmouseover="this.style.borderColor='var(--primary-color)'" onmouseout="this.style.borderColor='transparent'">
+                            <input type="radio" name="paymentMethod" value="efectivo" onchange="showPaymentForm()">
+                            <span style="margin-left: 10px; font-weight: 600;">💵 Efectivo Contra Entrega</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="cardForm" style="margin-bottom: 20px;">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Número de Tarjeta</label>
+                        <input type="text" placeholder="4532 1234 5678 9010" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 5px; font-family: monospace;" maxlength="19">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">Vencimiento (MM/AA)</label>
+                            <input type="text" placeholder="05/28" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 5px;" maxlength="5">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">CVV</label>
+                            <input type="text" placeholder="123" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 5px;" maxlength="3">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="yapeForm" style="margin-bottom: 20px; display: none;">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">📱 Número de Teléfono</label>
+                        <input type="text" id="yapePhone" placeholder="+51 912 345 678" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 5px;" maxlength="20">
+                        <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">Ingresa el número asociado a tu cuenta Yape</p>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark);">🔐 Código de Confirmación</label>
+                        <input type="text" id="yapeCode" placeholder="123456" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 5px; font-family: monospace; letter-spacing: 5px;" maxlength="6">
+                        <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">Código que recibirás en tu app de Yape</p>
+                    </div>
+                </div>
+
+                <div id="cashForm" style="margin-bottom: 20px; display: none; background: var(--light-bg); padding: 15px; border-radius: 8px;">
+                    <p style="margin: 0;">El repartidor te solicitará el dinero exacto o será capaz de dar cambio. Asegúrate de tener el monto disponible.</p>
+                </div>
+            </div>
+            <div class="modal-footer" style="gap: 10px;">
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closePaymentModal()">Atrás</button>
+                <button class="btn btn-primary" style="flex: 1;" onclick="completePayment()">✓ Confirmar Pago</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- INVOICE MODAL -->
+    <div id="invoiceModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <div>
+                    <h2>📄 Tu Factura</h2>
+                </div>
+                <button class="modal-close" onclick="closeInvoiceModal()">✕</button>
+            </div>
+            <div class="modal-body" id="invoiceContent" style="background: white; padding: 30px;">
+                <!-- Contenido de factura generado dinámicamente -->
+            </div>
+            <div class="modal-footer" style="gap: 10px;">
+                <button class="btn btn-secondary" style="flex: 1;" onclick="printInvoice()">🖨️ Imprimir</button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="downloadInvoice()">📥 Descargar</button>
+                <button class="btn btn-primary" style="flex: 1;" onclick="closeInvoiceModal(); window.location.reload();">✓ Completado</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ORDER DETAILS MODAL -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2>Detalles del Pedido</h2>
+                </div>
+                <button class="modal-close" onclick="closeOrderModal()">✕</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="order-details-header">
+                    <div>
+                        <div class="order-number" id="modalOrderNumber">#1050</div>
+                        <div class="order-date" id="modalOrderDate">16 Abril 2026 - 10:30 AM</div>
+                    </div>
+                    <div class="order-status">
+                        <div class="order-status-badge" id="modalOrderStatus">En ruta</div>
+                    </div>
+                </div>
+
+                <div class="order-section">
+                    <div class="order-section-title">Información de Entrega</div>
+                    <div class="order-info-grid">
+                        <div class="order-info-item">
+                            <span class="order-info-label">Dirección</span>
+                            <span class="order-info-value" id="modalClientAddress" style="grid-column: 1/3;">Mi dirección</span>
+                        </div>
+                        <div class="order-info-item">
+                            <span class="order-info-label">Repartidor</span>
+                            <span class="order-info-value" id="modalDeliveryName">Diego R.</span>
+                        </div>
+                        <div class="order-info-item">
+                            <span class="order-info-label">Teléfono Repartidor</span>
+                            <span class="order-info-value" id="modalDeliveryPhone">+51 987654321</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="order-section">
+                    <div class="order-section-title">Items del Pedido</div>
+                    <div class="order-items" id="modalOrderItems">
+                        <!-- Items populated by JS -->
+                    </div>
+                </div>
+
+                <div class="order-section">
+                    <div class="order-section-title">Resumen de Pago</div>
+                    <div class="order-summary">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span id="modalSubtotal">S/ 0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Delivery</span>
+                            <span id="modalDeliveryFee">S/ 0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Impuesto</span>
+                            <span id="modalTax">S/ 0.00</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>TOTAL</span>
+                            <span id="modalTotal">S/ 0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="order-section">
+                    <div class="order-section-title">Método de Pago</div>
+                    <div class="order-info-item">
+                        <span class="order-info-value" id="modalPaymentMethod">Efectivo</span>
+                    </div>
+                </div>
+
+                <div class="order-section">
+                    <div class="order-section-title">Timeline de Estado</div>
+                    <div class="timeline" id="modalTimeline">
+                        <!-- Timeline populated by JS -->
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="trackButton" onclick="trackOrder()" style="display: none;">📍 Rastrear en Vivo</button>
+                    <button class="btn btn-secondary" id="reorderButton" onclick="reorder()" style="display: none;">🔄 Reordenar</button>
+                    <button class="btn btn-secondary" onclick="closeOrderModal()">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample order data for client
+        const orders = {
+            1050: {
+                number: '#1050',
+                date: '16 Abril 2026 - 10:30 AM',
+                status: 'En ruta',
+                statusClass: 'status-en-camino',
+                address: 'Av. Principal 123, La Noria',
+                delivery: 'Diego Rodríguez',
+                deliveryPhone: '+51 987654321',
+                items: [
+                    { name: 'Pollo Entero', qty: 1, price: 45.00 },
+                    { name: 'Papas Grandes', qty: 1, price: 8.00 },
+                    { name: 'Bebida 2L', qty: 1, price: 12.00 }
+                ],
+                subtotal: 65.00,
+                deliveryFee: 5.00,
+                tax: 4.20,
+                total: 74.20,
+                payment: 'Efectivo',
+                timeline: [
+                    { time: '10:30 AM', title: 'Pedido Confirmado', desc: 'Tu pedido fue confirmado', completed: true },
+                    { time: '10:45 AM', title: 'En Preparación', desc: 'El restaurante está preparando tu comida', completed: true },
+                    { time: '11:00 AM', title: 'Listo para Entrega', desc: 'Tu pedido está listo', completed: true },
+                    { time: '11:20 AM', title: 'En Ruta', desc: 'Tu repartidor está en camino', completed: true },
+                    { time: 'Est. 11:50 AM', title: 'Entregado', desc: 'Tu pedido será entregado pronto', completed: false }
+                ]
+            },
+            1049: {
+                number: '#1049',
+                date: '16 Abril 2026 - 10:15 AM',
+                status: 'Preparando',
+                statusClass: 'status-preparando',
+                address: 'Av. Principal 123, La Noria',
+                delivery: '—',
+                deliveryPhone: '—',
+                items: [
+                    { name: 'Alitas x20', qty: 1, price: 35.00 },
+                    { name: 'Papas Medianas', qty: 1, price: 6.00 },
+                    { name: 'Salsa Picante', qty: 2, price: 2.50 }
+                ],
+                subtotal: 46.00,
+                deliveryFee: 5.00,
+                tax: 3.26,
+                total: 54.26,
+                payment: 'Yape',
+                timeline: [
+                    { time: '10:15 AM', title: 'Pedido Confirmado', desc: 'Tu pedido fue confirmado', completed: true },
+                    { time: '10:25 AM', title: 'En Preparación', desc: 'El restaurante está preparando tu comida', completed: true },
+                    { time: 'Est. 10:45 AM', title: 'Listo para Entrega', desc: 'Tu pedido estará listo', completed: false },
+                    { time: 'Est. 10:50 AM', title: 'En Ruta', desc: 'Tu repartidor irá en camino', completed: false },
+                    { time: 'Est. 11:20 AM', title: 'Entregado', desc: 'Tu pedido será entregado', completed: false }
+                ]
+            },
+            1045: {
+                number: '#1045',
+                date: '15 Abril 2026 - 02:00 PM',
+                status: 'Entregado',
+                statusClass: 'status-entregado',
+                address: 'Av. Principal 123, La Noria',
+                delivery: 'Diego Rodríguez',
+                deliveryPhone: '+51 987654321',
+                items: [
+                    { name: 'Pollo 1/4', qty: 2, price: 18.50 },
+                    { name: 'Arroz con Pollo', qty: 1, price: 15.00 }
+                ],
+                subtotal: 52.00,
+                deliveryFee: 5.00,
+                tax: 3.99,
+                total: 60.99,
+                payment: 'Efectivo',
+                timeline: [
+                    { time: '14:00', title: 'Pedido Confirmado', desc: 'Tu pedido fue confirmado', completed: true },
+                    { time: '14:12', title: 'En Preparación', desc: 'El restaurante preparó tu comida', completed: true },
+                    { time: '14:25', title: 'Listo para Entrega', desc: 'Tu pedido estuvo listo', completed: true },
+                    { time: '14:30', title: 'En Ruta', desc: 'Tu repartidor estaba en camino', completed: true },
+                    { time: '14:50', title: 'Entregado', desc: 'Tu pedido fue entregado', completed: true }
+                ]
+            },
+            1044: {
+                number: '#1044',
+                date: '14 Abril 2026 - 01:30 PM',
+                status: 'Entregado',
+                statusClass: 'status-entregado',
+                address: 'Av. Principal 123, La Noria',
+                delivery: 'Luis M.',
+                deliveryPhone: '+51 987123456',
+                items: [
+                    { name: 'Pollo Entero', qty: 1, price: 45.00 },
+                    { name: 'Papas Grandes', qty: 2, price: 8.00 }
+                ],
+                subtotal: 61.00,
+                deliveryFee: 5.00,
+                tax: 5.36,
+                total: 72.36,
+                payment: 'Yape',
+                timeline: [
+                    { time: '13:30', title: 'Pedido Confirmado', desc: 'Tu pedido fue confirmado', completed: true },
+                    { time: '13:45', title: 'En Preparación', desc: 'El restaurante preparó tu comida', completed: true },
+                    { time: '13:58', title: 'En Ruta', desc: 'Tu repartidor estaba en camino', completed: true },
+                    { time: '14:20', title: 'Entregado', desc: 'Tu pedido fue entregado', completed: true }
+                ]
+            },
+            1043: {
+                number: '#1043',
+                date: '13 Abril 2026 - 01:00 PM',
+                status: 'Entregado',
+                statusClass: 'status-entregado',
+                address: 'Av. Principal 123, La Noria',
+                delivery: 'Juan P.',
+                deliveryPhone: '+51 987456123',
+                items: [
+                    { name: 'Alitas x20', qty: 1, price: 35.00 },
+                    { name: 'Papas Medianas', qty: 1, price: 6.00 }
+                ],
+                subtotal: 41.00,
+                deliveryFee: 7.00,
+                tax: 3.84,
+                total: 51.84,
+                payment: 'Efectivo',
+                timeline: [
+                    { time: '13:00', title: 'Pedido Confirmado', desc: 'Tu pedido fue confirmado', completed: true },
+                    { time: '13:15', title: 'En Preparación', desc: 'El restaurante preparó tu comida', completed: true },
+                    { time: '13:30', title: 'En Ruta', desc: 'Tu repartidor estaba en camino', completed: true },
+                    { time: '13:55', title: 'Entregado', desc: 'Tu pedido fue entregado', completed: true }
+                ]
+            },
+            1040: {
+                number: '#1040',
+                date: '10 Abril 2026 - 06:15 PM',
+                status: 'Entregado',
+                statusClass: 'status-entregado',
+                address: 'Av. Principal 123, La Noria',
+                delivery: 'Diego Rodríguez',
+                deliveryPhone: '+51 987654321',
+                items: [
+                    { name: 'Combo Familiar', qty: 1, price: 89.90 }
+                ],
+                subtotal: 89.90,
+                deliveryFee: 5.00,
+                tax: 7.48,
+                total: 102.38,
+                payment: 'Tarjeta',
+                timeline: [
+                    { time: '18:15', title: 'Pedido Confirmado', desc: 'Tu pedido fue confirmado', completed: true },
+                    { time: '18:30', title: 'En Ruta', desc: 'Tu repartidor estaba en camino', completed: true },
+                    { time: '18:55', title: 'Entregado', desc: 'Tu pedido fue entregado', completed: true }
+                ]
+            },
+            1035: {
+                number: '#1035',
+                date: '05 Abril 2026 - 12:00 PM',
+                status: 'Entregado',
+                statusClass: 'status-entregado',
+                address: 'Av. Principal 123, La Noria',
+                delivery: 'Luis M.',
+                deliveryPhone: '+51 987123456',
+                items: [
+                    { name: 'Pollo 1/4', qty: 1, price: 18.50 }
+                ],
+                subtotal: 18.50,
+                deliveryFee: 5.00,
+                tax: 1.88,
+                total: 25.38,
+                payment: 'Efectivo',
+                timeline: [
+                    { time: '12:00', title: 'Pedido Confirmado', desc: 'Tu pedido fue confirmado', completed: true },
+                    { time: '12:20', title: 'En Ruta', desc: 'Tu repartidor estaba en camino', completed: true },
+                    { time: '12:40', title: 'Entregado', desc: 'Tu pedido fue entregado', completed: true }
+                ]
+            }
+        };
+
+        function openOrderDetails(orderId) {
+            const order = orders[orderId];
+            if (!order) return;
+
+            document.getElementById('modalOrderNumber').textContent = order.number;
+            document.getElementById('modalOrderDate').textContent = order.date;
+            document.getElementById('modalOrderStatus').textContent = order.status;
+            document.getElementById('modalOrderStatus').className = 'order-status-badge ' + order.statusClass;
+
+            document.getElementById('modalClientAddress').textContent = order.address;
+            document.getElementById('modalDeliveryName').textContent = order.delivery;
+            document.getElementById('modalDeliveryPhone').textContent = order.deliveryPhone;
+
+            const itemsHtml = order.items.map(item => `
+                <div class="order-item">
+                    <div class="item-details">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-quantity">x${item.qty}</div>
+                    </div>
+                    <div class="item-price">S/ ${item.price.toFixed(2)}</div>
+                </div>
+            `).join('');
+            document.getElementById('modalOrderItems').innerHTML = itemsHtml;
+
+            document.getElementById('modalSubtotal').textContent = 'S/ ' + order.subtotal.toFixed(2);
+            document.getElementById('modalDeliveryFee').textContent = 'S/ ' + order.deliveryFee.toFixed(2);
+            document.getElementById('modalTax').textContent = 'S/ ' + order.tax.toFixed(2);
+            document.getElementById('modalTotal').textContent = 'S/ ' + order.total.toFixed(2);
+
+            document.getElementById('modalPaymentMethod').textContent = order.payment;
+
+            const timelineHtml = order.timeline.map(event => `
+                <div class="timeline-event${event.completed ? ' completed' : ''}">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">${event.time} - ${event.title}</div>
+                        <div class="timeline-description">${event.desc}</div>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('modalTimeline').innerHTML = timelineHtml;
+
+            const trackButton = document.getElementById('trackButton');
+            const reorderButton = document.getElementById('reorderButton');
+            
+            if (order.status === 'En ruta' || order.status === 'Preparando') {
+                trackButton.style.display = 'block';
+                reorderButton.style.display = 'none';
+            } else {
+                trackButton.style.display = 'none';
+                reorderButton.style.display = 'block';
+            }
+
+            document.getElementById('orderModal').classList.add('show');
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').classList.remove('show');
+        }
+
+        function trackOrder() {
+            alert('Abriendo rastreo en vivo...');
+        }
+
+        function reorder() {
+            alert('Preparando tu pedido anterior...');
+        }
+
+        document.getElementById('orderModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeOrderModal();
+            }
+        });
+
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                window.location.href = '../index.html';
+            }
+        }
+
+        // SHOPPING CART FUNCTIONALITY
+        let cart = [];
+
+        const products = [
+            { id: 1, name: 'Pollo 1/4', price: 18.50 },
+            { id: 2, name: 'Combo Familiar', price: 89.90 },
+            { id: 3, name: 'Balde 12 Pzs', price: 125.00 },
+            { id: 4, name: 'Bebidas', price: 8.50 },
+            { id: 5, name: 'Alitas X20', price: 35.00 },
+            { id: 6, name: 'Pollo Entero', price: 45.00 }
+        ];
+
+        function makeOrder() {
+            // Simulamos que el usuario está agregando un producto aleatorio al carrito
+            const randomProduct = products[Math.floor(Math.random() * products.length)];
+            addToCart(randomProduct.id, randomProduct.name, randomProduct.price, 1);
+            toggleCart();
+        }
+
+        function addToCart(productId, productName, productPrice, quantity) {
+            // Verificar si el producto ya existe en el carrito
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({
+                    id: productId,
+                    name: productName,
+                    price: productPrice,
+                    quantity: quantity
+                });
+            }
+            
+            updateCartUI();
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartUI();
+        }
+
+        function increaseQuantity(productId) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity += 1;
+                updateCartUI();
+            }
+        }
+
+        function decreaseQuantity(productId) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                if (item.quantity > 1) {
+                    item.quantity -= 1;
+                    updateCartUI();
+                } else {
+                    removeFromCart(productId);
+                }
+            }
+        }
+
+        function updateCartUI() {
+            const cartCount = document.getElementById('cartCount');
+            const cartItems = document.getElementById('cartItems');
+            const emptyCart = document.getElementById('emptyCart');
+            const subtotal = document.getElementById('subtotal');
+            const cartTotal = document.getElementById('cartTotal');
+            const cartSummary = document.getElementById('cartSummary');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+
+            cartCount.textContent = cart.length;
+
+            if (cart.length === 0) {
+                cartItems.innerHTML = '';
+                emptyCart.style.display = 'block';
+                cartSummary.style.display = 'none';
+                checkoutBtn.style.display = 'none';
+                subtotal.textContent = 'S/ 0.00';
+                cartTotal.textContent = 'S/ 5.00';
+            } else {
+                emptyCart.style.display = 'none';
+                cartSummary.style.display = 'block';
+                checkoutBtn.style.display = 'block';
+                
+                let subtotalAmount = 0;
+                cartItems.innerHTML = cart.map(item => {
+                    const itemTotal = item.price * item.quantity;
+                    subtotalAmount += itemTotal;
+                    
+                    return `
+                        <div class="cart-item">
+                            <div class="cart-item-info">
+                                <div class="cart-item-name">${item.name}</div>
+                                <div class="cart-item-price">
+                                    S/ ${item.price.toFixed(2)} c/u
+                                </div>
+                                <div class="cart-item-price-total">
+                                    Total: S/ ${itemTotal.toFixed(2)}
+                                </div>
+                            </div>
+                            <div class="cart-item-controls">
+                                <button class="qty-btn" onclick="decreaseQuantity(${item.id})">−</button>
+                                <div class="qty-display">${item.quantity}</div>
+                                <button class="qty-btn" onclick="increaseQuantity(${item.id})">+</button>
+                            </div>
+                            <button class="cart-item-remove" onclick="removeFromCart(${item.id})">Eliminar</button>
+                        </div>
+                    `;
+                }).join('');
+
+                const deliveryFee = 5.00;
+                const total = subtotalAmount + deliveryFee;
+                
+                subtotal.textContent = `S/ ${subtotalAmount.toFixed(2)}`;
+                cartTotal.textContent = `S/ ${total.toFixed(2)}`;
+            }
+        }
+
+        function toggleCart() {
+            document.getElementById('cartModal').classList.toggle('show');
+        }
+
+        function closeCartModal() {
+            document.getElementById('cartModal').classList.remove('show');
+        }
+
+        function proceedToPayment() {
+            if (cart.length === 0) {
+                alert('Tu carrito está vacío');
+                return;
+            }
+            
+            closeCartModal();
+            
+            // Calcular totales
+            let subtotalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryFee = 5.00;
+            const total = subtotalAmount + deliveryFee;
+            
+            // Actualizar modal de pagos
+            document.getElementById('paySubtotal').textContent = `S/ ${subtotalAmount.toFixed(2)}`;
+            document.getElementById('payTotal').textContent = `S/ ${total.toFixed(2)}`;
+            
+            document.getElementById('paymentModal').classList.add('show');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('show');
+        }
+
+        function showPaymentForm() {
+            const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+            const cardForm = document.getElementById('cardForm');
+            const yapeForm = document.getElementById('yapeForm');
+            const cashForm = document.getElementById('cashForm');
+            
+            // Ocultar todos los formularios
+            cardForm.style.display = 'none';
+            yapeForm.style.display = 'none';
+            cashForm.style.display = 'none';
+            
+            // Mostrar el formulario correspondiente
+            if (selectedMethod === 'tarjeta') {
+                cardForm.style.display = 'block';
+            } else if (selectedMethod === 'yape') {
+                yapeForm.style.display = 'block';
+            } else if (selectedMethod === 'efectivo') {
+                cashForm.style.display = 'block';
+            }
+        }
+
+        function completePayment() {
+            const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+            
+            if (selectedMethod === 'tarjeta') {
+                const cardInputs = document.querySelectorAll('#cardForm input');
+                const allFilled = Array.from(cardInputs).every(input => input.value.trim() !== '');
+                
+                if (!allFilled) {
+                    alert('Por favor completa todos los campos de la tarjeta');
+                    return;
+                }
+            } else if (selectedMethod === 'yape') {
+                const yapePhone = document.getElementById('yapePhone').value.trim();
+                const yapeCode = document.getElementById('yapeCode').value.trim();
+                
+                if (!yapePhone || !yapeCode) {
+                    alert('Por favor ingresa tu número de teléfono y código de confirmación');
+                    return;
+                }
+                
+                if (yapeCode.length !== 6) {
+                    alert('El código de confirmación debe tener 6 dígitos');
+                    return;
+                }
+            }
+            
+            // Generar factura
+            generateInvoice();
+            closePaymentModal();
+        }
+
+        function generateInvoice() {
+            const invoiceContent = document.getElementById('invoiceContent');
+            const orderId = '#' + Math.floor(100000 + Math.random() * 900000);
+            const date = new Date().toLocaleString('es-PE');
+            
+            let subtotalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryFee = 5.00;
+            const tax = subtotalAmount * 0.18; // IGV 18%
+            const total = subtotalAmount + deliveryFee + tax;
+            
+            const itemsList = cart.map(item => `
+                <tr>
+                    <td style="border-bottom: 1px solid var(--border-color); padding: 10px;">${item.name}</td>
+                    <td style="border-bottom: 1px solid var(--border-color); padding: 10px; text-align: center;">${item.quantity}</td>
+                    <td style="border-bottom: 1px solid var(--border-color); padding: 10px; text-align: right;">S/ ${item.price.toFixed(2)}</td>
+                    <td style="border-bottom: 1px solid var(--border-color); padding: 10px; text-align: right;">S/ ${(item.price * item.quantity).toFixed(2)}</td>
+                </tr>
+            `).join('');
+            
+            invoiceContent.innerHTML = `
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div style="font-size: 36px; margin-bottom: 10px;">🍗 CHIKENHOT</div>
+                    <h2 style="margin: 10px 0;">COMPROBANTE DE PAGO</h2>
+                    <p style="color: var(--text-light);">Factura Electrónica</p>
+                </div>
+                
+                <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid var(--border-color);">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+                        <div>
+                            <p style="margin: 5px 0;"><strong>Número de Comprobante:</strong> ${orderId}</p>
+                            <p style="margin: 5px 0;"><strong>Fecha y Hora:</strong> ${date}</p>
+                        </div>
+                        <div>
+                            <p style="margin: 5px 0;"><strong>Cliente:</strong> Juan Cliente</p>
+                            <p style="margin: 5px 0;"><strong>Email:</strong> cliente@chikenhot.pe</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <table style="width: 100%; margin-bottom: 20px;">
+                    <thead>
+                        <tr style="background: var(--light-bg);">
+                            <th style="padding: 10px; text-align: left;">Descripción</th>
+                            <th style="padding: 10px; text-align: center;">Cantidad</th>
+                            <th style="padding: 10px; text-align: right;">Precio Unitario</th>
+                            <th style="padding: 10px; text-align: right;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsList}
+                    </tbody>
+                </table>
+                
+                <div style="display: grid; grid-template-columns: 1fr 200px; gap: 20px;">
+                    <div></div>
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 8px 0;">
+                            <span>Subtotal:</span>
+                            <span>S/ ${subtotalAmount.toFixed(2)}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 8px 0;">
+                            <span>IGV (18%):</span>
+                            <span>S/ ${tax.toFixed(2)}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 8px 0;">
+                            <span>Delivery:</span>
+                            <span>S/ ${deliveryFee.toFixed(2)}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; color: var(--primary-color); border-top: 1px solid var(--border-color); padding-top: 10px;">
+                            <span>TOTAL:</span>
+                            <span>S/ ${total.toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px; text-align: center; font-size: 12px; color: var(--text-light);">
+                    <p>¡Gracias por tu compra!</p>
+                    <p>Tiempo estimado de entrega: 30-45 minutos</p>
+                </div>
+            `;
+            
+            document.getElementById('invoiceModal').classList.add('show');
+        }
+
+        function closeInvoiceModal() {
+            document.getElementById('invoiceModal').classList.remove('show');
+        }
+
+        function printInvoice() {
+            window.print();
+        }
+
+        function downloadInvoice() {
+            alert('📥 La factura se ha descargado (simulado)');
+        }
+
+        function searchProducts() {
+            alert('🔍 Abriendo búsqueda de productos...');
+        }
+
+        document.getElementById('cartModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCartModal();
+            }
+        });
+
+        document.getElementById('paymentModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePaymentModal();
+            }
+        });
+
+        document.getElementById('invoiceModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeInvoiceModal();
+            }
+        });
+    </script>
+</body>
+</html>

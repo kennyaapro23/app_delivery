@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chikenhot - Mis Pedidos</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="dashboard-body">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🍗</div>
+            <div class="sidebar-title">CHIKENHOT</div>
+            <div class="sidebar-subtitle">MI CUENTA</div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">MENÚ</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="dashboard-cliente.html" class="sidebar-link">
+                        <span class="sidebar-icon">🏠</span>
+                        <span>Inicio</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="cliente-pedidos.html" class="sidebar-link active">
+                        <span class="sidebar-icon">📋</span>
+                        <span>Mis Pedidos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="cliente-favoritos.html" class="sidebar-link">
+                        <span class="sidebar-icon">❤️</span>
+                        <span>Favoritos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="cliente-direcciones.html" class="sidebar-link">
+                        <span class="sidebar-icon">🗺️</span>
+                        <span>Mis Direcciones</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="cliente-pago.html" class="sidebar-link">
+                        <span class="sidebar-icon">💳</span>
+                        <span>Métodos de Pago</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="cliente-resenas.html" class="sidebar-link">
+                        <span class="sidebar-icon">⭐</span>
+                        <span>Mis Reseñas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="cliente-cupones.html" class="sidebar-link">
+                        <span class="sidebar-icon">🎁</span>
+                        <span>Cupones</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="cliente-config.html" class="sidebar-link">
+                        <span class="sidebar-icon">⚙️</span>
+                        <span>Configuración</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">👤</div>
+            <div class="user-info">
+                <div class="user-name">Juan Cliente</div>
+                <div class="user-email">cliente@chikenhot.pe</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-title">
+                <h1>Mis Pedidos</h1>
+                <p>Historial completo de tus compras</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-new" onclick="window.location.href='dashboard-cliente.html'">🛒 Nuevo Pedido</button>
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <!-- FILTERS -->
+        <div class="section" style="margin-bottom: 20px;">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn" style="background: var(--primary-color); color: white;">📋 Todos</button>
+                <button class="btn btn-secondary">⏳ Pendientes</button>
+                <button class="btn btn-secondary">🚗 En Camino</button>
+                <button class="btn btn-secondary">✅ Entregados</button>
+                <button class="btn btn-secondary">❌ Cancelados</button>
+            </div>
+        </div>
+
+        <!-- ORDERS TABLE -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Total de Pedidos: 12</h2>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#PEDIDO</th>
+                            <th>FECHA</th>
+                            <th>PRODUCTOS</th>
+                            <th>TOTAL</th>
+                            <th>ESTADO</th>
+                            <th>ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#1050</td>
+                            <td>07/04/2026 10:30</td>
+                            <td>Pollo entero + papas + bebida</td>
+                            <td>S/ 45.00</td>
+                            <td><span class="badge badge-info">Preparando</span></td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;" onclick="trackOrder(1050)">📍 Rastrear</button>
+                                <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 11px;" onclick="viewOrderDetails(1050)">Ver</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#1045</td>
+                            <td>06/04/2026 18:15</td>
+                            <td>Combo familiar</td>
+                            <td>S/ 89.90</td>
+                            <td><span class="badge badge-success">Entregado</span></td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;" onclick="openReview(1045)">⭐ Reseña</button>
+                                <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 11px;" onclick="viewOrderDetails(1045)">Ver</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#1040</td>
+                            <td>01/04/2026 12:45</td>
+                            <td>Balde 12 pzs + ensalada</td>
+                            <td>S/ 125.00</td>
+                            <td><span class="badge badge-success">Entregado</span></td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;" onclick="openReview(1040)">⭐ Reseña</button>
+                                <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 11px;" onclick="viewOrderDetails(1040)">Ver</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#1035</td>
+                            <td>25/03/2026 20:00</td>
+                            <td>Alitas x20 + papas</td>
+                            <td>S/ 60.00</td>
+                            <td><span class="badge badge-success">Entregado</span></td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;" onclick="openReview(1035)">⭐ Reseña</button>
+                                <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 11px;" onclick="viewOrderDetails(1035)">Ver</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#1030</td>
+                            <td>20/03/2026 15:30</td>
+                            <td>Pollo 1/4 x 2 + bebidas</td>
+                            <td>S/ 72.00</td>
+                            <td><span class="badge badge-danger">Cancelado</span></td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 11px;" onclick="viewOrderDetails(1030)">Ver</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL: Rastrear Pedido -->
+    <div id="modalRastreo" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Rastrear Pedido en Vivo</h2>
+                <button class="modal-close" onclick="closeRastreo()">✕</button>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <!-- Información del Pedido -->
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4 style="margin-bottom: 10px;">Pedido <span id="pedidoNum">#1050</span></h4>
+                        <p style="font-size: 12px; color: var(--text-light); margin: 5px 0;">Rastrear tu entrega en tiempo real</p>
+                    </div>
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 12px;" onclick="refrescarUbicacion()">🔄 Actualizar</button>
+                </div>
+
+                <!-- Mapa Tipo Google Maps -->
+                <div id="mapaGoogle" style="background: linear-gradient(to bottom, #e8f5e9, #c8e6c9); height: 420px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--text-light); font-size: 14px; margin-bottom: 20px; position: relative; overflow: hidden; border: 2px solid #4caf50; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                    
+                    <!-- Mapa de fondo estilo Google Maps -->
+                    <svg style="position: absolute; width: 100%; height: 100%; top: 0; left: 0;" viewBox="0 0 800 600">
+                        <!-- Calles principales -->
+                        <rect width="800" height="600" fill="#f0f0f0"/>
+                        
+                        <!-- Calle horizontal principal -->
+                        <rect x="0" y="250" width="800" height="40" fill="#ffffff"/>
+                        <line x1="0" y1="260" x2="800" y2="260" stroke="#ffeb3b" stroke-width="4" stroke-dasharray="20,10"/>
+                        
+                        <!-- Calle vertical principal -->
+                        <rect x="350" y="0" width="40" height="600" fill="#ffffff"/>
+                        <line x1="360" y1="0" x2="360" y2="600" stroke="#ffeb3b" stroke-width="3" stroke-dasharray="15,8"/>
+                        
+                        <!-- Calles secundarias -->
+                        <rect x="0" y="150" width="800" height="20" fill="#fafafa"/>
+                        <rect x="150" y="0" width="20" height="600" fill="#fafafa"/>
+                        <rect x="550" y="0" width="20" height="600" fill="#fafafa"/>
+                        
+                        <!-- Parques/áreas verdes -->
+                        <circle cx="100" cy="100" r="60" fill="#c8e6c9" opacity="0.6"/>
+                        <circle cx="700" cy="500" r="70" fill="#c8e6c9" opacity="0.6"/>
+                        
+                        <!-- Edificios/bloques -->
+                        <rect x="50" y="50" width="80" height="60" fill="#e0e0e0" stroke="#999" stroke-width="1"/>
+                        <rect x="200" y="80" width="90" height="70" fill="#d0d0d0" stroke="#999" stroke-width="1"/>
+                        <rect x="500" y="120" width="100" height="80" fill="#d0d0d0" stroke="#999" stroke-width="1"/>
+                        <rect x="650" y="60" width="85" height="75" fill="#e0e0e0" stroke="#999" stroke-width="1"/>
+                        <rect x="50" y="380" width="95" height="85" fill="#e0e0e0" stroke="#999" stroke-width="1"/>
+                        <rect x="700" y="350" width="80" height="70" fill="#d0d0d0" stroke="#999" stroke-width="1"/>
+                    </svg>
+
+                    <!-- Origen: Restaurante (Izquierda) -->
+                    <div style="position: absolute; left: 8%; top: 30%; z-index: 10; text-align: center;">
+                        <div style="width: 50px; height: 50px; background: #4caf50; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; border: 4px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3); margin: 0 auto 8px;">🍗</div>
+                        <div style="background: white; padding: 6px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">Restaurante</div>
+                    </div>
+
+                    <!-- Destino: Casa Cliente (Derecha) -->
+                    <div style="position: absolute; right: 8%; bottom: 25%; z-index: 10; text-align: center;">
+                        <div style="width: 50px; height: 50px; background: #2196f3; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; border: 4px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3); margin: 0 auto 8px;">🏠</div>
+                        <div style="background: white; padding: 6px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">Tu Domicilio</div>
+                    </div>
+
+                    <!-- Ruta de navegación (línea azul) -->
+                    <svg style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 5;" viewBox="0 0 800 600">
+                        <defs>
+                            <linearGradient id="routeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#4caf50;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#2196f3;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#2196f3;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Ruta principal -->
+                        <path d="M 120 200 Q 300 180, 450 250 T 750 350" 
+                              stroke="url(#routeGradient)" 
+                              stroke-width="8" 
+                              fill="none" 
+                              stroke-linecap="round"
+                              style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));"/>
+                    </svg>
+
+                    <!-- Repartidor en movimiento (elemento animado) -->
+                    <div id="repartidorMarcador" style="position: absolute; left: 10%; top: 32%; z-index: 20; font-size: 48px; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.3)); animation: moverRepartidorAvanzado 8s ease-in-out infinite;">
+                        🚴
+                    </div>
+
+                    <!-- Panel de información superior -->
+                    <div style="position: absolute; top: 12px; left: 12px; background: white; padding: 12px 16px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 15; font-size: 13px;">
+                        <div style="font-weight: 700; color: #333; margin-bottom: 4px;">Diego Rodríguez 🚴</div>
+                        <div style="font-size: 12px; color: #666;">En Camino hacia tu domicilio</div>
+                    </div>
+
+                    <!-- Panel ETA/Información inferior izquierda -->
+                    <div style="position: absolute; bottom: 12px; left: 12px; background: white; padding: 12px 16px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 15; min-width: 200px;">
+                        <div style="font-weight: 700; color: #333; margin-bottom: 8px; font-size: 14px;">⏱️ ETA: 12 minutos</div>
+                        <div style="font-size: 12px; color: #666; line-height: 1.6;">
+                            <div>📍 Ubicación: Calle Principal, 890</div>
+                            <div>📏 Distancia: 2.3 km</div>
+                            <div>🚴 Velocidad: 25 km/h</div>
+                        </div>
+                    </div>
+
+                    <!-- Panel de información inferior derecha -->
+                    <div style="position: absolute; bottom: 12px; right: 12px; background: rgba(76, 175, 80, 0.95); color: white; padding: 12px 16px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 15; text-align: center;">
+                        <div style="font-weight: 700; font-size: 14px; margin-bottom: 6px;">ENTREGA EN PROGRESO</div>
+                        <div style="font-size: 11px; opacity: 0.95;">50% del trayecto completado</div>
+                    </div>
+
+                    <!-- Controles del mapa (estilo Google Maps) -->
+                    <div style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); z-index: 15; display: flex; flex-direction: column; gap: 8px;">
+                        <button style="width: 40px; height: 40px; background: white; border: 1px solid #ccc; border-radius: 2px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,0.2); transition: all 0.2s;" onclick="zoomMas()">➕</button>
+                        <button style="width: 40px; height: 40px; background: white; border: 1px solid #ccc; border-radius: 2px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,0.2); transition: all 0.2s;" onclick="zoomMenos()">➖</button>
+                    </div>
+
+                    <!-- Brújula/Indicador de dirección -->
+                    <div style="position: absolute; top: 12px; right: 70px; width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 15; font-size: 20px;">
+                        ⬆️
+                    </div>
+                </div>
+
+                <!-- Datos del Repartidor -->
+                <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                    <div style="display: flex; gap: 15px;">
+                        <div style="font-size: 48px; flex-shrink: 0;">🚴</div>
+                        <div style="flex: 1;">
+                            <h4 style="margin-bottom: 5px;">Diego Rodríguez</h4>
+                            <div style="display: flex; gap: 10px; font-size: 12px; color: var(--text-light); margin-bottom: 10px;">
+                                <span>⭐⭐⭐⭐⭐ 4.8</span>
+                                <span>•</span>
+                                <span>152 entregas</span>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">📞 Llamar</button>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">💬 Mensaje</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estado de Entrega con Progreso -->
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 15px;">Estado de la Entrega</h4>
+                    
+                    <!-- Barra de progreso -->
+                    <div style="background: #e0e0e0; height: 6px; border-radius: 3px; margin-bottom: 20px; overflow: hidden;">
+                        <div id="progressBar" style="background: linear-gradient(90deg, #4caf50, #FF6B6B); height: 100%; width: 65%; border-radius: 3px; transition: width 0.5s ease;"></div>
+                    </div>
+
+                    <div style="display: grid; gap: 12px;">
+                        <!-- Paso 1: Confirmado -->
+                        <div style="display: flex; gap: 15px;">
+                            <div style="position: relative; width: 30px; min-width: 30px;">
+                                <div style="width: 30px; height: 30px; background: #4caf50; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">✓</div>
+                                <div style="width: 2px; height: 30px; background: #4caf50; position: absolute; left: 14px; top: 30px;"></div>
+                            </div>
+                            <div>
+                                <h5 style="margin-bottom: 3px;">Pedido Confirmado</h5>
+                                <p style="font-size: 12px; color: var(--text-light);">07/04/2026 10:30</p>
+                            </div>
+                        </div>
+
+                        <!-- Paso 2: Preparando -->
+                        <div style="display: flex; gap: 15px;">
+                            <div style="position: relative; width: 30px; min-width: 30px;">
+                                <div style="width: 30px; height: 30px; background: #4caf50; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">✓</div>
+                                <div style="width: 2px; height: 30px; background: #4caf50; position: absolute; left: 14px; top: 30px;"></div>
+                            </div>
+                            <div>
+                                <h5 style="margin-bottom: 3px;">En Preparación</h5>
+                                <p style="font-size: 12px; color: var(--text-light);">Aproximadamente 5 minutos más</p>
+                            </div>
+                        </div>
+
+                        <!-- Paso 3: En Camino -->
+                        <div style="display: flex; gap: 15px;">
+                            <div style="position: relative; width: 30px; min-width: 30px;">
+                                <div style=\"width: 30px; height: 30px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; animation: pulse 2s infinite;\">▶</div>
+                            </div>
+                            <div>
+                                <h5 style="margin-bottom: 3px;">En Camino (En progreso)</h5>
+                                <p style="font-size: 12px; color: var(--text-light);">El repartidor salió del local hace 2 minutos</p>
+                                <p style="font-size: 12px; color: var(--primary-color); font-weight: 600; margin-top: 5px;">📍 Calle Principal, 2 cuadras de tu domicilio</p>
+                            </div>
+                        </div>
+
+                        <!-- Paso 4: Entregado -->
+                        <div style="display: flex; gap: 15px;">
+                            <div style="width: 30px; min-width: 30px;">
+                                <div style="width: 30px; height: 30px; background: #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #999; font-weight: bold;">4</div>
+                            </div>
+                            <div>
+                                <h5 style="margin-bottom: 3px; color: #ccc;">Entregado</h5>
+                                <p style="font-size: 12px; color: var(--text-light);">Tiempo estimado: 12-15 minutos</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información Adicional -->
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px;">
+                    <h4 style="margin-bottom: 10px;">Información Adicional</h4>
+                    <div style="font-size: 12px; line-height: 1.8;">
+                        <p><strong>Vehículo:</strong> Moto Honda CRF - Placa ABC-1234</p>
+                        <p><strong>Tiempo Estimado:</strong> 12 minutos</p>
+                        <p><strong>Distancia:</strong> 2.3 km</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Detalles del Pedido -->
+    <div id="orderDetailsModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2>Detalles del Pedido</h2>
+                <button class="modal-close" onclick="closeOrderDetails()">✕</button>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <div id="orderDetailsContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeOrderDetails()">Cerrar</button>
+                <button class="btn btn-primary" id="invoiceButtonDetails" onclick="viewInvoice()" style="display: none;">📄 Ver Factura</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Escribir Reseña -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>📝 Escribir Reseña</h2>
+                <button class="modal-close" onclick="closeReview()">✕</button>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <div id="reviewContent">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Calificación</label>
+                        <div id="ratingStars" style="font-size: 36px; display: flex; gap: 10px; cursor: pointer;">
+                            <span class="rating-star" data-rating="1">⭐</span>
+                            <span class="rating-star" data-rating="2">⭐</span>
+                            <span class="rating-star" data-rating="3">⭐</span>
+                            <span class="rating-star" data-rating="4">⭐</span>
+                            <span class="rating-star" data-rating="5">⭐</span>
+                        </div>
+                        <p id="ratingText" style="font-size: 12px; color: var(--text-light); margin-top: 10px;"></p>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Tu Comentario</label>
+                        <textarea id="reviewComment" placeholder="Cuéntanos tu experiencia..." style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 5px; min-height: 120px; font-family: inherit; resize: vertical;"></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="recommendCheckbox">
+                            <span style="margin-left: 8px; font-size: 14px;">👍 Recomendaría este producto</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeReview()">Cancelar</button>
+                <button class="btn btn-primary" style="flex: 1;" onclick="submitReview()">Enviar Reseña</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Ver Factura -->
+    <div id="invoiceViewModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2>📄 Comprobante de Pago</h2>
+                <button class="modal-close" onclick="closeInvoiceView()">✕</button>
+            </div>
+            <div class="modal-body" id="invoiceViewContent" style="background: white; padding: 30px; max-height: 600px; overflow-y: auto;">
+                <!-- Contenido generado dinámicamente -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="printInvoiceView()">🖨️ Imprimir</button>
+                <button class="btn btn-secondary" onclick="downloadInvoiceView()">📥 Descargar PDF</button>
+                <button class="btn btn-primary" onclick="closeInvoiceView()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openRastreo(pedido) {
+            document.getElementById('pedidoNum').textContent = pedido;
+            document.getElementById('modalRastreo').classList.add('show');
+            actualizarRastreo();
+        }
+
+        function closeRastreo() {
+            document.getElementById('modalRastreo').classList.remove('show');
+        }
+
+        function refrescarUbicacion() {
+            alert('🔄 Actualizando ubicación...');
+            actualizarRastreo();
+        }
+
+        function actualizarRastreo() {
+            // Simular actualización de progreso
+            const progressBar = document.getElementById('progressBar');
+            if (progressBar) {
+                const currentWidth = parseFloat(progressBar.style.width) || 0;
+                const newWidth = Math.min(currentWidth + Math.random() * 15, 95);
+                progressBar.style.width = newWidth + '%';
+            }
+        }
+
+        function zoomMas() {
+            const mapa = document.getElementById('mapaGoogle');
+            if (mapa) {
+                const currentScale = parseFloat(mapa.style.transform.match(/scale\(([\d.]+)\)/) ? mapa.style.transform.match(/scale\(([\d.]+)\)/)[1] : 1);
+                mapa.style.transform = 'scale(' + Math.min(currentScale + 0.2, 2) + ')';
+                mapa.style.transformOrigin = 'center';
+            }
+        }
+
+        function zoomMenos() {
+            const mapa = document.getElementById('mapaGoogle');
+            if (mapa) {
+                const currentScale = parseFloat(mapa.style.transform.match(/scale\(([\d.]+)\)/) ? mapa.style.transform.match(/scale\(([\d.]+)\)/)[1] : 1);
+                mapa.style.transform = 'scale(' + Math.max(currentScale - 0.2, 0.8) + ')';
+                mapa.style.transformOrigin = 'center';
+            }
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                window.location.href = '../index.html';
+            }
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalRastreo');
+            if (event.target == modal) {
+                closeRastreo();
+            }
+        }
+
+        // ===== DATOS DE PEDIDOS =====
+        const ordersData = {
+            1050: { number: '#1050', date: '07/04/2026 10:30', status: 'Preparando', items: 'Pollo entero + papas + bebida', total: 45.00, subtotal: 40.00, delivery: 5.00 },
+            1045: { number: '#1045', date: '06/04/2026 18:15', status: 'Entregado', items: 'Combo familiar', total: 89.90, subtotal: 84.90, delivery: 5.00 },
+            1040: { number: '#1040', date: '01/04/2026 12:45', status: 'Entregado', items: 'Balde 12 pzs + ensalada', total: 125.00, subtotal: 120.00, delivery: 5.00 },
+            1035: { number: '#1035', date: '25/03/2026 20:00', status: 'Entregado', items: 'Alitas x20 + papas', total: 60.00, subtotal: 55.00, delivery: 5.00 },
+            1030: { number: '#1030', date: '20/03/2026 15:30', status: 'Cancelado', items: 'Pollo 1/4 x 2 + bebidas', total: 72.00, subtotal: 67.00, delivery: 5.00 }
+        };
+
+        let currentOrderId = null;
+        let currentRating = 0;
+
+        // ===== FUNCIONES DE DETALLES DEL PEDIDO =====
+        function viewOrderDetails(orderId) {
+            currentOrderId = orderId;
+            const order = ordersData[orderId];
+            
+            if (!order) return;
+            
+            const content = `
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <p style="margin: 5px 0; color: var(--text-light); font-size: 12px;">Número de Pedido</p>
+                            <p style="margin: 5px 0; font-weight: 700; font-size: 18px;">${order.number}</p>
+                        </div>
+                        <div>
+                            <p style="margin: 5px 0; color: var(--text-light); font-size: 12px;">Estado</p>
+                            <p style="margin: 5px 0; font-weight: 700; font-size: 16px;">
+                                ${order.status === 'Entregado' ? '✅ Entregado' : order.status === 'Cancelado' ? '❌ Cancelado' : '⏳ ' + order.status}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 15px;">📦 Items del Pedido</h4>
+                    <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                        <p style="margin: 0; font-size: 14px; color: var(--text-dark);">${order.items}</p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 15px;">💰 Resumen de Pago</h4>
+                    <div style="background: var(--light-bg); padding: 15px; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);">
+                            <span>Subtotal:</span>
+                            <span>S/ ${order.subtotal.toFixed(2)}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);">
+                            <span>Delivery:</span>
+                            <span>S/ ${order.delivery.toFixed(2)}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; color: var(--primary-color);">
+                            <span>Total:</span>
+                            <span>S/ ${order.total.toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 15px;">📅 Fecha del Pedido</h4>
+                    <p style="background: var(--light-bg); padding: 12px; border-radius: 8px; margin: 0;">${order.date}</p>
+                </div>
+            `;
+            
+            document.getElementById('orderDetailsContent').innerHTML = content;
+            
+            // Mostrar botón de factura solo si está entregado
+            const invoiceBtn = document.getElementById('invoiceButtonDetails');
+            if (order.status === 'Entregado') {
+                invoiceBtn.style.display = 'block';
+            } else {
+                invoiceBtn.style.display = 'none';
+            }
+            
+            document.getElementById('orderDetailsModal').classList.add('show');
+        }
+
+        function closeOrderDetails() {
+            document.getElementById('orderDetailsModal').classList.remove('show');
+        }
+
+        // ===== FUNCIONES DE RASTREO =====
+        function trackOrder(orderId) {
+            const order = ordersData[orderId];
+            if (order && order.status !== 'Entregado' && order.status !== 'Cancelado') {
+                openRastreo(order.number);
+            } else {
+                alert('Este pedido ya fue ' + (order.status === 'Entregado' ? 'entregado' : 'cancelado'));
+            }
+        }
+
+        // ===== FUNCIONES DE RESEÑA =====
+        function openReview(orderId) {
+            currentOrderId = orderId;
+            currentRating = 0;
+            document.getElementById('reviewComment').value = '';
+            document.getElementById('recommendCheckbox').checked = false;
+            updateStarDisplay();
+            document.getElementById('reviewModal').classList.add('show');
+        }
+
+        function closeReview() {
+            document.getElementById('reviewModal').classList.remove('show');
+        }
+
+        function updateStarDisplay() {
+            const stars = document.querySelectorAll('.rating-star');
+            const ratingText = document.getElementById('ratingText');
+            
+            const ratings = ['Muy Malo', 'Malo', 'Aceptable', 'Bueno', 'Excelente'];
+            
+            stars.forEach((star, index) => {
+                if (index < currentRating) {
+                    star.style.opacity = '1';
+                    star.style.color = '#FFD700';
+                } else {
+                    star.style.opacity = '0.3';
+                    star.style.color = '#333';
+                }
+            });
+            
+            if (currentRating > 0) {
+                ratingText.textContent = '⭐ ' + ratings[currentRating - 1];
+            } else {
+                ratingText.textContent = 'Selecciona una calificación';
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('rating-star')) {
+                currentRating = parseInt(e.target.dataset.rating);
+                updateStarDisplay();
+            }
+        });
+
+        function submitReview() {
+            if (currentRating === 0) {
+                alert('Por favor selecciona una calificación');
+                return;
+            }
+            
+            const comment = document.getElementById('reviewComment').value.trim();
+            if (!comment) {
+                alert('Por favor escribe un comentario');
+                return;
+            }
+            
+            const recommend = document.getElementById('recommendCheckbox').checked;
+            
+            alert('✅ ¡Reseña enviada!\n\nCalificación: ' + '⭐'.repeat(currentRating) + '\nComentario: ' + comment + '\nRecomendado: ' + (recommend ? 'Sí' : 'No'));
+            
+            closeReview();
+        }
+
+        // ===== FUNCIONES DE FACTURA =====
+        function viewInvoice() {
+            closeOrderDetails();
+            generateAndShowInvoice();
+        }
+
+        function generateAndShowInvoice() {
+            const order = ordersData[currentOrderId];
+            if (!order) return;
+            
+            const invoiceDate = new Date().toLocaleString('es-PE');
+            const invoiceNumber = 'F-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+            
+            const invoiceHTML = `
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div style="font-size: 32px; margin-bottom: 10px;">🍗 CHIKENHOT</div>
+                    <h2 style="margin: 10px 0; color: var(--primary-color);">COMPROBANTE DE PAGO</h2>
+                    <p style="color: var(--text-light); margin: 5px 0;">Factura Electrónica</p>
+                </div>
+                
+                <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid var(--border-color);">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <p style="margin: 5px 0;"><strong>Factura Nº:</strong> ${invoiceNumber}</p>
+                            <p style="margin: 5px 0;"><strong>Orden:</strong> ${order.number}</p>
+                            <p style="margin: 5px 0;"><strong>Fecha:</strong> ${order.date}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="margin: 5px 0;"><strong>Cliente:</strong> Juan Cliente</p>
+                            <p style="margin: 5px 0;"><strong>Email:</strong> cliente@chikenhot.pe</p>
+                            <p style="margin: 5px 0;"><strong>RUC:</strong> 20123456789</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 10px;">📦 Detalle de Productos</h4>
+                    <div style="background: var(--light-bg); padding: 12px; border-radius: 6px; margin-bottom: 10px;">
+                        <p style="margin: 0;"><strong>${order.items}</strong></p>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 10px;">💰 Resumen Financiero</h4>
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 10px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 8px 0;">
+                            <span>Subtotal:</span>
+                            <span><strong>S/ ${order.subtotal.toFixed(2)}</strong></span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 8px 0;">
+                            <span>IGV (18%):</span>
+                            <span><strong>S/ ${(order.subtotal * 0.18).toFixed(2)}</strong></span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 8px 0; border-bottom: 1px solid var(--border-color);">
+                            <span>Delivery:</span>
+                            <span><strong>S/ ${order.delivery.toFixed(2)}</strong></span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 12px 0; font-weight: 700; font-size: 16px; color: var(--primary-color);">
+                            <span>TOTAL PAGADO:</span>
+                            <span>S/ ${(order.total + (order.subtotal * 0.18)).toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
+                    <p style="margin: 5px 0; font-size: 12px; color: var(--text-light);">✅ Estado: Pagado</p>
+                    <p style="margin: 5px 0; font-size: 12px; color: var(--text-light);">Gracias por tu compra</p>
+                </div>
+                
+                <div style="text-align: center; font-size: 11px; color: var(--text-light); padding-top: 15px; border-top: 1px solid var(--border-color);">
+                    <p style="margin: 5px 0;">CHIKENHOT - Todos los derechos reservados</p>
+                    <p style="margin: 5px 0;">Sucursal: Av. Principal 100, Lima</p>
+                    <p style="margin: 5px 0;">Telf: +51 987654321</p>
+                </div>
+            `;
+            
+            document.getElementById('invoiceViewContent').innerHTML = invoiceHTML;
+            document.getElementById('invoiceViewModal').classList.add('show');
+        }
+
+        function closeInvoiceView() {
+            document.getElementById('invoiceViewModal').classList.remove('show');
+        }
+
+        function printInvoiceView() {
+            window.print();
+        }
+
+        function downloadInvoiceView() {
+            alert('📥 Factura descargada en formato PDF');
+        }
+
+        // ===== CERRAR MODALES AL HACER CLICK AFUERA =====
+        window.onclick = function(event) {
+            const modalRastreo = document.getElementById('modalRastreo');
+            const modalDetalles = document.getElementById('orderDetailsModal');
+            const modalReview = document.getElementById('reviewModal');
+            const modalFactura = document.getElementById('invoiceViewModal');
+            
+            if (event.target === modalRastreo) closeRastreo();
+            if (event.target === modalDetalles) closeOrderDetails();
+            if (event.target === modalReview) closeReview();
+            if (event.target === modalFactura) closeInvoiceView();
+        }
+    </script>
+
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes moverRepartidorAvanzado {
+            0% {
+                left: 10%;
+                top: 32%;
+                transform: rotate(0deg) scale(1);
+            }
+            25% {
+                left: 30%;
+                top: 25%;
+                transform: rotate(45deg) scale(1.1);
+            }
+            50% {
+                left: 50%;
+                top: 28%;
+                transform: rotate(90deg) scale(1);
+            }
+            75% {
+                left: 75%;
+                top: 40%;
+                transform: rotate(135deg) scale(1.1);
+            }
+            100% {
+                left: 88%;
+                top: 45%;
+                transform: rotate(180deg) scale(1);
+            }
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        #mapaGoogle button:hover {
+            background: #f0f0f0 !important;
+            transform: scale(1.1);
+        }
+
+        @keyframes drawLine {
+            0% {
+                stroke-dashoffset: 500;
+            }
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes blink {
+            0%, 49%, 100% { opacity: 1; }
+            50%, 99% { opacity: 0.3; }
+        }
+    </style>
+</body>
+</html>
+

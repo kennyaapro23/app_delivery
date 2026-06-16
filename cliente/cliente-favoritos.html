@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chikenhot - Favoritos</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="dashboard-body">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🍗</div>
+            <div class="sidebar-title">CHIKENHOT</div>
+            <div class="sidebar-subtitle">MI CUENTA</div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">MENÚ</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="dashboard-cliente.html" class="sidebar-link"><span class="sidebar-icon">🏠</span><span>Inicio</span></a></li>
+                <li class="sidebar-item"><a href="cliente-pedidos.html" class="sidebar-link"><span class="sidebar-icon">📋</span><span>Mis Pedidos</span></a></li>
+                <li class="sidebar-item"><a href="cliente-favoritos.html" class="sidebar-link active"><span class="sidebar-icon">❤️</span><span>Favoritos</span></a></li>
+                <li class="sidebar-item"><a href="cliente-direcciones.html" class="sidebar-link"><span class="sidebar-icon">🗺️</span><span>Mis Direcciones</span></a></li>
+                <li class="sidebar-item"><a href="cliente-pago.html" class="sidebar-link"><span class="sidebar-icon">💳</span><span>Métodos de Pago</span></a></li>
+                <li class="sidebar-item"><a href="cliente-resenas.html" class="sidebar-link"><span class="sidebar-icon">⭐</span><span>Mis Reseñas</span></a></li>
+                <li class="sidebar-item"><a href="cliente-cupones.html" class="sidebar-link"><span class="sidebar-icon">🎁</span><span>Cupones</span></a></li>
+                <li class="sidebar-item"><a href="cliente-config.html" class="sidebar-link"><span class="sidebar-icon">⚙️</span><span>Configuración</span></a></li>
+            </ul>
+        </div>
+        <div class="sidebar-user">
+            <div class="user-avatar">👤</div>
+            <div class="user-info">
+                <div class="user-name">Juan Cliente</div>
+                <div class="user-email">cliente@chikenhot.pe</div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="header">
+            <div class="header-title">
+                <h1>Mis Productos Favoritos</h1>
+                <p>Acceso rápido a tus productos preferidos</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <div style="font-size: 48px; margin-bottom: 10px;">🍗</div>
+                <h4 style="margin-bottom: 5px;">Pollo 1/4</h4>
+                <p style="color: var(--text-light); font-size: 12px; margin-bottom: 10px;">Con arroz y papas</p>
+                <div style="font-size: 18px; font-weight: 700; color: var(--primary-color); margin-bottom: 10px;">S/ 18.50</div>
+                <button class="btn btn-primary" style="width: 100%;">Agregar</button>
+                <button class="btn btn-secondary" style="width: 100%; margin-top: 5px;">❌ Eliminar</button>
+            </div>
+
+            <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <div style="font-size: 48px; margin-bottom: 10px;">🍗</div>
+                <h4 style="margin-bottom: 5px;">Pollo Entero</h4>
+                <p style="color: var(--text-light); font-size: 12px; margin-bottom: 10px;">Fresco con papas</p>
+                <div style="font-size: 18px; font-weight: 700; color: var(--primary-color); margin-bottom: 10px;">S/ 45.00</div>
+                <button class="btn btn-primary" style="width: 100%;">Agregar</button>
+                <button class="btn btn-secondary" style="width: 100%; margin-top: 5px;">❌ Eliminar</button>
+            </div>
+
+            <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <div style="font-size: 48px; margin-bottom: 10px;">🍖</div>
+                <h4 style="margin-bottom: 5px;">Alitas x20</h4>
+                <p style="color: var(--text-light); font-size: 12px; margin-bottom: 10px;">Crujientes</p>
+                <div style="font-size: 18px; font-weight: 700; color: var(--primary-color); margin-bottom: 10px;">S/ 35.00</div>
+                <button class="btn btn-primary" style="width: 100%;">Agregar</button>
+                <button class="btn btn-secondary" style="width: 100%; margin-top: 5px;">❌ Eliminar</button>
+            </div>
+
+            <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <div style="font-size: 48px; margin-bottom: 10px;">🍗</div>
+                <h4 style="margin-bottom: 5px;">Combo Familiar</h4>
+                <p style="color: var(--text-light); font-size: 12px; margin-bottom: 10px;">4 cuartos + papas</p>
+                <div style="font-size: 18px; font-weight: 700; color: var(--primary-color); margin-bottom: 10px;">S/ 89.90</div>
+                <button class="btn btn-primary" style="width: 100%;">Agregar</button>
+                <button class="btn btn-secondary" style="width: 100%; margin-top: 5px;">❌ Eliminar</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                window.location.href = '../index.html';
+            }
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chikenhot - Reportes</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="dashboard-body">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🍗</div>
+            <div class="sidebar-title">CHIKENHOT</div>
+            <div class="sidebar-subtitle">SISTEMA DE GESTIÓN</div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">PRINCIPAL</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="dashboard-admin.html" class="sidebar-link">
+                        <span class="sidebar-icon">📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">MÓDULOS</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="admin-usuarios.html" class="sidebar-link">
+                        <span class="sidebar-icon">👥</span>
+                        <span>Usuarios</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-catalogo.html" class="sidebar-link">
+                        <span class="sidebar-icon">📋</span>
+                        <span>Catálogo y Pedidos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-repartidores.html" class="sidebar-link">
+                        <span class="sidebar-icon">🚗</span>
+                        <span>Repartidores</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-pagos.html" class="sidebar-link">
+                        <span class="sidebar-icon">💳</span>
+                        <span>Pagos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-notificaciones.html" class="sidebar-link">
+                        <span class="sidebar-icon">🔔</span>
+                        <span>Notificaciones</span>
+                        <span class="sidebar-badge">3</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">ANÁLISIS</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="admin-reportes.html" class="sidebar-link active">
+                        <span class="sidebar-icon">📈</span>
+                        <span>Reportes</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">👤</div>
+            <div class="user-info">
+                <div class="user-name">Administrador</div>
+                <div class="user-email">admin@chikenhot.pe</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-title">
+                <h1>Reportes Analíticos</h1>
+                <p>Chikenhot / Análisis</p>
+            </div>
+            <div class="header-actions">
+                <select style="padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 5px; font-size: 13px;">
+                    <option>Este Mes</option>
+                    <option>Mes Anterior</option>
+                    <option>Últimos 3 meses</option>
+                    <option>Este Año</option>
+                </select>
+                <button class="btn-new" onclick="alert('Descargar reportes...')">📥 Descargar</button>
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <!-- KEY METRICS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🍗</div>
+                <div class="stat-content">
+                    <div class="stat-label">Pedidos Totales</div>
+                    <div class="stat-value">1,245</div>
+                    <div class="stat-change positive">↑ 25% vs mes anterior</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-content">
+                    <div class="stat-label">Clientes Activos</div>
+                    <div class="stat-value">487</div>
+                    <div class="stat-change positive">↑ 12 nuevos</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-content">
+                    <div class="stat-label">Ingresos Totales</div>
+                    <div class="stat-value">S/ 95,800</div>
+                    <div class="stat-change positive">↑ 18% vs mes anterior</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-content">
+                    <div class="stat-label">Calificación Promedio</div>
+                    <div class="stat-value">4.7 / 5</div>
+                    <div class="stat-change positive">Muy satisfecho</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SALES TREND -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Tendencia de Ventas Mensual</h2>
+            </div>
+
+            <div style="height: 250px; background: var(--light-bg); border-radius: 8px; display: flex; align-items: flex-end; justify-content: space-around; padding: 20px;">
+                <div style="width: 35px; height: 180px; background: var(--primary-color); border-radius: 4px; opacity: 0.7;" title="Enero: S/ 65,000"></div>
+                <div style="width: 35px; height: 200px; background: var(--primary-color); border-radius: 4px; opacity: 0.8;" title="Febrero: S/ 75,000"></div>
+                <div style="width: 35px; height: 210px; background: var(--primary-color); border-radius: 4px; opacity: 0.85;" title="Marzo: S/ 81,000"></div>
+                <div style="width: 35px; height: 230px; background: var(--primary-color); border-radius: 4px;" title="Abril: S/ 95,800"></div>
+            </div>
+
+            <div style="display: flex; justify-content: space-around; margin-top: 15px; text-align: center; font-size: 12px;">
+                <div><strong>Enero</strong><br>S/ 65,000</div>
+                <div><strong>Febrero</strong><br>S/ 75,000</div>
+                <div><strong>Marzo</strong><br>S/ 81,000</div>
+                <div><strong>Abril</strong><br>S/ 95,800</div>
+            </div>
+        </div>
+
+        <!-- TOP PRODUCTS -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Top 5 Productos Más Vendidos</h2>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>RANKING</th>
+                            <th>PRODUCTO</th>
+                            <th>VENDIDAS</th>
+                            <th>INGRESOS</th>
+                            <th>GANANCIAS %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>🥇</td>
+                            <td>🍟 Papas Grandes</td>
+                            <td>1,245</td>
+                            <td>S/ 10,582.50</td>
+                            <td>11.0%</td>
+                        </tr>
+                        <tr>
+                            <td>🥈</td>
+                            <td>🍖 Alitas x20</td>
+                            <td>987</td>
+                            <td>S/ 34,545.00</td>
+                            <td>36.0%</td>
+                        </tr>
+                        <tr>
+                            <td>🥉</td>
+                            <td>🍗 Pollo 1/4</td>
+                            <td>856</td>
+                            <td>S/ 15,836.00</td>
+                            <td>16.5%</td>
+                        </tr>
+                        <tr>
+                            <td>4️⃣</td>
+                            <td>🍗 Pollo Entero</td>
+                            <td>654</td>
+                            <td>S/ 29,430.00</td>
+                            <td>30.7%</td>
+                        </tr>
+                        <tr>
+                            <td>5️⃣</td>
+                            <td>🍗 Balde 12 Pzs</td>
+                            <td>325</td>
+                            <td>S/ 40,625.00</td>
+                            <td>42.3%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- DELIVERY PERFORMANCE -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Desempeño de Repartidores</h2>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>REPARTIDOR</th>
+                            <th>ENTREGAS</th>
+                            <th>GANANCIAS</th>
+                            <th>RATING</th>
+                            <th>PUNTUALIDAD</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Juan Pérez</td>
+                            <td>203</td>
+                            <td>S/ 1,320.00</td>
+                            <td>⭐⭐⭐⭐⭐</td>
+                            <td><span class="badge badge-success">98%</span></td>
+                        </tr>
+                        <tr>
+                            <td>Diego Rodríguez</td>
+                            <td>156</td>
+                            <td>S/ 1,010.00</td>
+                            <td>⭐⭐⭐⭐⭐</td>
+                            <td><span class="badge badge-success">96%</span></td>
+                        </tr>
+                        <tr>
+                            <td>Roberto Silva</td>
+                            <td>178</td>
+                            <td>S/ 1,157.00</td>
+                            <td>⭐⭐⭐⭐⭐</td>
+                            <td><span class="badge badge-success">95%</span></td>
+                        </tr>
+                        <tr>
+                            <td>Luis Martínez</td>
+                            <td>98</td>
+                            <td>S/ 637.00</td>
+                            <td>⭐⭐⭐⭐</td>
+                            <td><span class="badge badge-warning">92%</span></td>
+                        </tr>
+                        <tr>
+                            <td>Carlos Mendoza</td>
+                            <td>45</td>
+                            <td>S/ 292.50</td>
+                            <td>⭐⭐⭐</td>
+                            <td><span class="badge badge-danger">78%</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- CUSTOMER SATISFACTION -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Satisfacción del Cliente</h2>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                <div style="background: var(--light-bg); padding: 20px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 10px;">😍</div>
+                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 5px;">Muy Satisfecho</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--success-color);">72%</div>
+                    <div style="font-size: 12px; color: var(--text-light); margin-top: 10px;">892 clientes</div>
+                </div>
+
+                <div style="background: var(--light-bg); padding: 20px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 10px;">😊</div>
+                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 5px;">Satisfecho</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--success-color);">20%</div>
+                    <div style="font-size: 12px; color: var(--text-light); margin-top: 10px;">249 clientes</div>
+                </div>
+
+                <div style="background: var(--light-bg); padding: 20px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 10px;">😐</div>
+                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 5px;">Neutral</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--warning-color);">5%</div>
+                    <div style="font-size: 12px; color: var(--text-light); margin-top: 10px;">62 clientes</div>
+                </div>
+
+                <div style="background: var(--light-bg); padding: 20px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 10px;">😞</div>
+                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 5px;">Insatisfecho</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--danger-color);">3%</div>
+                    <div style="font-size: 12px; color: var(--text-light); margin-top: 10px;">37 clientes</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                window.location.href = '../index.html';
+            }
+        }
+    </script>
+</body>
+</html>
+

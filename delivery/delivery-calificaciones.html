@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chikenhot - Mis Calificaciones</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="dashboard-body">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🍗</div>
+            <div class="sidebar-title">CHIKENHOT</div>
+            <div class="sidebar-subtitle">REPARTIDOR</div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">MENÚ</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="dashboard-delivery.html" class="sidebar-link"><span class="sidebar-icon">🚗</span><span>Mis Entregas</span></a></li>
+                <li class="sidebar-item"><a href="delivery-mapa.html" class="sidebar-link"><span class="sidebar-icon">🗺️</span><span>Mapa en Vivo</span></a></li>
+                <li class="sidebar-item"><a href="delivery-ganancias.html" class="sidebar-link"><span class="sidebar-icon">💰</span><span>Mis Ganancias</span></a></li>
+                <li class="sidebar-item"><a href="delivery-calificaciones.html" class="sidebar-link active"><span class="sidebar-icon">⭐</span><span>Calificaciones</span></a></li>
+                <li class="sidebar-item"><a href="delivery-notificaciones.html" class="sidebar-link"><span class="sidebar-icon">🔔</span><span>Notificaciones</span></a></li>
+                <li class="sidebar-item"><a href="delivery-config.html" class="sidebar-link"><span class="sidebar-icon">⚙️</span><span>Configuración</span></a></li>
+            </ul>
+        </div>
+        <div class="sidebar-user">
+            <div class="user-avatar">🚴</div>
+            <div class="user-info">
+                <div class="user-name">Diego Rodríguez</div>
+                <div class="user-email">diego@chikenhot.pe</div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="header">
+            <div class="header-title">
+                <h1>Mi Calificación</h1>
+                <p>Opiniones de clientes</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-content">
+                    <div class="stat-label">Calificación Promedio</div>
+                    <div class="stat-value">4.8 / 5</div>
+                    <div class="stat-change positive">Excelente desempeño</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">👍</div>
+                <div class="stat-content">
+                    <div class="stat-label">Reseñas Positivas</div>
+                    <div class="stat-value">156</div>
+                    <div class="stat-change positive">95% del total</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <div class="stat-label">Total Reseñas</div>
+                    <div class="stat-value">164</div>
+                    <div class="stat-change positive">De 156 entregas</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-content">
+                    <div class="stat-label">Tasa de Aceptación</div>
+                    <div class="stat-value">98%</div>
+                    <div class="stat-change positive">Muy confiable</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Distribución de Calificaciones</h2>
+            </div>
+
+            <div style="display: grid; gap: 15px;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="font-weight: 600; min-width: 100px;">⭐⭐⭐⭐⭐ (5)</div>
+                    <div style="flex: 1; background: #f0f0f0; height: 20px; border-radius: 4px; overflow: hidden;">
+                        <div style="background: #4caf50; height: 100%; width: 92%;"></div>
+                    </div>
+                    <div>143 (87%)</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="font-weight: 600; min-width: 100px;">⭐⭐⭐⭐ (4)</div>
+                    <div style="flex: 1; background: #f0f0f0; height: 20px; border-radius: 4px; overflow: hidden;">
+                        <div style="background: #8bc34a; height: 100%; width: 8%;"></div>
+                    </div>
+                    <div>13 (8%)</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="font-weight: 600; min-width: 100px;">⭐⭐⭐ (3)</div>
+                    <div style="flex: 1; background: #f0f0f0; height: 20px; border-radius: 4px; overflow: hidden;">
+                        <div style="background: #ff9800; height: 100%; width: 2%;"></div>
+                    </div>
+                    <div>3 (2%)</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="font-weight: 600; min-width: 100px;">⭐⭐ (2)</div>
+                    <div style="flex: 1; background: #f0f0f0; height: 20px; border-radius: 4px; overflow: hidden;">
+                        <div style="background: #f44336; height: 100%; width: 1%;"></div>
+                    </div>
+                    <div>1 (1%)</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="font-weight: 600; min-width: 100px;">⭐ (1)</div>
+                    <div style="flex: 1; background: #f0f0f0; height: 20px; border-radius: 4px; overflow: hidden;">
+                        <div style="background: #c62828; height: 100%; width: 0%;"></div>
+                    </div>
+                    <div>0 (0%)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Reseñas Recientes</h2>
+            </div>
+
+            <div style="display: grid; gap: 15px;">
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>
+                            <h4>Pedro Gómez</h4>
+                            <p style="font-size: 12px; color: var(--text-light);">Pedido #1050 - 07/04/2026</p>
+                        </div>
+                        <div style="font-size: 18px;">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    <p style="font-size: 13px;">Excelente repartidor, llegó puntualmente y fue muy amable. De lo mejor.</p>
+                </div>
+
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>
+                            <h4>María López</h4>
+                            <p style="font-size: 12px; color: var(--text-light);">Pedido #1047 - 05/04/2026</p>
+                        </div>
+                        <div style="font-size: 18px;">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    <p style="font-size: 13px;">Perfecto, muy rápido y profesional. Volvería a usar su servicio.</p>
+                </div>
+
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>
+                            <h4>Carlos Ruiz</h4>
+                            <p style="font-size: 12px; color: var(--text-light);">Pedido #1048 - 04/04/2026</p>
+                        </div>
+                        <div style="font-size: 18px;">⭐⭐⭐⭐</div>
+                    </div>
+                    <p style="font-size: 13px;">Buena entrega, aunque se demorió un poco. Pero muy atento to customer service.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                window.location.href = '../index.html';
+            }
+        }
+    </script>
+</body>
+</html>
+

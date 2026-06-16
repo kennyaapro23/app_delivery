@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chikenhot - Login Cliente</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <div class="logo">🍗</div>
+                <h1>CHIKENHOT</h1>
+                <p class="subtitle">PARA CLIENTES</p>
+            </div>
+
+            <!-- Tabs para Login/Registro -->
+            <div class="auth-tabs">
+                <button type="button" class="tab-btn active" data-tab="login">Iniciar Sesión</button>
+                <button type="button" class="tab-btn" data-tab="register">Registrarse</button>
+            </div>
+
+            <!-- FORMULARIO DE LOGIN -->
+            <form class="login-form auth-form active" id="loginForm" data-form="login">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="tu@email.com" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="••••••••" 
+                        required
+                    >
+                </div>
+
+                <div class="remember-forgot">
+                    <label class="checkbox">
+                        <input type="checkbox" name="remember">
+                        <span>Recuérdame</span>
+                    </label>
+                    <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <button type="submit" class="btn-login">Iniciar Sesión</button>
+            </form>
+
+            <!-- FORMULARIO DE REGISTRO -->
+            <form class="login-form auth-form" id="registerForm" data-form="register">
+                <div class="form-group">
+                    <label for="reg-nombre">Nombre Completo</label>
+                    <input 
+                        type="text" 
+                        id="reg-nombre" 
+                        name="nombre" 
+                        placeholder="Tu nombre completo" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-email">Email</label>
+                    <input 
+                        type="email" 
+                        id="reg-email" 
+                        name="email" 
+                        placeholder="tu@email.com" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-telefono">Teléfono</label>
+                    <input 
+                        type="tel" 
+                        id="reg-telefono" 
+                        name="telefono" 
+                        placeholder="+51 999 999 999" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-password">Contraseña</label>
+                    <input 
+                        type="password" 
+                        id="reg-password" 
+                        name="password" 
+                        placeholder="••••••••" 
+                        required
+                    >
+                    <small class="password-requirements">
+                        Mínimo 8 caracteres, con mayúscula y número
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-confirm-password">Confirmar Contraseña</label>
+                    <input 
+                        type="password" 
+                        id="reg-confirm-password" 
+                        name="confirm_password" 
+                        placeholder="••••••••" 
+                        required
+                    >
+                </div>
+
+                <div class="terms-acceptance">
+                    <label class="checkbox">
+                        <input type="checkbox" name="terms" required>
+                        <span>Acepto los <a href="#" style="color: var(--primary-color);">términos y condiciones</a></span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-login">Crear Cuenta</button>
+            </form>
+
+            <div class="login-footer">
+                <p id="login-footer-text">¿No tienes cuenta? <a href="#" class="register-link" id="toggle-register-btn" style="cursor: pointer;">Regístrate aquí</a></p>
+                <p id="register-footer-text" style="display: none;">¿Ya tienes cuenta? <a href="#" class="register-link" id="toggle-login-btn" style="cursor: pointer;">Inicia sesión</a></p>
+            </div>
+        </div>
+
+        <!-- Demo Users Info -->
+        <div class="demo-info">
+            <p><strong>Acceso para Clientes:</strong></p>
+            <ul>
+                <li><strong>Email:</strong> cliente@chikenhot.pe</li>
+                <li><strong>Contraseña:</strong> cliente123</li>
+            </ul>
+            <hr style="margin: 15px 0; border: none; border-top: 1px solid #ddd;">
+            <p style="font-size: 12px; color: #666;"><strong>¿Eres Repartidor?</strong></p>
+            <p style="font-size: 12px; margin-top: 5px;"><a href="delivery/dashboard-delivery.html" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">Acceso Directo para Repartidores →</a></p>
+        </div>
+    </div>
+
+    <script>
+        // TAB SWITCHING
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabName = this.getAttribute('data-tab');
+                
+                // Actualizar botones activos
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Mostrar/Ocultar formularios
+                document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+                document.querySelector(`[data-form="${tabName}"]`).classList.add('active');
+                
+                // Actualizar footer text
+                if (tabName === 'login') {
+                    document.getElementById('login-footer-text').style.display = 'block';
+                    document.getElementById('register-footer-text').style.display = 'none';
+                } else {
+                    document.getElementById('login-footer-text').style.display = 'none';
+                    document.getElementById('register-footer-text').style.display = 'block';
+                }
+            });
+        });
+        
+        // Footer toggle buttons
+        document.getElementById('toggle-register-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector('[data-tab="register"]').click();
+        });
+        
+        document.getElementById('toggle-login-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector('[data-tab="login"]').click();
+        });
+
+        // LOGIN FORM
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Validación simple para demo
+            if (email === 'cliente@chikenhot.pe' && password === 'cliente123') {
+                // Guardar sesión
+                sessionStorage.setItem('usuario_logueado', JSON.stringify({
+                    email: email,
+                    rol: 'cliente',
+                    nombre: 'Cliente Demo'
+                }));
+                window.location.href = 'cliente/dashboard-cliente.html';
+            } else {
+                alert('❌ Email o contraseña incorrectos.\n\nUsá:\nEmail: cliente@chikenhot.pe\nContraseña: cliente123');
+            }
+        });
+
+        // REGISTRO FORM
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nombre = document.getElementById('reg-nombre').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const telefono = document.getElementById('reg-telefono').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-confirm-password').value;
+            const terms = document.querySelector('input[name="terms"]').checked;
+            
+            // Validaciones
+            if (!nombre || nombre.length < 3) {
+                alert('❌ El nombre debe tener al menos 3 caracteres');
+                return;
+            }
+            
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                alert('❌ Ingresa un email válido');
+                return;
+            }
+            
+            if (!telefono.match(/^(\+|[0-9])[0-9\s-]{8,}$/)) {
+                alert('❌ Ingresa un teléfono válido');
+                return;
+            }
+            
+            if (password.length < 8) {
+                alert('❌ La contraseña debe tener al menos 8 caracteres');
+                return;
+            }
+            
+            if (!/[A-Z]/.test(password)) {
+                alert('❌ La contraseña debe contener una mayúscula');
+                return;
+            }
+            
+            if (!/[0-9]/.test(password)) {
+                alert('❌ La contraseña debe contener un número');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                alert('❌ Las contraseñas no coinciden');
+                return;
+            }
+            
+            if (!terms) {
+                alert('❌ Debes aceptar los términos y condiciones');
+                return;
+            }
+            
+            // Si todas las validaciones pasan
+            alert('✅ ¡Registro exitoso! Ahora puedes iniciar sesión con tu email y contraseña.');
+            
+            // Guardar datos de usuario (en un caso real iría a la BD)
+            const nuevoUsuario = {
+                nombre: nombre,
+                email: email,
+                telefono: telefono,
+                password: password, // En producción usar hash
+                rol: 'cliente',
+                fechaRegistro: new Date().toISOString()
+            };
+            
+            console.log('Nuevo usuario registrado:', nuevoUsuario);
+            
+            // Limpiar formulario
+            this.reset();
+            
+            // Cambiar a tab de login
+            document.querySelector('[data-tab="login"]').click();
+        });
+    </script>
+</body>
+</html>

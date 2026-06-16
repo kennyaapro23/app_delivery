@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chikenhot - Notificaciones Delivery</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="dashboard-body">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🍗</div>
+            <div class="sidebar-title">CHIKENHOT</div>
+            <div class="sidebar-subtitle">REPARTIDOR</div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">MENÚ</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="dashboard-delivery.html" class="sidebar-link"><span class="sidebar-icon">🚗</span><span>Mis Entregas</span></a></li>
+                <li class="sidebar-item"><a href="delivery-mapa.html" class="sidebar-link"><span class="sidebar-icon">🗺️</span><span>Mapa en Vivo</span></a></li>
+                <li class="sidebar-item"><a href="delivery-ganancias.html" class="sidebar-link"><span class="sidebar-icon">💰</span><span>Mis Ganancias</span></a></li>
+                <li class="sidebar-item"><a href="delivery-calificaciones.html" class="sidebar-link"><span class="sidebar-icon">⭐</span><span>Calificaciones</span></a></li>
+                <li class="sidebar-item"><a href="delivery-notificaciones.html" class="sidebar-link active"><span class="sidebar-icon">🔔</span><span>Notificaciones</span></a></li>
+                <li class="sidebar-item"><a href="delivery-config.html" class="sidebar-link"><span class="sidebar-icon">⚙️</span><span>Configuración</span></a></li>
+            </ul>
+        </div>
+        <div class="sidebar-user">
+            <div class="user-avatar">🚴</div>
+            <div class="user-info">
+                <div class="user-name">Diego Rodríguez</div>
+                <div class="user-email">diego@chikenhot.pe</div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="header">
+            <div class="header-title">
+                <h1>Notificaciones</h1>
+                <p>Alertas y mensajes importantes</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn" style="background: var(--primary-color); color: white;">🔔 Todos</button>
+                <button class="btn btn-secondary">📦 Nuevos Pedidos</button>
+                <button class="btn btn-secondary">🎯 Promociones</button>
+                <button class="btn btn-secondary">⚠️ Alertas</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div style="background: #e8f5e9; padding: 20px; border-left: 4px solid #4caf50; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>
+                            <h4 style="color: #2e7d32;">✅ Nuevo Pedido Disponible</h4>
+                            <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">Hace 5 minutos</p>
+                        </div>
+                        <button class="btn btn-success" style="padding: 8px 12px; font-size: 11px;">Ver</button>
+                    </div>
+                    <p style="font-size: 13px;">Se ha asignado un nuevo pedido a tu zona. Monto: S/ 45. Cliente: Pedro Gómez</p>
+                </div>
+
+                <div style="background: #fff3e0; padding: 20px; border-left: 4px solid #ff9800; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>
+                            <h4 style="color: #e65100;">⚠️ Cambio de Zona Disponible</h4>
+                            <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">Hace 15 minutos</p>
+                        </div>
+                        <button class="btn btn-warning" style="padding: 8px 12px; font-size: 11px; background: #ff9800; color: white;">Ver</button>
+                    </div>
+                    <p style="font-size: 13px;">Hay oportunidad de cambiar a zona Centro con mejores ingresos. ¿Te interesa?</p>
+                </div>
+
+                <div style="background: #e3f2fd; padding: 20px; border-left: 4px solid #2196f3; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>
+                            <h4 style="color: #1565c0;">📢 Promoción Especial</h4>
+                            <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">Hace 30 minutos</p>
+                        </div>
+                        <button class="btn btn-primary" style="padding: 8px 12px; font-size: 11px;">Ver</button>
+                    </div>
+                    <p style="font-size: 13px;">Completa 15 entregas esta semana y recibe un bono de S/ 150 adicionales.</p>
+                </div>
+
+                <div style="background: #f3e5f5; padding: 20px; border-left: 4px solid #9c27b0; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>
+                            <h4 style="color: #6a1b9a;">🎁 Logro Desbloqueado</h4>
+                            <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">Hace 1 hora</p>
+                        </div>
+                        <button class="btn" style="padding: 8px 12px; font-size: 11px; background: #9c27b0; color: white;">Ver</button>
+                    </div>
+                    <p style="font-size: 13px;">¡Felicidades! Has alcanzado 150 entregas. Accede a beneficios premium ahora.</p>
+                </div>
+
+                <div style="background: #f5f5f5; padding: 20px; border-left: 4px solid #bdbdbd; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>
+                            <h4>📊 Reporte Semanal</h4>
+                            <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">Hace 2 horas</p>
+                        </div>
+                        <button class="btn btn-secondary" style="padding: 8px 12px; font-size: 11px;">Ver</button>
+                    </div>
+                    <p style="font-size: 13px;">Tu reporte semanal está listo. Entregas: 98 | Ganancias: S/ 1,250 | Rating: 4.8</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                window.location.href = '../index.html';
+            }
+        }
+    </script>
+</body>
+</html>
+

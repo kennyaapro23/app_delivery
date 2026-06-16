@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chikenhot - Dashboard Admin</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="dashboard-body">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🍗</div>
+            <div class="sidebar-title">CHIKENHOT</div>
+            <div class="sidebar-subtitle">SISTEMA DE GESTIÓN</div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">PRINCIPAL</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="dashboard-admin.html" class="sidebar-link active">
+                        <span class="sidebar-icon">📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">MÓDULOS</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="admin-usuarios.html" class="sidebar-link">
+                        <span class="sidebar-icon">👥</span>
+                        <span>Usuarios</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-catalogo.html" class="sidebar-link">
+                        <span class="sidebar-icon">📋</span>
+                        <span>Catálogo y Pedidos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-repartidores.html" class="sidebar-link">
+                        <span class="sidebar-icon">🚗</span>
+                        <span>Repartidores</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-pagos.html" class="sidebar-link">
+                        <span class="sidebar-icon">💳</span>
+                        <span>Pagos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-notificaciones.html" class="sidebar-link">
+                        <span class="sidebar-icon">🔔</span>
+                        <span>Notificaciones</span>
+                        <span class="sidebar-badge">3</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">ANÁLISIS</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="admin-reportes.html" class="sidebar-link">
+                        <span class="sidebar-icon">📈</span>
+                        <span>Reportes</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">👤</div>
+            <div class="user-info">
+                <div class="user-name">Administrador</div>
+                <div class="user-email">admin@chikenhot.pe</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-title">
+                <h1>Dashboard General</h1>
+                <p>Chikenhot / Dashboard</p>
+            </div>
+            <div class="header-actions">
+                <span style="color: #ff6b6b; font-weight: 600;">⏰ 3 pedidos nuevos</span>
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <!-- STATS GRID -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🍗</div>
+                <div class="stat-content">
+                    <div class="stat-label">Pedidos Hoy</div>
+                    <div class="stat-value">47</div>
+                    <div class="stat-change positive">↑ 12% vs ayer</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-content">
+                    <div class="stat-label">Usuarios Activos</div>
+                    <div class="stat-value">312</div>
+                    <div class="stat-change positive">↑5 esta semana</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🚗</div>
+                <div class="stat-content">
+                    <div class="stat-label">Repartidores</div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-change positive">6 en turno ahora</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-content">
+                    <div class="stat-label">Ingresos Hoy</div>
+                    <div class="stat-value">S/ 1,840</div>
+                    <div class="stat-change positive">↑ 8% vs ayer</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECENT ORDERS -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Pedidos Recientes</h2>
+                <span class="section-link">➜ En vivo</span>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#PEDIDO</th>
+                            <th>CLIENTE</th>
+                            <th>PRODUCTO</th>
+                            <th>TOTAL</th>
+                            <th>REPARTIDOR</th>
+                            <th>ESTADO</th>
+                            <th>ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#1050</td>
+                            <td>Pedro Gómez</td>
+                            <td>Pollo entero + Papas + Bebida</td>
+                            <td>S/ 74.20</td>
+                            <td>Diego R.</td>
+                            <td><span class="badge badge-info">En ruta</span></td>
+                            <td>
+                                <button class="btn btn-primary" onclick="openOrderDetails(1050)">Ver</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#1049</td>
+                            <td>Ana Torres</td>
+                            <td>Alitas x20 + Papas + Salsa</td>
+                            <td>S/ 54.26</td>
+                            <td>—</td>
+                            <td><span class="badge badge-danger">Pendiente</span></td>
+                            <td>
+                                <button class="btn btn-primary" onclick="openOrderDetails(1049)">Ver</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#1048</td>
+                            <td>Carlos Ruiz</td>
+                            <td>Combo familiar + Bebida</td>
+                            <td>S/ 119.74</td>
+                            <td>Luis M.</td>
+                            <td><span class="badge badge-warning">En camino</span></td>
+                            <td>
+                                <button class="btn btn-primary" onclick="openOrderDetails(1048)">Ver</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#1047</td>
+                            <td>María López</td>
+                            <td>Balde 12 pzs + Papas</td>
+                            <td>S/ 108.26</td>
+                            <td>Juan P.</td>
+                            <td><span class="badge badge-warning">En camino</span></td>
+                            <td>
+                                <button class="btn btn-primary" onclick="openOrderDetails(1047)">Ver</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#1045</td>
+                            <td>Andrea Paz</td>
+                            <td>Pollo 1/4 x2 + Arroz</td>
+                            <td>S/ 60.99</td>
+                            <td>Diego R.</td>
+                            <td><span class="badge badge-success">Entregado</span></td>
+                            <td>
+                                <button class="btn btn-secondary" onclick="openOrderDetails(1045)">Ver</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- DELIVERY DRIVERS -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Estado de Repartidores</h2>
+                <span class="section-link">Ver todos</span>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>REPARTIDOR</th>
+                            <th>TELÉFONO</th>
+                            <th>UBICACIÓN</th>
+                            <th>ESTADO</th>
+                            <th>ENTREGAS HOY</th>
+                            <th>ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Diego Rodríguez</td>
+                            <td>987 654 321</td>
+                            <td>Centro</td>
+                            <td><span class="badge badge-success">Disponible</span></td>
+                            <td>8</td>
+                            <td>
+                                <button class="btn btn-secondary">Contactar</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Luis Martínez</td>
+                            <td>987 654 322</td>
+                            <td>La Noria</td>
+                            <td><span class="badge badge-success">En ruta</span></td>
+                            <td>5</td>
+                            <td>
+                                <button class="btn btn-secondary">Contactar</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Juan Pérez</td>
+                            <td>987 654 323</td>
+                            <td>Ica</td>
+                            <td><span class="badge badge-success">En ruta</span></td>
+                            <td>6</td>
+                            <td>
+                                <button class="btn btn-secondary">Contactar</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Carlos Mendoza</td>
+                            <td>987 654 324</td>
+                            <td>San Isidro</td>
+                            <td><span class="badge badge-danger">Offline</span></td>
+                            <td>3</td>
+                            <td>
+                                <button class="btn btn-secondary">Contactar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- ORDER DETAILS MODAL -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2>Detalles del Pedido</h2>
+                </div>
+                <button class="modal-close" onclick="closeOrderModal()">✕</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="order-details-header">
+                    <div>
+                        <div class="order-number" id="modalOrderNumber">#1050</div>
+                        <div class="order-date" id="modalOrderDate">16 Abril 2026 - 10:30 AM</div>
+                    </div>
+                    <div class="order-status">
+                        <div class="order-status-badge" id="modalOrderStatus">En ruta</div>
+                    </div>
+                </div>
+
+                <div class="order-section">
+                    <div class="order-section-title">Información del Cliente</div>
+                    <div class="order-info-grid">
+                        <div class="order-info-item">
+                            <span class="order-info-label">Cliente</span>
+                            <span class="order-info-value" id="modalClientName">Pedro Gómez</span>
+                        </div>
+                        <div class="order-info-item">
+                            <span class="order-info-label">Teléfono</span>
+                            <span class="order-info-value" id="modalClientPhone">+51 987654321</span>
+                        </div>
+                        <div class="order-info-item">
+                            <span class="order-info-label">Dirección</span>
+                            <span class="order-info-value" id="modalClientAddress" style="grid-column: 1/3;">Av. Principal 123, La Noria</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="order-section">
+                    <div class="order-section-title">Repartidor Asignado</div>
+                    <div class="order-info-grid">
+                        <div class="order-info-item">
+                            <span class="order-info-label">Nombre</span>
+                            <span class="order-info-value" id="modalDeliveryName">Diego R.</span>
+                        </div>
+                        <div class="order-info-item">
+                            <span class="order-info-label">Teléfono</span>
+                            <span class="order-info-value" id="modalDeliveryPhone">+51 987654321</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="order-section">
+                    <div class="order-section-title">Items del Pedido</div>
+                    <div class="order-items" id="modalOrderItems">
+                        <!-- Items populated by JS -->
+                    </div>
+                </div>
+
+                <div class="order-section">
+                    <div class="order-section-title">Resumen de Pago</div>
+                    <div class="order-summary">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span id="modalSubtotal">S/ 0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Delivery</span>
+                            <span id="modalDeliveryFee">S/ 0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Impuesto</span>
+                            <span id="modalTax">S/ 0.00</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>TOTAL</span>
+                            <span id="modalTotal">S/ 0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="order-section">
+                    <div class="order-section-title">Método de Pago</div>
+                    <div class="order-info-item">
+                        <span class="order-info-value" id="modalPaymentMethod">Efectivo</span>
+                    </div>
+                </div>
+
+                <div class="order-section">
+                    <div class="order-section-title">Timeline de Estado</div>
+                    <div class="timeline" id="modalTimeline">
+                        <!-- Timeline populated by JS -->
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-primary" onclick="exportOrder()">Exportar</button>
+                    <button class="btn btn-secondary" onclick="closeOrderModal()">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample order data for admin
+        const orders = {
+            1050: {
+                number: '#1050',
+                date: '16 Abril 2026 - 10:30 AM',
+                status: 'En ruta',
+                statusClass: 'status-en-camino',
+                client: 'Pedro Gómez',
+                clientPhone: '+51 987654321',
+                address: 'Av. Principal 123, La Noria',
+                delivery: 'Diego Rodríguez',
+                deliveryPhone: '+51 987654321',
+                items: [
+                    { name: 'Pollo Entero', qty: 1, price: 45.00 },
+                    { name: 'Papas Grandes', qty: 1, price: 8.00 },
+                    { name: 'Bebida 2L', qty: 1, price: 12.00 }
+                ],
+                subtotal: 65.00,
+                deliveryFee: 5.00,
+                tax: 4.20,
+                total: 74.20,
+                payment: 'Efectivo',
+                timeline: [
+                    { time: '10:30 AM', title: 'Pedido Confirmado', desc: 'Cliente confirmó el pedido', completed: true },
+                    { time: '10:45 AM', title: 'En Preparación', desc: 'El restaurante preparó tu pedido', completed: true },
+                    { time: '11:00 AM', title: 'Listo para Entrega', desc: 'Pedido empaquetado y asignado a repartidor', completed: true },
+                    { time: '11:20 AM', title: 'En Ruta', desc: 'Repartidor en camino al cliente', completed: true },
+                    { time: 'Est. 11:50 AM', title: 'Entregado', desc: 'Entrega completada', completed: false }
+                ]
+            },
+            1049: {
+                number: '#1049',
+                date: '16 Abril 2026 - 10:15 AM',
+                status: 'Pendiente',
+                statusClass: 'status-pendiente',
+                client: 'Ana Torres',
+                clientPhone: '+51 987123456',
+                address: 'Jr. Flores 456, Centro',
+                delivery: '—',
+                deliveryPhone: '—',
+                items: [
+                    { name: 'Alitas x20', qty: 1, price: 35.00 },
+                    { name: 'Papas Medianas', qty: 1, price: 6.00 },
+                    { name: 'Salsa Picante', qty: 2, price: 2.50 }
+                ],
+                subtotal: 46.00,
+                deliveryFee: 5.00,
+                tax: 3.26,
+                total: 54.26,
+                payment: 'Yape',
+                timeline: [
+                    { time: '10:15 AM', title: 'Pedido Confirmado', desc: 'Cliente confirmó el pedido', completed: true },
+                    { time: 'Est. 10:45 AM', title: 'En Preparación', desc: 'Esperando asignación de repartidor', completed: false },
+                    { time: 'Est. 11:15 AM', title: 'Listo para Entrega', desc: 'Será entregado', completed: false }
+                ]
+            },
+            1048: {
+                number: '#1048',
+                date: '16 Abril 2026 - 10:00 AM',
+                status: 'En camino',
+                statusClass: 'status-en-camino',
+                client: 'Carlos Ruiz',
+                clientPhone: '+51 987654123',
+                address: 'Calle Comercio 789, Ica',
+                delivery: 'Luis M.',
+                deliveryPhone: '+51 987123456',
+                items: [
+                    { name: 'Combo Familiar', qty: 1, price: 89.90 },
+                    { name: 'Bebida 2.5L', qty: 1, price: 15.00 }
+                ],
+                subtotal: 104.90,
+                deliveryFee: 7.00,
+                tax: 7.84,
+                total: 119.74,
+                payment: 'Tarjeta',
+                timeline: [
+                    { time: '10:00 AM', title: 'Pedido Confirmado', desc: 'Cliente confirmó el pedido', completed: true },
+                    { time: '10:15 AM', title: 'En Preparación', desc: 'El restaurante preparó el pedido', completed: true },
+                    { time: '10:35 AM', title: 'Listo para Entrega', desc: 'Asignado a Luis M.', completed: true },
+                    { time: '10:45 AM', title: 'En Ruta', desc: 'Repartidor en camino', completed: true },
+                    { time: 'Est. 11:15 AM', title: 'Entregado', desc: 'Entrega completada', completed: false }
+                ]
+            },
+            1047: {
+                number: '#1047',
+                date: '16 Abril 2026 - 09:45 AM',
+                status: 'En camino',
+                statusClass: 'status-en-camino',
+                client: 'María López',
+                clientPhone: '+51 987456789',
+                address: 'Pasaje Verde 234, San Isidro',
+                delivery: 'Juan P.',
+                deliveryPhone: '+51 987456123',
+                items: [
+                    { name: 'Balde 12 Pzs', qty: 1, price: 85.00 },
+                    { name: 'Papas Extra', qty: 1, price: 10.00 }
+                ],
+                subtotal: 95.00,
+                deliveryFee: 6.00,
+                tax: 7.26,
+                total: 108.26,
+                payment: 'Efectivo',
+                timeline: [
+                    { time: '09:45 AM', title: 'Pedido Confirmado', desc: 'Cliente confirmó el pedido', completed: true },
+                    { time: '10:00 AM', title: 'En Preparación', desc: 'El restaurante preparó el pedido', completed: true },
+                    { time: '10:25 AM', title: 'Listo para Entrega', desc: 'Asignado a Juan P.', completed: true },
+                    { time: '10:35 AM', title: 'En Ruta', desc: 'Repartidor en camino', completed: true },
+                    { time: 'Est. 11:05 AM', title: 'Entregado', desc: 'Entrega completada', completed: false }
+                ]
+            },
+            1045: {
+                number: '#1045',
+                date: '16 Abril 2026 - 02:00 PM',
+                status: 'Entregado',
+                statusClass: 'status-entregado',
+                client: 'Andrea Paz',
+                clientPhone: '+51 987987987',
+                address: 'Av. Larco 500, Miraflores',
+                delivery: 'Diego Rodríguez',
+                deliveryPhone: '+51 987654321',
+                items: [
+                    { name: 'Pollo 1/4', qty: 2, price: 18.50 },
+                    { name: 'Arroz con Pollo', qty: 1, price: 15.00 }
+                ],
+                subtotal: 52.00,
+                deliveryFee: 5.00,
+                tax: 3.99,
+                total: 60.99,
+                payment: 'Efectivo',
+                timeline: [
+                    { time: '14:00', title: 'Pedido Confirmado', desc: 'Cliente confirmó el pedido', completed: true },
+                    { time: '14:12', title: 'En Preparación', desc: 'El restaurante preparó el pedido', completed: true },
+                    { time: '14:25', title: 'Listo para Entrega', desc: 'Asignado a Diego R.', completed: true },
+                    { time: '14:30', title: 'En Ruta', desc: 'Repartidor en camino', completed: true },
+                    { time: '14:50', title: 'Entregado', desc: 'Entrega completada', completed: true }
+                ]
+            }
+        };
+
+        function openOrderDetails(orderId) {
+            const order = orders[orderId];
+            if (!order) return;
+
+            document.getElementById('modalOrderNumber').textContent = order.number;
+            document.getElementById('modalOrderDate').textContent = order.date;
+            document.getElementById('modalOrderStatus').textContent = order.status;
+            document.getElementById('modalOrderStatus').className = 'order-status-badge ' + order.statusClass;
+
+            document.getElementById('modalClientName').textContent = order.client;
+            document.getElementById('modalClientPhone').textContent = order.clientPhone;
+            document.getElementById('modalClientAddress').textContent = order.address;
+
+            document.getElementById('modalDeliveryName').textContent = order.delivery;
+            document.getElementById('modalDeliveryPhone').textContent = order.deliveryPhone;
+
+            const itemsHtml = order.items.map(item => `
+                <div class="order-item">
+                    <div class="item-details">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-quantity">x${item.qty}</div>
+                    </div>
+                    <div class="item-price">S/ ${item.price.toFixed(2)}</div>
+                </div>
+            `).join('');
+            document.getElementById('modalOrderItems').innerHTML = itemsHtml;
+
+            document.getElementById('modalSubtotal').textContent = 'S/ ' + order.subtotal.toFixed(2);
+            document.getElementById('modalDeliveryFee').textContent = 'S/ ' + order.deliveryFee.toFixed(2);
+            document.getElementById('modalTax').textContent = 'S/ ' + order.tax.toFixed(2);
+            document.getElementById('modalTotal').textContent = 'S/ ' + order.total.toFixed(2);
+
+            document.getElementById('modalPaymentMethod').textContent = order.payment;
+
+            const timelineHtml = order.timeline.map(event => `
+                <div class="timeline-event${event.completed ? ' completed' : ''}">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">${event.time} - ${event.title}</div>
+                        <div class="timeline-description">${event.desc}</div>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('modalTimeline').innerHTML = timelineHtml;
+
+            document.getElementById('orderModal').classList.add('show');
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').classList.remove('show');
+        }
+
+        function exportOrder() {
+            alert('Exportando pedido a PDF...');
+        }
+
+        document.getElementById('orderModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeOrderModal();
+            }
+        });
+
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                window.location.href = '../index.html';
+            }
+        }
+    </script>
+</body>
+</html>
+

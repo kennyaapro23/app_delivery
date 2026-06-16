@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chikenhot - Notificaciones</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="dashboard-body">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🍗</div>
+            <div class="sidebar-title">CHIKENHOT</div>
+            <div class="sidebar-subtitle">SISTEMA DE GESTIÓN</div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">PRINCIPAL</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="dashboard-admin.html" class="sidebar-link">
+                        <span class="sidebar-icon">📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">MÓDULOS</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="admin-usuarios.html" class="sidebar-link">
+                        <span class="sidebar-icon">👥</span>
+                        <span>Usuarios</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-catalogo.html" class="sidebar-link">
+                        <span class="sidebar-icon">📋</span>
+                        <span>Catálogo y Pedidos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-repartidores.html" class="sidebar-link">
+                        <span class="sidebar-icon">🚗</span>
+                        <span>Repartidores</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-pagos.html" class="sidebar-link">
+                        <span class="sidebar-icon">💳</span>
+                        <span>Pagos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="admin-notificaciones.html" class="sidebar-link active">
+                        <span class="sidebar-icon">🔔</span>
+                        <span>Notificaciones</span>
+                        <span class="sidebar-badge">3</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">ANÁLISIS</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="admin-reportes.html" class="sidebar-link">
+                        <span class="sidebar-icon">📈</span>
+                        <span>Reportes</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">👤</div>
+            <div class="user-info">
+                <div class="user-name">Administrador</div>
+                <div class="user-email">admin@chikenhot.pe</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-title">
+                <h1>Centro de Notificaciones</h1>
+                <p>Chikenhot / Notificaciones (3 sin leer)</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-new" onclick="alert('Enviando notificación masiva...')">📢 Enviar Masiva</button>
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <!-- NOTIFICATION STATS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🔔</div>
+                <div class="stat-content">
+                    <div class="stat-label">Sin Leer</div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-change negative">⚠️ Requiere atención</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-content">
+                    <div class="stat-label">Leídas Hoy</div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-change positive">Revisadas</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📨</div>
+                <div class="stat-content">
+                    <div class="stat-label">Enviadas Hoy</div>
+                    <div class="stat-value">28</div>
+                    <div class="stat-change positive">A todos los usuarios</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📲</div>
+                <div class="stat-content">
+                    <div class="stat-label">Tasa Apertura</div>
+                    <div class="stat-value">68%</div>
+                    <div class="stat-change positive">Buena interacción</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTIFICATIONS -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Notificaciones Recientes</h2>
+                <span class="section-link">Marcar todas como leídas</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div style="background: #fff3e0; padding: 20px; border-left: 4px solid #ff9800; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 5px;">⚠️ Stock bajo en Papas Grandes</div>
+                        <div style="font-size: 13px; color: var(--text-light); margin-bottom: 5px;">Solo 8 unidades disponibles</div>
+                        <div style="font-size: 11px; color: var(--text-light);">Hace 15 minutos</div>
+                    </div>
+                    <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Ver</button>
+                </div>
+
+                <div style="background: #fff3e0; padding: 20px; border-left: 4px solid #ff9800; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 5px;">🚗 Repartidor offline</div>
+                        <div style="font-size: 13px; color: var(--text-light); margin-bottom: 5px;">Carlos Mendoza no se conecta desde hace 2 horas</div>
+                        <div style="font-size: 11px; color: var(--text-light);">Hace 45 minutos</div>
+                    </div>
+                    <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Ver</button>
+                </div>
+
+                <div style="background: #fff3e0; padding: 20px; border-left: 4px solid #ff9800; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 5px;">❌ Pago rechazado</div>
+                        <div style="font-size: 13px; color: var(--text-light); margin-bottom: 5px;">Cliente: Pedro Gómez - TRX: #TRX005</div>
+                        <div style="font-size: 11px; color: var(--text-light);">Hace 1 hora</div>
+                    </div>
+                    <button class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">Ver</button>
+                </div>
+
+                <div style="background: #f5f5f5; padding: 20px; border-left: 4px solid #4caf50; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 5px;">✅ Nuevo usuario registrado</div>
+                        <div style="font-size: 13px; color: var(--text-light); margin-bottom: 5px;">Total: 487 usuarios activos</div>
+                        <div style="font-size: 11px; color: var(--text-light);">Hace 2 horas</div>
+                    </div>
+                    <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 11px;">Ver</button>
+                </div>
+
+                <div style="background: #f5f5f5; padding: 20px; border-left: 4px solid #2196f3; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 5px;">📊 Reporte diario generado</div>
+                        <div style="font-size: 13px; color: var(--text-light); margin-bottom: 5px;">Ventas: S/ 4,850 | Pedidos: 47</div>
+                        <div style="font-size: 11px; color: var(--text-light);">Hace 3 horas</div>
+                    </div>
+                    <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 11px;">Ver</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEND NOTIFICATIONS -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Enviar Nueva Notificación</h2>
+            </div>
+
+            <div style="display: grid; gap: 15px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Destinatarios *</label>
+                        <select style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;" required>
+                            <option value="">Seleccionar</option>
+                            <option value="todos">Todos los usuarios</option>
+                            <option value="clientes">Solo clientes</option>
+                            <option value="repartidores">Solo repartidores</option>
+                            <option value="admin">Solo administradores</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Canal de Envío *</label>
+                        <select style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;" required>
+                            <option value="">Seleccionar</option>
+                            <option value="app">Aplicación</option>
+                            <option value="email">Email</option>
+                            <option value="sms">SMS</option>
+                            <option value="todos">Todos los canales</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Título *</label>
+                    <input type="text" placeholder="Ej: Nueva promoción especial" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Icono/Emoji</label>
+                    <input type="text" placeholder="Ej: 🎉 🚀 📢" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;">
+                </div>
+
+                <div class="form-group">
+                    <label>Mensaje *</label>
+                    <textarea placeholder="Escribe el mensaje detallado..." style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; min-height: 100px; font-family: inherit;" required></textarea>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Tipo de Notificación *</label>
+                        <select style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;" required>
+                            <option value="">Seleccionar</option>
+                            <option value="info">Información</option>
+                            <option value="promocion">Promoción</option>
+                            <option value="urgente">Urgente</option>
+                            <option value="mantenimiento">Mantenimiento</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Programar (opcional)</label>
+                        <input type="datetime-local" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;">
+                    </div>
+                </div>
+
+                <button class="btn-new" style="width: 100%; padding: 12px;" onclick="openModal('formNotificacion')">📤 Enviar Notificación</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL: Confirmar Envío de Notificación -->
+    <div id="formNotificacion" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirmar Envío</h2>
+                <button class="modal-close" onclick="closeModal('formNotificacion')">✕</button>
+            </div>
+            <form class="modal-body" onsubmit="guardarNotificacion(event)">
+                <p style="margin-bottom: 15px; color: var(--text-light);">¿Estás seguro de que deseas enviar esta notificación a todos los destinatarios?</p>
+                <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <p><strong>Resumen:</strong></p>
+                    <p style="font-size: 13px; margin: 8px 0;">Destinatarios: Todos los usuarios</p>
+                    <p style="font-size: 13px; margin: 8px 0;">Título: Nueva promoción</p>
+                    <p style="font-size: 13px; margin: 8px 0;">Tipo: Sistema</p>
+                    <p style="font-size: 13px; margin: 8px 0;">Hora: Inmediato</p>
+                </div>
+                <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <input type="checkbox" required>
+                    <span style="font-size: 13px;">Confirmar envío de notificación</span>
+                </label>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('formNotificacion')">Cancelar</button>
+                    <button type="submit" class="btn btn-new">Enviar Ahora</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function guardarNotificacion(event) {
+            event.preventDefault();
+            alert('✅ Notificación enviada exitosamente a todos los usuarios!');
+            closeModal('formNotificacion');
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                window.location.href = '../index.html';
+            }
+        }
+    </script>
+</body>
+</html>
+
