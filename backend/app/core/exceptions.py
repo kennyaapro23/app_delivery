@@ -54,3 +54,18 @@ class ConflictException(HTTPException):
             status_code=status.HTTP_409_CONFLICT,
             detail=detail,
         )
+
+
+class RateLimitException(HTTPException):
+    """Error 429: demasiadas peticiones en poco tiempo."""
+
+    def __init__(
+        self,
+        detail: str = "Demasiados intentos. Inténtalo de nuevo más tarde.",
+        retry_after: int = 60,
+    ):
+        super().__init__(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=detail,
+            headers={"Retry-After": str(retry_after)},
+        )
