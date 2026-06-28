@@ -1,6 +1,6 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Bike, ListTodo, Wallet, LogOut, Power, Map as MapIcon, Star } from "lucide-react";
+import { Bike, ListTodo, Wallet, LogOut, Power, Map as MapIcon, Star, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 import { toggleAvailability } from "@/services/delivery";
 import { useDriverLocationReporter } from "@/hooks/useDriverLocationReporter";
@@ -43,26 +43,45 @@ export function DriverLayout() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-neutral-50">
-      <header className="sticky top-0 z-30 border-b border-neutral-200 bg-white">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-          <Link to="/delivery" className="flex items-center gap-2 font-bold">
+    <div className="flex min-h-screen flex-col bg-ink-50">
+      <header className="sticky top-0 z-40 border-b border-ink-200 bg-white/80 backdrop-blur">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
+          <Link
+            to="/delivery"
+            className="flex min-w-0 items-center gap-2 font-display font-bold text-ink-900 transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 rounded-lg"
+          >
             <span className="text-xl">🍗</span>
-            <span>Chikenhot · Repartidor</span>
+            <span className="truncate">
+              Chikenhot <span className="text-brand-600">· Repartidor</span>
+            </span>
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <button
               onClick={handleToggle}
               disabled={toggling}
               className={cn(
-                "inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold transition",
+                "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold shadow-card transition active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60",
                 available
-                  ? "bg-green-100 text-green-700 hover:bg-green-200"
-                  : "bg-neutral-200 text-neutral-700 hover:bg-neutral-300",
+                  ? "bg-success-50 text-success-700 hover:bg-success-100 focus-visible:ring-success-400"
+                  : "bg-ink-100 text-ink-700 hover:bg-ink-200 focus-visible:ring-ink-400",
               )}
-              title="Toggle disponibilidad"
+              title="Cambiar disponibilidad"
             >
-              <Power className="h-3 w-3" />
+              {toggling ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <span
+                  className={cn(
+                    "relative flex h-2 w-2 items-center justify-center rounded-full",
+                    available ? "bg-success-500" : "bg-ink-400",
+                  )}
+                >
+                  {available && (
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success-500 opacity-75" />
+                  )}
+                </span>
+              )}
+              <Power className="h-3.5 w-3.5" />
               {available ? "Disponible" : "Offline"}
             </button>
             <button
@@ -70,15 +89,18 @@ export function DriverLayout() {
                 logout();
                 navigate("/login");
               }}
-              className="p-2 rounded-lg hover:bg-neutral-100"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-ink-600 transition hover:bg-ink-100 hover:text-ink-900 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
               aria-label="Cerrar sesión"
+              title="Cerrar sesión"
             >
               <LogOut className="h-4 w-4" />
             </button>
           </div>
         </div>
-        <div className="border-t border-neutral-100 px-2 py-1">
-          <p className="px-2 text-xs text-neutral-500">Hola, {fullName}</p>
+        <div className="border-t border-ink-100">
+          <p className="mx-auto max-w-3xl px-4 py-1.5 text-xs text-ink-500">
+            Hola, <span className="font-medium text-ink-700">{fullName}</span>
+          </p>
         </div>
       </header>
 
@@ -86,7 +108,7 @@ export function DriverLayout() {
         <Outlet />
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-neutral-200 bg-white shadow-lg">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-ink-200 bg-white/90 backdrop-blur shadow-pop">
         <div className="mx-auto flex max-w-3xl">
           {NAV.map((item) => (
             <NavLink
@@ -95,8 +117,8 @@ export function DriverLayout() {
               end={item.end}
               className={({ isActive }) =>
                 cn(
-                  "flex flex-1 flex-col items-center gap-1 py-3 text-xs font-medium transition",
-                  isActive ? "text-brand-600" : "text-neutral-500 hover:text-neutral-800",
+                  "flex flex-1 flex-col items-center gap-1 py-3 text-xs font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-300",
+                  isActive ? "text-brand-600" : "text-ink-500 hover:text-ink-800",
                 )
               }
             >

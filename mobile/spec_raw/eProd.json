@@ -1,0 +1,155 @@
+{
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/api/v1/products/categories",
+      "auth": "public",
+      "request": "Query params: include_inactive: bool = false (when true, also returns deactivated categories; intended for admin view, but NOT auth-protected — anyone can pass it).",
+      "response": "list[CategoryResponse]; each item: id: int, name: str, description: str|null, icon: str (default '🍗'), is_active: bool, display_order: int.",
+      "notes": "No auth dependency. Defined BEFORE the dynamic /{product_id} route so 'categories' is matched correctly. Delegates to product_service.get_categories(db, include_inactive)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/products/categories",
+      "auth": "admin",
+      "request": "Body CategoryCreate: name: str (required), description: str|null = null, icon: str = '🍗', display_order: int = 0.",
+      "response": "CategoryResponse: id: int, name: str, description: str|null, icon: str, is_active: bool, display_order: int.",
+      "notes": "Depends(require_admin) = RoleChecker(['admin']). Delegates to product_service.create_category."
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/products/categories/{category_id}",
+      "auth": "admin",
+      "request": "Path: category_id: int. Body CategoryUpdate (all optional/partial): name: str|null, description: str|null, icon: str|null, is_active: bool|null, display_order: int|null.",
+      "response": "CategoryResponse: id: int, name: str, description: str|null, icon: str, is_active: bool, display_order: int.",
+      "notes": "Depends(require_admin). Partial update — only provided fields change. Delegates to product_service.update_category."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/products/categories/{category_id}",
+      "auth": "admin",
+      "request": "Path: category_id: int. No body.",
+      "response": "CategoryResponse (the deactivated category): id, name, description, icon, is_active (now false), display_order.",
+      "notes": "Soft delete: deactivates the category AND cascades to deactivate its products (per docstring). Depends(require_admin). Returns the category object, not 204."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/products",
+      "auth": "public",
+      "request": "Query params: skip: int = 0 (ge=0), limit: int = 100 (ge=1, le=500), category_id: int|null = null, search: str|null = null, featured: bool = false, include_inactive: bool = false. Empty router path '' = the /products collection root.",
+      "response": "ProductListResponse: products: list[ProductResponse], total: int. Each ProductResponse: id: int, name: str, description: str|null, price: float, category_id: int, icon: str (default '🍗'), image_url: str|null, is_featured: bool, is_available: bool, created_at: datetime, category: CategoryResponse|null (nested).",
+      "notes": "Pagination via skip/limit. Filters: category_id, free-text search, featured-only, include_inactive (lets admin see deactivated products to reactivate; not auth-gated). total is the unpaginated count. Delegates to product_service.get_products(db, skip, limit, category_id, search, featured, include_inactive)."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/products/{product_id}",
+      "auth": "public",
+      "request": "Path: product_id: int. No body/query.",
+      "response": "ProductResponse: id: int, name: str, description: str|null, price: float, category_id: int, icon: str, image_url: str|null, is_featured: bool, is_available: bool, created_at: datetime, category: CategoryResponse|null.",
+      "notes": "Public. Delegates to product_service.get_product_by_id (raises NotFound if missing)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/products",
+      "auth": "admin",
+      "request": "Body ProductCreate (== ProductBase): name: str (required), description: str|null = null, price: float (required), category_id: int (required), icon: str = '🍗', image_url: str|null = null, is_featured: bool = false.",
+      "response": "ProductResponse: id, name, description, price, category_id, icon, image_url, is_featured, is_available, created_at, category (nested CategoryResponse|null).",
+      "notes": "Router path '' (collection root). Depends(require_admin). is_available is not in the create payload (server-set). Delegates to product_service.create_product."
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/products/{product_id}",
+      "auth": "admin",
+      "request": "Path: product_id: int. Body ProductUpdate (all optional/partial): name: str|null, description: str|null, price: float|null, category_id: int|null, icon: str|null, image_url: str|null, is_available: bool|null, is_featured: bool|null.",
+      "response": "ProductResponse: id, name, description, price, category_id, icon, image_url, is_featured, is_available, created_at, category|null.",
+      "notes": "Depends(require_admin). Partial update. Note ProductUpdate exposes is_available (toggle availability), which ProductCreate does not. Delegates to product_service.update_product."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/products/{product_id}",
+      "auth": "admin",
+      "request": "Path: product_id: int. No body.",
+      "response": "ProductResponse (the deactivated product): same fields; is_available now false.",
+      "notes": "Soft delete (deactivate). Depends(require_admin). Returns the product object, not 204. Delegates to product_service.delete_product."
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/orders/calculate-fee",
+      "auth": "public",
+      "request": "Body CalculateFeeRequest (inline pydantic model in router): latitude: float|null = null, longitude: float|null = null, address: str|null = null.",
+      "response": "Raw dict from pricing_service.calculate_delivery_fee (NOT a declared response_model). When coords resolved: {fee: float, distance_km: float, base: float, per_km: float, min: float, max: float, raw_fee: float, restaurant: {name: str, latitude: float, longitude: float}, note: str}. When coords NOT resolvable: {fee: float (DEFAULT_DELIVERY_FEE), distance_km: null, base, per_km, min, max, restaurant: {...}, note: str}.",
+      "notes": "Public preview of delivery fee. Resolves coordinates from explicit lat/lon, OR by extracting embedded coords from the address string. Fee = base + per_km * haversine_km(restaurant, dest), clamped to [min, max]. Restaurant origin from settings (RESTAURANT_LATITUDE/LONGITUDE)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/orders",
+      "auth": "any-auth",
+      "request": "Body OrderCreate: items: list[OrderItemCreate] (required, must be non-empty; each item {product_id: int, quantity: int = 1}), delivery_address: str (required), payment_method: str = 'efectivo' (must be one of efectivo|yape|tarjeta), notes: str|null = null, coupon_code: str|null = null.",
+      "response": "OrderResponse (see GET /orders/{id} for full field list).",
+      "notes": "Auth: Depends(get_current_user) — any authenticated user; created order's customer_id = current user. Router path '' (collection root). CART->ORDER FLOW (order_service.create_order): (1) reject empty items; (2) validate payment_method against PaymentMethod enum; (3) for each item load Product, 404 if missing, 400 if not is_available, snapshot product_name+unit_price, subtotal += price*qty; (4) delivery_fee = calculate_delivery_fee(address=delivery_address)['fee'] — coords extracted from the address string; (5) tax = round(subtotal * settings.TAX_RATE, 2); (6) optional coupon: lookup by code.upper(), must be is_active, not expired, not exhausted (current_uses < max_uses), subtotal >= min_order_amount, else ignored; discount = percent or fixed amount; (7) total = max(0, subtotal + delivery_fee + tax - discount); (8) order created with status=PENDING, order_number = '#' + (1000 + nextId); (9) initial OrderTimeline 'Pedido Confirmado'; (10) if coupon applied: CouponUsage row + increment current_uses + timeline 'Cupón aplicado'; (11) AUTO-ASSIGN driver via delivery_service.pick_next_driver_round_robin — if a driver is found, sets delivery_driver_id, adds 'Repartidor Asignado' timeline, marks driver assigned. NOTE: discount is applied to total but is NOT a field on OrderResponse."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/orders",
+      "auth": "any-auth",
+      "request": "Query params: status: str|null = null (filter by exact OrderStatus value), skip: int = 0 (ge=0), limit: int = 50 (ge=1, le=100). Router path '' (collection root).",
+      "response": "OrderListResponse: orders: list[OrderResponse], total: int.",
+      "notes": "ROLE-SCOPED RESULTS (order_service.get_orders): role 'customer' => only own orders (customer_id == user.id); role 'delivery_driver' => only orders assigned to them (delivery_driver_id == user.id); admin => all orders (no filter). Optional status filter applied on top. total = filtered count before pagination. Ordered by created_at DESC, then offset/limit."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/orders/{order_id}",
+      "auth": "any-auth",
+      "request": "Path: order_id: int. No body.",
+      "response": "OrderResponse: id: int, order_number: str, customer_id: int, delivery_driver_id: int|null, status: str (OrderStatus value), subtotal: float, delivery_fee: float, tax: float, total: float, payment_method: str, delivery_address: str (may carry embedded '(lat, lon)' suffix), notes: str|null, created_at: datetime, updated_at: datetime, items: list[OrderItemResponse] (each {id, product_id, product_name, quantity, unit_price, subtotal}), timeline: list[OrderTimelineResponse] (each {id, status: str, title: str, description: str|null, timestamp: datetime}), customer_name: str|null, customer_phone: str|null, driver_name: str|null, driver_phone: str|null.",
+      "notes": "Auth: get_current_user. Ownership enforced in service: customer must own (order.customer_id == user.id) else 403; delivery_driver must be assigned (order.delivery_driver_id == user.id) else 403; admin unrestricted. 404 if order missing."
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/orders/{order_id}/status",
+      "auth": "admin-or-driver",
+      "request": "Path: order_id: int. Body OrderStatusUpdate: status: str (new OrderStatus value).",
+      "response": "OrderResponse (full order with updated status and a new timeline entry).",
+      "notes": "Auth: Depends(require_admin_or_driver) = RoleChecker(['admin','delivery_driver']). STATUS TRANSITION ENDPOINT. Two-layer validation in order_service.update_order_status: (A) ROLE-ALLOWED TARGETS — admin may set {accepted, preparing, ready, canceled}; delivery_driver may set {on_the_way, delivered}; else 403. (B) driver must be the assigned driver (order.delivery_driver_id == user.id) else 403. (C) VALID_STATUS_TRANSITIONS graph from current status: pending->[accepted,canceled]; accepted->[preparing,canceled]; preparing->[ready,canceled]; ready->[on_the_way]; on_the_way->[delivered]; delivered->[]; canceled->[]. Invalid target => 400. Adds OrderTimeline with Spanish label. Invalid status string => 400."
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/orders/{order_id}/cancel",
+      "auth": "any-auth",
+      "request": "Path: order_id: int. No body.",
+      "response": "OrderResponse (status now 'canceled', with 'Pedido Cancelado' timeline entry).",
+      "notes": "Auth: get_current_user (customer or admin per docstring). order_service.cancel_order: if role 'customer' must own the order (else 403); only orders in {pending, accepted, preparing} are cancelable (else 400 'Solo se pueden cancelar pedidos pendientes, aceptados o en preparación'). Sets status=CANCELED, adds timeline 'Cancelado por {full_name}'. NOTE: this is a separate cancel path from the /status endpoint and is NOT gated by require_admin_or_driver (customers can cancel their own)."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/orders/{order_id}/tracking",
+      "auth": "any-auth",
+      "request": "Path: order_id: int. No body.",
+      "response": "Raw dict (no response_model): order_id: int, order_number: str, status: str, driver_id: int|null, driver_name: str|null, driver_phone: str|null, driver_latitude: float|null, driver_longitude: float|null, driver_zone: str|null, driver_vehicle_type: str|null (enum .value), driver_updated_at: str|null (ISO timestamp of profile.last_location_update), delivery_address: str (raw stored address, may include embedded '(lat, lon)'), is_active: bool (true unless status in {delivered, canceled}).",
+      "notes": "Live driver location for an active order. Permissions inline in router: 404 if missing; customer must own (order.customer_id == user.id) else 403; delivery_driver must be assigned (order.delivery_driver_id == user.id) else 403; admin unrestricted. Driver coords pulled from DeliveryProfile (latitude/longitude/current_zone/vehicle_type/last_location_update) for order.delivery_driver_id."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/orders/{order_id}/invoice",
+      "auth": "any-auth",
+      "request": "Path: order_id: int. No body.",
+      "response": "StreamingResponse — application/pdf binary; Content-Disposition: attachment; filename='factura-{order_number without #}.pdf'. Not JSON.",
+      "notes": "Auth: get_current_user. 404 if order missing. Access: non-admin must own the order (order.customer_id == user.id) else 403; admin may download any. PDF generated by invoice_service.generate_invoice_pdf(order)."
+    }
+  ],
+  "notes": [
+    "API prefix: API_PREFIX = '/api/v1' (backend/app/main.py:80). Products router prefix='/products' tags=['Productos']; Orders router prefix='/orders' tags=['Pedidos']. Full paths = /api/v1 + router prefix + route path. Routes with empty path '' resolve to the collection root (e.g. POST /api/v1/orders).",
+    "Auth dependencies (backend/app/core/dependencies.py): get_current_user = any authenticated active user (validates JWT 'sub', loads User, rejects inactive); RoleChecker(allowed_roles) raises 403 ForbiddenException if user.role not in list. Shortcuts: require_admin=['admin'], require_customer=['customer'], require_driver=['delivery_driver'], require_admin_or_driver=['admin','delivery_driver']. Roles in this codebase: 'admin', 'customer', 'delivery_driver'.",
+    "ORDER STATUS LIFECYCLE (backend/app/models/order.py): OrderStatus enum values = pending, accepted, preparing, ready, on_the_way, delivered, canceled. Happy path: pending -> accepted -> preparing -> ready -> on_the_way -> delivered. VALID_STATUS_TRANSITIONS: pending->[accepted,canceled]; accepted->[preparing,canceled]; preparing->[ready,canceled]; ready->[on_the_way]; on_the_way->[delivered]; delivered->[] (terminal); canceled->[] (terminal). Note: once ready or on_the_way, the transition graph no longer permits 'canceled' via the /status endpoint.",
+    "ROLE OWNERSHIP OF STATUS: admin drives pending..ready (can set accepted, preparing, ready, canceled); delivery_driver drives the last leg (on_the_way, delivered) and must be the assigned driver. These role-allowed target sets (ALLOWED_TARGET_BY_ROLE in order_service.py) are enforced IN ADDITION TO the transition graph.",
+    "ORDER NUMBER format: '#' + (1000 + nextOrderId), e.g. '#1001' (order_service._gen_order_number).",
+    "PaymentMethod enum: efectivo (default), yape, tarjeta. payment_method validated against this enum on create.",
+    "PRICING: subtotal = sum(product.price * quantity) over items; tax = round(subtotal * settings.TAX_RATE, 2); delivery_fee computed from delivery_address coords; total = round(max(0, subtotal + delivery_fee + tax - discount), 2). Coupon discount is applied to total but discount is NOT exposed as a field on OrderResponse (only reflected in total + a timeline entry).",
+    "DELIVERY_ADDRESS COORDINATE EMBEDDING (backend/app/services/pricing_service.py): delivery_address is a single free-text string (Order.delivery_address is a TEXT column) with coordinates embedded as a suffix in the form 'texto — (lat, lon)'. Regex _COORDS_RE = r'\\((-?\\d+\\.\\d+),\\s*(-?\\d+\\.\\d+)\\)' extracts (latitude, longitude). On order create, delivery_fee is computed via calculate_delivery_fee(address=delivery_address) which calls extract_coords(address); if no coords parse, settings.DEFAULT_DELIVERY_FEE is used. Fee formula: base + per_km * haversine_km(restaurant_lat/lon, dest_lat/lon), clamped to [DELIVERY_FEE_MIN, DELIVERY_FEE_MAX]. There is NO separate latitude/longitude column on Order — coordinates live only inside the address string. (The /calculate-fee preview endpoint additionally accepts explicit latitude/longitude in its body.)",
+    "FILTERING/PAGINATION: GET /products: skip(>=0,default 0), limit(1..500,default 100), category_id, search, featured(bool), include_inactive(bool). GET /products/categories: include_inactive(bool). GET /orders: status(str), skip(>=0,default 0), limit(1..100,default 50). All list responses return {items..., total:int} where total is the pre-pagination filtered count. Orders are returned newest-first (created_at DESC).",
+    "CART->ORDER: there is no persistent server-side cart entity; the client posts the cart contents as OrderCreate.items (list of {product_id, quantity}). The server re-fetches each Product live to snapshot name+unit_price and to enforce availability, so pricing is authoritative server-side, not trusted from the client.",
+    "AUTO-ASSIGNMENT: on order creation a driver is auto-assigned round-robin via delivery_service.pick_next_driver_round_robin(db); if found, order.delivery_driver_id is set and a 'Repartidor Asignado' timeline entry is added. May be null if no driver available.",
+    "RESPONSE MODEL CAVEAT: /orders/calculate-fee, /orders/{id}/tracking return raw dicts (no FastAPI response_model, so not schema-validated/filtered); /orders/{id}/invoice returns a StreamingResponse (PDF). All other endpoints use declared Pydantic response_models. OrderResponse expands customer_name/customer_phone/driver_name/driver_phone from relationships (built in order_service._to_response).",
+    "Files documented: backend/app/routers/products.py, backend/app/routers/orders.py, backend/app/schemas/product.py, backend/app/schemas/order.py. Supporting sources read for accuracy: backend/app/main.py (prefix+mounting), backend/app/core/dependencies.py (roles), backend/app/models/order.py (status/payment enums + transition map), backend/app/services/order_service.py (creation/lifecycle/cancel logic), backend/app/services/pricing_service.py (coordinate embedding + fee calc)."
+  ]
+}

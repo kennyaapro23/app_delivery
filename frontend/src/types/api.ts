@@ -106,14 +106,11 @@ export interface OrderListResponse {
   total: number;
 }
 
-export interface Address {
-  id: number;
-  user_id: number;
-  label: string;
-  street: string;
-  reference?: string | null;
-  is_default: boolean;
-}
+// NOTA: el tipo `Address` vive en `@/services/addresses` y refleja el contrato
+// real del backend (full_address, district, city, latitude, longitude,
+// created_at). Antes existía aquí un `Address` duplicado e incompatible (con
+// `street`) que no usaba nadie; se eliminó para evitar campos undefined
+// silenciosos y choques de importación. Importa Address desde @/services/addresses.
 
 export interface CartItem {
   product: Product;

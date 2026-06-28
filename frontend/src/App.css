@@ -1,1 +1,2 @@
-/* Tailwind handles all styles via index.css */
+/* El sistema de diseño vive en index.css (Tailwind + @layer components).
+   App.css se mantiene vacío a propósito para no entrar en conflicto. */

@@ -1,0 +1,74 @@
+{
+  "models": [
+    "User (table 'users'): id:int PK; email:str(255) unique not-null; hashed_password:str(255) not-null; full_name:str(255) not-null; phone:str(20) nullable; role:Enum UserRole(admin|customer|delivery_driver) not-null default=CUSTOMER; is_active:bool default=True; points:int default=0; membership_level:Enum MembershipLevel(BRONCE|PLATA|ORO|PLATINO) default=BRONCE; created_at:datetime; updated_at:datetime. Relationships: orders (Order.customer_id), delivery_orders (Order.delivery_driver_id), delivery_profile (1:1 DeliveryProfile), addresses (1:N Address), reviews (Review.customer_id). File: backend/app/models/user.py",
+    "Category (table 'categories'): id:int PK; name:str(100) not-null unique; description:str(255) nullable; icon:str(10) default='🍗'; is_active:bool default=True; display_order:int default=0; created_at:datetime. Relationship: products (1:N Product). File: backend/app/models/product.py",
+    "Product (table 'products'): id:int PK; name:str(200) not-null; description:Text nullable; price:float not-null; category_id:int FK->categories.id not-null; icon:str(10) default='🍗'; image_url:str(500) nullable; is_available:bool default=True; is_featured:bool default=False; created_at:datetime; updated_at:datetime. Relationships: category (N:1 Category), order_items (1:N OrderItem). File: backend/app/models/product.py",
+    "Order (table 'orders'): id:int PK; order_number:str(20) unique not-null indexed; customer_id:int FK->users.id not-null; delivery_driver_id:int FK->users.id nullable; status:Enum OrderStatus default=PENDING not-null; subtotal:float not-null default=0.0; delivery_fee:float not-null default=5.0; tax:float not-null default=0.0; total:float not-null default=0.0; payment_method:Enum PaymentMethod(efectivo|yape|tarjeta) not-null default=EFECTIVO; delivery_address:Text not-null; notes:Text nullable; created_at:datetime; updated_at:datetime. Relationships: customer (N:1 User via customer_id), delivery_driver (N:1 User via delivery_driver_id), items (1:N OrderItem, cascade all/delete-orphan), timeline (1:N OrderTimeline, cascade, ordered by timestamp), review (1:1 Review). File: backend/app/models/order.py",
+    "OrderItem (table 'order_items'): id:int PK; order_id:int FK->orders.id (ondelete CASCADE) not-null; product_id:int FK->products.id not-null; product_name:str(200) not-null (name snapshot); quantity:int not-null default=1; unit_price:float not-null; subtotal:float not-null. Relationships: order (N:1 Order), product (N:1 Product). File: backend/app/models/order.py",
+    "OrderTimeline (table 'order_timeline'): id:int PK; order_id:int FK->orders.id (ondelete CASCADE) not-null; status:str(50) not-null; title:str(100) not-null; description:str(255) nullable; timestamp:datetime. Relationship: order (N:1 Order). File: backend/app/models/order.py",
+    "DeliveryProfile (table 'delivery_profiles'): id:int PK; user_id:int FK->users.id unique not-null; document_id:str(20) nullable; birth_date:str(10) nullable; gender:str(20) nullable; home_address:str(255); home_district:str(100); emergency_contact_name/phone/relation:str nullable; vehicle_type:Enum VehicleType(moto|bicicleta|auto) nullable; vehicle_brand/model/color/plate, license_number/expiry, insurance_number/expiry:str nullable; vehicle_year:int nullable; bank_name/account_type/account/cci/account_holder:str nullable; is_available:bool default=False; latitude:float; longitude:float; current_zone:str(100); last_location_update:datetime; total_deliveries:int default=0; average_rating:float default=0.0; total_earnings:float default=0.0; last_assigned_at:datetime indexed (round-robin); created_at; updated_at. Relationships: user (1:1 User), earnings (1:N DeliveryEarning). File: backend/app/models/delivery.py",
+    "DeliveryEarning (table 'delivery_earnings'): id:int PK; driver_profile_id:int FK->delivery_profiles.id not-null; order_id:int FK->orders.id not-null; amount:float not-null; earned_at:datetime. Relationships: driver_profile (N:1 DeliveryProfile), order (N:1 Order). File: backend/app/models/delivery.py",
+    "Address (table 'addresses'): id:int PK; user_id:int FK->users.id not-null; label:str(50) not-null default='Casa'; full_address:str(500) not-null; reference:str(255) nullable; district:str(100) nullable; city:str(100) nullable; latitude:float nullable; longitude:float nullable; is_default:bool default=False; created_at:datetime. Relationship: user (N:1 User). File: backend/app/models/address.py",
+    "Review (table 'reviews'): id:int PK; order_id:int FK->orders.id unique not-null; customer_id:int FK->users.id not-null; driver_id:int FK->users.id nullable; rating:float not-null (1.0-5.0); comment:Text nullable; created_at:datetime. Relationships: order (1:1 Order), customer (N:1 User via customer_id). File: backend/app/models/review.py",
+    "Coupon (table 'coupons'): id:int PK; code:str(50) unique not-null indexed; description:str(255) nullable; discount_percent:float nullable (e.g. 10.0=10%); discount_amount:float nullable (e.g. 5.0=S/5); min_order_amount:float default=0.0; max_uses:int default=1; current_uses:int default=0; is_active:bool default=True; expires_at:datetime nullable; created_at:datetime. Relationship: usages (1:N CouponUsage). File: backend/app/models/coupon.py",
+    "CouponUsage (table 'coupon_usages'): id:int PK; coupon_id:int FK->coupons.id not-null; user_id:int FK->users.id not-null; order_id:int FK->orders.id nullable; used_at:datetime. Relationship: coupon (N:1 Coupon). File: backend/app/models/coupon.py",
+    "Enums: UserRole=admin|customer|delivery_driver; MembershipLevel=BRONCE|PLATA|ORO|PLATINO; OrderStatus=pending|accepted|preparing|ready|on_the_way|delivered|canceled; PaymentMethod=efectivo|yape|tarjeta; VehicleType=moto|bicicleta|auto"
+  ],
+  "order_lifecycle": [
+    "Status enum values (OrderStatus): pending, accepted, preparing, ready, on_the_way, delivered, canceled. Spanish labels: pending=Pendiente, accepted=Aceptado, preparing=En Preparacion, ready=Listo para Entrega, on_the_way=En Ruta, delivered=Entregado, canceled=Cancelado.",
+    "VALID_STATUS_TRANSITIONS (backend/app/models/order.py): pending -> {accepted, canceled}; accepted -> {preparing, canceled}; preparing -> {ready, canceled}; ready -> {on_the_way}; on_the_way -> {delivered}; delivered -> {} (terminal); canceled -> {} (terminal). Note ready and on_the_way can NOT be canceled via this transition map.",
+    "Order creation (order_service.create_order): new orders start at status=pending; a timeline entry 'Pedido Confirmado' is added; an available driver is auto-assigned via round-robin (delivery_driver_id set, 'Repartidor Asignado' timeline entry, driver.last_assigned_at updated).",
+    "Role-based transition permissions (order_service.ALLOWED_TARGET_BY_ROLE) enforced in update_order_status: admin may set targets {accepted, preparing, ready, canceled}; delivery_driver may set targets {on_the_way, delivered}. Customer is NOT in this map, so customer cannot use update_order_status at all. A delivery_driver must also be the assigned driver (order.delivery_driver_id == user.id) or gets ForbiddenException. Both the role-allowed set AND the VALID_STATUS_TRANSITIONS check must pass.",
+    "Effective ownership: admin drives the order pending->accepted->preparing->ready (and can cancel from pending/accepted/preparing). Driver drives ready->on_the_way->delivered.",
+    "Driver self-service path (delivery_service.accept_order): driver can accept an unassigned order whose status is in {pending, accepted, preparing, ready}; if status==pending it is bumped to accepted; sets delivery_driver_id, adds 'Repartidor Asignado' timeline, updates last_assigned_at. Rejects if order already has a driver.",
+    "Driver completion (delivery_service.complete_delivery): requires order.status==on_the_way and caller is the assigned driver; sets status=delivered, adds 'Entregado' timeline, and records a DeliveryEarning (see earnings rule).",
+    "Cancellation (order_service.cancel_order): allowed only when current status in {pending, accepted, preparing}. A customer may cancel only their own order (customer_id == user.id); other roles (admin) may cancel any. Sets status=canceled and adds 'Pedido Cancelado' timeline entry (Cancelado por <full_name>).",
+    "get_nearby_orders (driver feed): returns orders with status in {pending, ready} AND delivery_driver_id IS NULL, oldest first."
+  ],
+  "pricing_logic": "Delivery fee (pricing_service.calculate_delivery_fee, constants in backend/app/config.py): distance via Haversine from restaurant (RESTAURANT_LATITUDE=-12.0464, RESTAURANT_LONGITUDE=-77.0428, name 'Chikenhot Lima Centro') to destination. Destination coords come from explicit lat/lon OR are parsed from the delivery_address string via regex '(lat, lon)' suffix. raw_fee = DELIVERY_FEE_BASE + DELIVERY_FEE_PER_KM * distance_km = 3.00 + 1.50 * km. fee = round(clamp(raw_fee, DELIVERY_FEE_MIN=5.00, DELIVERY_FEE_MAX=25.00), 2). If coords cannot be determined, fee = DEFAULT_DELIVERY_FEE = 5.00 (also the Order.delivery_fee column default). Tax: tax = round(subtotal * TAX_RATE, 2) where TAX_RATE = 0.18 (IGV 18%); computed on subtotal only, NOT on delivery_fee. Subtotal = sum(product.price * quantity) over items, stored rounded to 2 decimals. Coupon discount (see business rules) is applied AFTER. Total (order_service.create_order) = round(max(0.0, subtotal + delivery_fee + tax - discount), 2). Invoice PDF (invoice_service) prints lines: Subtotal, Delivery, 'IGV (18%)' = order.tax, TOTAL = order.total; the invoice does NOT display the coupon discount line.",
+  "seed_credentials": [
+    {
+      "email": "admin@chikenhot.pe",
+      "password": "admin123",
+      "role": "admin"
+    },
+    {
+      "email": "cliente@chikenhot.pe",
+      "password": "cliente123",
+      "role": "customer"
+    },
+    {
+      "email": "delivery@chikenhot.pe",
+      "password": "delivery123",
+      "role": "delivery_driver"
+    },
+    {
+      "email": "luis@chikenhot.pe",
+      "password": "delivery123",
+      "role": "delivery_driver"
+    },
+    {
+      "email": "juan.p@chikenhot.pe",
+      "password": "delivery123",
+      "role": "delivery_driver"
+    },
+    {
+      "email": "carlos@chikenhot.pe",
+      "password": "delivery123",
+      "role": "delivery_driver"
+    }
+  ],
+  "business_rules": [
+    "Seed passwords (plaintext, hashed via app.core.security.hash_password at seed time): admin123 (admin@chikenhot.pe), cliente123 (cliente@chikenhot.pe), and delivery123 for ALL FOUR drivers (delivery@, luis@, juan.p@, carlos@chikenhot.pe). Seed is skipped entirely if the users table is non-empty.",
+    "Points/membership: User.points (default 0) and User.membership_level (default BRONCE; enum BRONCE|PLATA|ORO|PLATINO). Seeded customer 'cliente@chikenhot.pe' has points=450 and membership_level=PLATA. IMPORTANT: no service code anywhere mutates points or membership_level on orders/deliveries; they are static seed values, only READ (displayed by dashboard_service and user schema). There is no points-accrual or auto-upgrade logic.",
+    "Coupon discount (order_service.create_order): coupon matched case-insensitively (code.upper()). Applied only if coupon.is_active AND not expired (expires_at >= now) AND not exhausted (current_uses < max_uses) AND subtotal >= min_order_amount. Discount = subtotal * (discount_percent/100) if discount_percent set, ELSE flat discount_amount (percent takes precedence; rounded to 2 decimals). Discount is subtracted from total (total floored at 0). On success a CouponUsage row is inserted (coupon_id,user_id,order_id), coupon.current_uses incremented, and a 'Cupon aplicado' timeline entry added. There is NO per-user usage limit check (a user can reuse the same coupon until global max_uses is hit).",
+    "Seeded coupons: BIENVENIDO = 10% off, min_order 30.0, max_uses 100; POLLO5 = S/5 off, min_order 25.0, max_uses 50; DELIVERY0 = S/5 off (implemented as flat discount_amount, NOT actual free delivery), min_order 50.0, max_uses 30. All active, no expiry.",
+    "Driver auto-assignment / round-robin (delivery_service.pick_next_driver_round_robin): picks DeliveryProfile with is_available==True ordered by last_assigned_at NULLs-first then oldest ascending; mark_driver_assigned sets last_assigned_at=now. Called automatically on order creation. toggle_availability flips is_available.",
+    "Driver earnings (delivery_service.complete_delivery): on delivery completion a DeliveryEarning is created with amount = order.delivery_fee (the FULL delivery fee, no platform commission/split). profile.total_deliveries += 1 and profile.total_earnings += order.delivery_fee. Earnings summary aggregates DeliveryEarning.amount by today/week (week starts Monday)/month and reports profile.total_earnings as lifetime total.",
+    "get_driver_stats has hardcoded demo values: deliveries_today = today_count + 4 ('includes active deliveries'), average_rating falls back to 4.8, and punctuality=95.0, satisfaction=92.0, efficiency=88.0 are constants.",
+    "Invoice generation (invoice_service.generate_invoice_pdf): builds a ReportLab A4 PDF. Issuer hardcoded EMISOR = CHIKENHOT S.A.C., RUC 20512345678, Av. Larco 123 Miraflores Lima, +51 (01) 555-1234, facturacion@chikenhot.pe. Invoice number formatted as F001-<order_number without '#'>. Shows client (name/email/phone), order meta, items table, and totals (Subtotal, Delivery, IGV 18%, TOTAL). Module docstring says 'for delivered orders' but the function itself does not enforce status.",
+    "Auth (auth_service): authenticate_user verifies password and requires is_active; register_user validates role against UserRole; register_driver creates a User(role=delivery_driver)+DeliveryProfile(is_available=False); JWT access+refresh tokens carry {sub:user_id, role}; refresh requires token type=='refresh'.",
+    "OrderItem stores product_name and unit_price as snapshots at order time, so later product price/name changes do not alter historical orders. Order creation rejects items whose product is_available is False.",
+    "Order.delivery_address is free-text; pricing relies on an embedded '(lat, lon)' suffix to compute distance, otherwise falls back to flat S/5 fee."
+  ]
+}

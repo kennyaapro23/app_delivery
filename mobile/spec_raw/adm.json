@@ -1,0 +1,199 @@
+{
+  "screens": [
+    {
+      "name": "Admin Dashboard",
+      "route": "/admin (index)",
+      "role": "admin",
+      "purpose": "Landing panel for admins showing today's key operational KPIs at a glance (orders, revenue, pending work, users, drivers).",
+      "features": [
+        "Read-only stat-card grid; no CRUD, no filters, no charts",
+        "StatCard 'Pedidos hoy' = orders_today with trend % (orders_change_percent)",
+        "StatCard 'Ingresos hoy' = revenue_today (currency, success tone) with trend % (revenue_change_percent)",
+        "StatCard 'Pedidos pendientes' = pending_orders (warning tone)",
+        "StatCard 'Usuarios activos' = active_users",
+        "StatCard 'Repartidores' = total_drivers with hint '<available_drivers> disponibles ahora'",
+        "StatCard 'Disponibles ahora' = available_drivers (success tone)",
+        "Trend % on first two cards are the only comparison indicators",
+        "Loading spinner and red error-banner states"
+      ],
+      "api_calls": [
+        "GET /dashboard/admin -> AdminDashboard {orders_today, orders_change_percent, revenue_today, revenue_change_percent, active_users, total_drivers, available_drivers, pending_orders} (getAdminDashboard, fired once on mount)"
+      ],
+      "ui_notes": "Grid 1/2/4 columns responsive. Uses shared StatCard component (label, value, lucide icon, optional tone success|warning, optional trend %, optional hint). Title 'Dashboard'. Centered Loader2 spinner while loading; on error/null data renders only a red error box. No refresh button, no auto-poll."
+    },
+    {
+      "name": "Admin Orders (list)",
+      "route": "/admin/orders",
+      "role": "admin",
+      "purpose": "Global list of ALL orders across customers with status filtering and a drill-in link to each order's detail.",
+      "features": [
+        "Status filter pill row: Todos, Pendiente, Aceptado, En preparacion, Listo, En ruta, Entregado, Cancelado (8 options from STATUS_LABELS)",
+        "Selecting a filter re-fetches the list",
+        "Manual 'Refrescar' button re-runs the load",
+        "Table columns: Pedido (order_number mono), Cliente (customer_name + customer_phone), Estado (OrderStatusBadge), Total (formatCurrency), Fecha (formatDate)",
+        "'Ver >' link per row navigates to detail",
+        "Read + navigate only; no create/edit/delete here",
+        "Empty state 'No hay pedidos', loading spinner, red error banner"
+      ],
+      "api_calls": [
+        "GET /orders?status=<status> (omits status when filter = all) -> OrderListResponse {orders, total} (listAllOrders; re-fetched on filter change and on Refrescar)"
+      ],
+      "ui_notes": "Active filter pill is brand-500 filled; row hover highlight. Each 'Ver' navigates to /admin/orders/:id. Endpoint is plain /orders — admin sees all via backend role scoping, not a separate admin route."
+    },
+    {
+      "name": "Admin Order Detail",
+      "route": "/admin/orders/:id",
+      "role": "admin",
+      "purpose": "Full detail of a single order with live driver tracking, line items, status timeline, customer/payment summary, and admin-driven status transitions.",
+      "features": [
+        "Admin status transitions limited to up-to-'ready' plus cancel, via NEXT_STATUSES_ADMIN (pending->accepted/canceled, accepted->preparing/canceled, preparing->ready/canceled; ready/on_the_way/delivered/canceled have no admin actions)",
+        "Transition buttons render per allowed next status; 'canceled' styled btn-danger, others btn-primary",
+        "When ready/on_the_way, an info blue box states the driver now owns the flow",
+        "NO manual driver-to-order assignment UI — drivers self-accept via the delivery module; this screen only displays driver_name if set",
+        "Live tracking map (LiveOrderMap, 10s refresh, in ErrorBoundary) shown only while order active (not delivered/canceled)",
+        "Productos section: line items qty x name, unit_price, subtotal",
+        "Seguimiento timeline: events with title/description/timestamp",
+        "Cliente card: name, phone, delivery_address, driver_name (if assigned), payment_method",
+        "Resumen: subtotal, delivery_fee, IGV/tax, total",
+        "Manual refresh icon button; auto-poll every 15s while order active; aliveRef guards stale responses",
+        "Loading spinner and error states"
+      ],
+      "api_calls": [
+        "GET /orders/:id -> Order (getOrder; on mount, on manual refresh, and on 15s poll while active)",
+        "PATCH /orders/:id/status {status} -> Order (updateOrderStatus when admin clicks a transition button)",
+        "LiveOrderMap component issues its own polling requests for driver location (10s)"
+      ],
+      "ui_notes": "3-col layout (2/3 main + 1/3 aside). Back link to /admin/orders. Header shows order_number, created_at, OrderStatusBadge, refresh button. Driver name appears in Cliente card only if order.driver_name is set. No way to (re)assign a driver from this screen."
+    },
+    {
+      "name": "Admin Products / Catalog",
+      "route": "/admin/products",
+      "role": "admin",
+      "purpose": "Full CRUD management of the product catalog and its categories via a two-tab interface with modal forms.",
+      "features": [
+        "Two tabs: 'Productos (<count>)' and 'Categorias (<count>)'",
+        "Products table: icon, name + Destacado badge, category name, price, Activo/Inactivo status, actions",
+        "Create 'Nuevo producto' and Edit open a modal (name, price, icon emoji, category select [active only], description, image_url, is_featured, is_available)",
+        "Inline Power button toggles product is_available",
+        "Categories card grid: icon, name, product count, display_order, description, Inactiva badge",
+        "Create 'Nueva categoria' and Edit open a modal (name, icon, display_order, description, is_active)",
+        "Trash button soft-deletes/deactivates a category via confirm() that warns how many products will also deactivate; disabled when already inactive",
+        "No status filters or stat cards",
+        "Loading spinner and red error banner"
+      ],
+      "api_calls": [
+        "GET /products?include_inactive=true&limit=500 -> {products,total} (listProductsAdmin)",
+        "GET /products/categories?include_inactive=true -> Category[] (listCategoriesAdmin) — both via Promise.all on mount and after every mutation",
+        "POST /products (createProduct)",
+        "PUT /products/:id (updateProduct; also used by is_available toggle)",
+        "POST /products/categories (createCategory)",
+        "PUT /products/categories/:id (updateCategory)",
+        "DELETE /products/categories/:id (deleteCategory — soft deactivate)"
+      ],
+      "ui_notes": "Tab toggle is a segmented control (brand-500 active). Modals are fixed overlays with form submit; saving disables submit + shows spinner. Inactive products/categories at opacity-60. Price is S/ (PEN). Category 'delete' is really a deactivate; product hard-delete (deactivateProduct service exists) is not wired — only the Power toggle is."
+    },
+    {
+      "name": "Admin Users",
+      "route": "/admin/users",
+      "role": "admin",
+      "purpose": "Manage all platform users (customers, drivers, admins): view, search/filter, and activate/deactivate accounts.",
+      "features": [
+        "6 stat cards from /users/stats: Total, Activos (success), Clientes, Repartidores, Admins, Nuevos (semana, warning)",
+        "Free-text search input (name or email)",
+        "Role <select> filter: Todos / Clientes / Repartidores / Admins",
+        "Both filters re-fetch (effect keyed on role+search; limit 100)",
+        "Table columns: Usuario (full_name + email), Rol (colored badge), Estado (Activo/Inactivo badge), Registro (created_at), action",
+        "Activate/deactivate toggle via confirm() then PUT",
+        "No create/edit forms — only activation toggle (not full CRUD)",
+        "Loading spinner, red error banner"
+      ],
+      "api_calls": [
+        "GET /users?role=<role>&search=<q>&limit=100 -> {users,total} (listUsers; re-fetched on role/search change)",
+        "GET /users/stats -> UserStats {total_users, active_users, customers, drivers, admins, new_this_week} (getUserStats; once on mount, failures swallowed)",
+        "PUT /users/:id {is_active} -> User (setUserActive on toggle)"
+      ],
+      "ui_notes": "Search input has Search icon; role select narrows on sm+. Role badges: admin purple, customer blue, delivery_driver orange. Inactive rows at opacity-60. Action icon is PowerOff (active->deactivate) or Power (inactive->activate). Search has no debounce — fires per keystroke."
+    },
+    {
+      "name": "Admin Drivers / Repartidores",
+      "route": "/admin/drivers",
+      "role": "admin",
+      "purpose": "View all delivery-driver profiles in list or map form, with a rich read-only detail modal (personal, emergency, vehicle, banking, location).",
+      "features": [
+        "Two view tabs: 'Lista' (card grid) and 'Mapa' (Leaflet map)",
+        "List cards: vehicle-type emoji, full_name, phone/email, Disponible/Offline badge, mini-stats (total_deliveries, average_rating with star, total_earnings), vehicle brand/model/plate",
+        "Clicking a card opens the detail modal",
+        "Map: react-leaflet MapContainer, custom markers green=available/gray=offline, only for drivers reporting lat/long; popups with name/phone + 'Ver detalle'; TileStyleSwitcher; empty state when no driver has location",
+        "Detail modal (read-only): header (name, email, availability), 3 KPIs (Entregas, Rating, Ganado)",
+        "Modal sections: Datos personales, Contacto de emergencia, Vehiculo (type/brand/model/year/color/plate/license/insurance), Informacion bancaria (bank/account type/account/CCI/holder), Ultima ubicacion (zone, coords) when present",
+        "No CRUD, no driver-to-order assignment, no filters/search — view + inspect only",
+        "Loading spinner, red error banner, empty state"
+      ],
+      "api_calls": [
+        "GET /delivery/drivers -> DriverProfile[] (listAllDrivers; once on mount). No write calls from this screen."
+      ],
+      "ui_notes": "Default map center Lima (-12.0464,-77.0428) or first located driver. Vehicle emojis: moto, bicicleta, auto (fallback scooter). Modal closes on backdrop click (stopPropagation on inner). DetailRow renders em-dash for empty values. Only admin screen using Leaflet besides the order-detail live map."
+    },
+    {
+      "name": "Admin Coupons / Cupones",
+      "route": "/admin/coupons",
+      "role": "admin",
+      "purpose": "List discount coupons and create new ones.",
+      "features": [
+        "Card grid: code (mono), Activo/Inactivo badge, description, big discount ('<percent>%' or formatted S/ amount + ' off'), min_order_amount, usage 'current_uses / max_uses', expiry date if set",
+        "'Nuevo cupon' button opens a create modal",
+        "Modal form: code (uppercased on submit), description, % descuento OR S/ fijo (mutually exclusive — entering one clears the other), minimo de orden, usos maximos",
+        "Create only — no edit, delete, toggle, filters, or search on this screen",
+        "Loading spinner, empty state 'No hay cupones activos', red error banner"
+      ],
+      "api_calls": [
+        "GET /coupons -> Coupon[] (listCoupons; on mount and after create)",
+        "POST /coupons {code, description?, discount_percent?, discount_amount?, min_order_amount, max_uses} -> Coupon (createCoupon on form submit)"
+      ],
+      "ui_notes": "Discount type is exclusive in the form by clearing the sibling field. Code input forces uppercase and is .toUpperCase().trim() before POST. Defaults: min_order_amount '0', max_uses '100'. expires_at supported by API but not exposed in create form (display only)."
+    }
+  ],
+  "routing_notes": [
+    "COMPLETE ROUTE MAP (path -> component | guard | layout), from frontend/src/App.tsx:",
+    "--- CUSTOMER GROUP (wrapped in <Layout/>, the normal storefront header) ---",
+    "/ (index) -> CatalogPage | no guard | Layout",
+    "/products/:id -> ProductDetailPage | no guard | Layout",
+    "/cart -> CartPage | no guard | Layout",
+    "/favorites -> FavoritesPage | no guard | Layout",
+    "/checkout -> CheckoutPage | ProtectedRoute (token required) | Layout",
+    "/orders -> OrdersPage | ProtectedRoute | Layout",
+    "/orders/:id -> OrderDetailPage | ProtectedRoute | Layout",
+    "/profile -> ProfilePage | ProtectedRoute | Layout",
+    "/addresses -> AddressesPage | ProtectedRoute | Layout",
+    "/reviews -> ReviewsPage | ProtectedRoute | Layout",
+    "(ProtectedRoute only checks for a token, NOT a role — any logged-in user can reach these.)",
+    "--- ADMIN GROUP: parent route path='/admin' element=<RoleGuard allow={['admin']}/>, child wrapper element=<AdminLayout/> ---",
+    "/admin (index) -> AdminDashboardPage | RoleGuard allow=['admin'] | AdminLayout",
+    "/admin/orders -> AdminOrdersPage | RoleGuard ['admin'] | AdminLayout",
+    "/admin/orders/:id -> AdminOrderDetailPage | RoleGuard ['admin'] | AdminLayout",
+    "/admin/products -> AdminProductsPage | RoleGuard ['admin'] | AdminLayout",
+    "/admin/users -> AdminUsersPage | RoleGuard ['admin'] | AdminLayout",
+    "/admin/drivers -> AdminDriversPage | RoleGuard ['admin'] | AdminLayout",
+    "/admin/coupons -> AdminCouponsPage | RoleGuard ['admin'] | AdminLayout",
+    "--- DRIVER GROUP: parent path='/delivery' element=<RoleGuard allow={['delivery_driver']}/>, child wrapper element=<DriverLayout/> ---",
+    "/delivery (index) -> DriverDashboardPage | RoleGuard ['delivery_driver'] | DriverLayout",
+    "/delivery/available -> DriverAvailablePage | RoleGuard ['delivery_driver'] | DriverLayout",
+    "/delivery/map -> DriverMapPage | RoleGuard ['delivery_driver'] | DriverLayout",
+    "/delivery/my-orders -> DriverMyOrdersPage | RoleGuard ['delivery_driver'] | DriverLayout",
+    "/delivery/my-orders/:id -> DriverOrderDetailPage | RoleGuard ['delivery_driver'] | DriverLayout",
+    "/delivery/earnings -> DriverEarningsPage | RoleGuard ['delivery_driver'] | DriverLayout",
+    "/delivery/ratings -> DriverRatingsPage | RoleGuard ['delivery_driver'] | DriverLayout",
+    "--- AUTH (no layout) ---",
+    "/login -> LoginPage | no guard | none",
+    "/register -> RegisterPage | no guard | none",
+    "/register-driver -> DriverRegisterPage | no guard | none",
+    "--- CATCH-ALL ---",
+    "* -> <Navigate to='/' replace/> (any unknown path redirects to the catalog home).",
+    "ADMIN LAYOUT (frontend/src/components/AdminLayout.tsx): fixed left sidebar (brand 'Chikenhot / Admin') with NavLink items — Dashboard (/admin, end=true), Pedidos (/admin/orders), Productos (/admin/products), Usuarios (/admin/users), Repartidores (/admin/drivers), Cupones (/admin/coupons). Active link styled brand-50/brand-700. Bottom shows fullName (useAuthStore) + 'Cerrar sesion' button that calls logout() then navigate('/login'). Mobile: collapsible drawer toggled by a Menu button in a top header; backdrop closes it. Content via <Outlet/>. Sidebar nav does NOT list /admin/orders/:id (reached by drill-in only).",
+    "ROLE GUARD (frontend/src/components/RoleGuard.tsx): first waits for zustand-persist hydration (useAuthHydrated) showing a spinner to avoid a hard-reload race. Then: no token -> Navigate /login replace; token but no role (inconsistent session) -> Navigate /login replace; role present but NOT in allow[] -> Navigate to defaultHomeForRole(role) replace; else render <Outlet/>. So a logged-in driver/customer hitting /admin/* is bounced to THEIR home, not to /login.",
+    "PROTECTED ROUTE (frontend/src/components/ProtectedRoute.tsx): hydration spinner, then no token -> Navigate /login with state={{from: location.pathname}} replace; else <Outlet/>. Does NOT check role (token-only gate, used for customer-area routes).",
+    "defaultHomeForRole(role) (exported from RoleGuard.tsx): admin -> '/admin', delivery_driver -> '/delivery', anything else (customer/null) -> '/'. Single source of truth for role-based home.",
+    "ROLE-BASED REDIRECT AFTER LOGIN (frontend/src/pages/LoginPage.tsx): doLogin() first clears prior session (auth logout + cart/favorites clear + remove 'chikenhot-auth' localStorage key) to avoid leaking previous-user state, then POSTs login. On success: (1) setSession(data) into zustand; (2) persistSessionSync(data) writes session directly to localStorage key 'chikenhot-auth' in zustand-persist shape {state:{accessToken,refreshToken,userId,role,fullName,user:null},version:0} to beat the persist/reload race; (3) navigates via window.location.assign(target) — a HARD reload — where target = explicitFrom ?? defaultHomeForRole(data.role). explicitFrom comes from location.state.from set by ProtectedRoute (so a customer kicked to /login returns to their original page; admins/drivers without a 'from' go to /admin or /delivery). The login page does NOT auto-redirect when a session already exists — it shows an amber banner with 'Ir a mi panel' (href = defaultHomeForRole) or 'Cerrar sesion'. Three demo quick-login buttons: Admin (admin@chikenhot.pe), Cliente (cliente@chikenhot.pe), Repartidor (delivery@chikenhot.pe).",
+    "RELEVANT FILE PATHS: C:/Users/kenny/Documents/app_delivery/frontend/src/App.tsx; .../components/AdminLayout.tsx; .../components/ProtectedRoute.tsx; .../components/RoleGuard.tsx; .../components/OrderStatusBadge.tsx (NEXT_STATUSES_ADMIN drives admin order transitions); .../pages/LoginPage.tsx; .../pages/admin/AdminDashboardPage.tsx, AdminOrdersPage.tsx, AdminOrderDetailPage.tsx, AdminProductsPage.tsx, AdminUsersPage.tsx, AdminDriversPage.tsx, AdminCouponsPage.tsx; services: .../services/dashboard.ts, admin-orders.ts, admin-products.ts, users.ts, delivery.ts, coupons.ts, orders.ts."
+  ]
+}

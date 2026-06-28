@@ -1,0 +1,167 @@
+{
+  "screens": [
+    {
+      "name": "DriverDashboardPage",
+      "route": "/delivery (index)",
+      "role": "delivery_driver (guarded by RoleGuard allow=[\"delivery_driver\"], wrapped in DriverLayout)",
+      "purpose": "Driver home screen showing the day's KPIs and an earnings summary, plus quick-jump shortcuts to available orders and assigned orders.",
+      "features": [
+        "Read-only KPI dashboard (no order actions here)",
+        "Four StatCards: Ganancias hoy (earnings.today fallback stats.earnings_today), Entregas hoy (earnings.deliveries_today fallback stats.deliveries_completed), Rating (stats.average_rating toFixed(1), shows '—' if null), Eficiencia (stats.efficiency%)",
+        "Earnings summary card (rendered only when earnings loaded): Hoy / Esta semana / Este mes / Total via formatCurrency",
+        "Two shortcut cards linking to /delivery/available and /delivery/my-orders",
+        "No accept/reject, no status updates, no availability toggle, no GPS reporting originated on this page"
+      ],
+      "api_calls": [
+        "GET /dashboard/driver (getDriverDashboard) -> DriverDashboard {deliveries_today, deliveries_completed, earnings_today, average_rating, punctuality, satisfaction, efficiency}",
+        "GET /delivery/earnings (getEarnings) -> EarningsSummary {today, this_week, this_month, total, deliveries_today, deliveries_total}",
+        "Both fired together via Promise.all on mount (useEffect [])"
+      ],
+      "ui_notes": "Spanish UI. Heading 'Bienvenido 🍗' / subtitle 'Tu día en Chikenhot'. 2-col grid of StatCards. Centered Loader2 spinner while loading; red error banner on failure. StatCard tones: success (green) for earnings, warning (yellow) for rating."
+    },
+    {
+      "name": "DriverAvailablePage",
+      "route": "/delivery/available",
+      "role": "delivery_driver (DriverLayout)",
+      "purpose": "List of unassigned nearby orders the driver can claim; primary place to ACCEPT an order.",
+      "features": [
+        "Accept order: handleAccept(id) calls acceptOrder then navigates to /delivery/my-orders/:id; per-row accepting spinner state; on error shows message and reloads list (no explicit reject action — drivers simply do not accept)",
+        "Manual refresh button (RefreshCw) re-runs load()",
+        "Each order card shows: order_number, created_at (formatDate), delivery_fee labelled 'Ganancia', delivery_address (MapPin), payment_method (capitalized, CreditCard) and total",
+        "Count header: '{orders.length} esperando un repartidor'",
+        "Empty state '🕑 No hay pedidos disponibles ahora mismo'; no status updates / availability toggle / GPS here"
+      ],
+      "api_calls": [
+        "GET /delivery/nearby-orders (getNearbyOrders) -> NearbyOrder[] {id, order_number, status, delivery_address, total, delivery_fee, payment_method, created_at}",
+        "POST /delivery/accept/{orderId} (acceptOrder) -> {message, order_id}"
+      ],
+      "ui_notes": "Spanish UI. Loader2 spinner (h-40) while loading. Red error banner above list. Cards use .card class; full-width btn-primary 'Aceptar pedido' disabled while that row is accepting."
+    },
+    {
+      "name": "DriverMyOrdersPage",
+      "route": "/delivery/my-orders",
+      "role": "delivery_driver (DriverLayout)",
+      "purpose": "Lists the driver's own orders, split into Active and History sections, each row linking to the order detail.",
+      "features": [
+        "Client-side split: active = status not in [delivered, canceled]; past = status in [delivered, canceled]",
+        "Active section header with count; empty state with Package icon + link to /delivery/available",
+        "History section (only if past.length>0) shows up to 20 past orders (past.slice(0,20))",
+        "OrderRow shows order_number, OrderStatusBadge, created_at, delivery_fee labelled 'delivery', ChevronRight; links to /delivery/my-orders/:id",
+        "No accept/reject, status update, availability toggle, or GPS on this page"
+      ],
+      "api_calls": [
+        "GET /orders (listMyOrders) -> {orders: Order[]} (backend scopes to the authenticated driver's orders)"
+      ],
+      "ui_notes": "Spanish UI. Heading 'Mis pedidos'. Loader2 spinner (h-64) while loading; red error banner on failure. Rows are .card links with hover shadow."
+    },
+    {
+      "name": "DriverOrderDetailPage",
+      "route": "/delivery/my-orders/:id",
+      "role": "delivery_driver (DriverLayout)",
+      "purpose": "Full detail + action screen for a single assigned order: navigation map, customer/contact info, items, status timeline, and the status-progression action buttons.",
+      "features": [
+        "Status updates (driver workflow): pickUp() when status==='ready' -> PATCH /orders/:id/status with status 'on_the_way' (button 'Recoger y salir en ruta'); complete() when status==='on_the_way' -> PATCH /delivery/complete/:id (button 'Marcar como entregado'). Buttons render conditionally on canPickUp/canDeliver",
+        "Auto-refresh polling: window.setInterval every 10000ms (10s) re-fetches getOrder while order is active; stops when status in [delivered, canceled] (so driver sees admin marking order 'ready' without manual refresh). aliveRef guards against setState after unmount",
+        "Embedded LiveOrderMap (refreshSeconds=10, height 260) wrapped in ErrorBoundary, only when delivery_address contains embedded (lat,lon) matching COORDS_RE /\\((-?\\d+\\.\\d+),\\s*(-?\\d+\\.\\d+)\\)/",
+        "Deep links 'Abrir en Google Maps' (maps/dir destination=lat,lon travelmode=driving) and 'Abrir en Waze' (waze.com/ul?ll=lat,lon&navigate=yes)",
+        "Customer card: name, tap-to-call tel: link for customer_phone, delivery_address, payment_method (special orange 'Cobrar {total}' hint when payment_method==='efectivo'), notes banner",
+        "Products list (quantity × product_name, subtotal) and Total a cobrar",
+        "Timeline (order.timeline) rendered as vertical checklist with formatted timestamps",
+        "No accept/reject here (accept happens on available/map pages); no availability toggle; no driver-GPS reporting originates here (location reporting lives in DriverLayout)"
+      ],
+      "api_calls": [
+        "GET /orders/{id} (getOrder) -> Order — on mount and on each 10s poll",
+        "PATCH /orders/{id}/status {status:'on_the_way'} (updateOrderStatus) for pick-up",
+        "PATCH /delivery/complete/{id} (completeDelivery) for delivery completion; followed by a fresh GET /orders/{id} to refresh timeline",
+        "Indirectly via LiveOrderMap: GET /orders/{id}/tracking (getOrderTracking) to render driver position/route"
+      ],
+      "ui_notes": "Spanish UI. Back link to 'Mis pedidos'. Header with order_number + OrderStatusBadge. Action buttons are full-width btn-primary with Truck/CheckCircle2 icons and a Loader2 while updating. Loader2 spinner (h-64) while initial load; error/not-found state offers a 'Volver' link."
+    },
+    {
+      "name": "DriverMapPage",
+      "route": "/delivery/map",
+      "role": "delivery_driver (DriverLayout)",
+      "purpose": "Leaflet map of nearby unassigned orders with proximity filtering and quick accept; an alternative spatial view of the available list.",
+      "features": [
+        "Accept order from map popup or from the bottom shortlist (top 5): handleAccept -> acceptOrder then navigate to /delivery/my-orders/:id; per-order accepting state",
+        "'Mi ubicación' (Crosshair) uses browser navigator.geolocation.getCurrentPosition({enableHighAccuracy:true, timeout:10000}) one-shot to set myPos (this is map-centering only, NOT the background GPS reporting)",
+        "Distance annotation via Haversine from myPos; radius filter slider 1–20 km (default 10) filters and sorts visible orders by distance",
+        "Marker pin color by urgency: <2km green, <5km orange, else red; driver shown with blue 'me' marker; FlyToOnce only re-centers when position moves >~50m to avoid jumpiness",
+        "Order parsing: only orders whose delivery_address matches COORDS_RE are placed on the map",
+        "Manual refresh (RefreshCw) re-loads nearby orders; popup and list show order_number, address (first segment split on ' — '), distance, delivery_fee",
+        "No status updates, no availability toggle, no driver-GPS reporting (one-shot locate only)"
+      ],
+      "api_calls": [
+        "GET /delivery/nearby-orders (getNearbyOrders) -> NearbyOrder[]",
+        "POST /delivery/accept/{orderId} (acceptOrder)",
+        "Browser Geolocation API getCurrentPosition (client-side only; does NOT hit backend)"
+      ],
+      "ui_notes": "Spanish UI. Heading '🗺️ Pedidos cerca'. 420px map with BaseTileLayer + TileStyleSwitcher. DEFAULT_CENTER Lima [-12.0464,-77.0428] when no position. Loading overlay spinner over map; red error banner. Hint to enable location when myPos null. Bottom list capped at 5 cards."
+    },
+    {
+      "name": "DriverEarningsPage",
+      "route": "/delivery/earnings",
+      "role": "delivery_driver (DriverLayout)",
+      "purpose": "Detailed earnings breakdown for the driver across time windows plus delivery totals.",
+      "features": [
+        "Earnings breakdown (read-only): hero card 'Total acumulado' (data.total) with '{deliveries_total} entregas completadas'",
+        "StatCards: Hoy (data.today, hint '{deliveries_today} entregas'), Esta semana (this_week), Este mes (this_month), Total entregas (deliveries_total)",
+        "Footnote: earnings are computed from delivered orders",
+        "No accept/reject, status updates, availability toggle, or GPS"
+      ],
+      "api_calls": [
+        "GET /delivery/earnings (getEarnings) -> EarningsSummary {today, this_week, this_month, total, deliveries_today, deliveries_total}"
+      ],
+      "ui_notes": "Spanish UI. Heading '💰 Ganancias'. Gradient brand hero card (from-brand-500 to-brand-700) with large total. 2-col StatCard grid. Loader2 spinner (h-64); red error banner on failure."
+    },
+    {
+      "name": "DriverRatingsPage",
+      "route": "/delivery/ratings",
+      "role": "delivery_driver (DriverLayout)",
+      "purpose": "Shows the driver's received customer ratings: average, star distribution, and recent reviews.",
+      "features": [
+        "Ratings view (read-only): computes avg, total, and 5→1 star distribution (count + pct) client-side from reviews via useMemo",
+        "Summary card: big average (toFixed(1)), StarRating(readonly) of rounded average, review count, and per-star distribution bars",
+        "Recent reviews list sorted by created_at desc: StarRating, formatted date, optional comment, 'Pedido #{order_id}'",
+        "Empty state 'Aún no has recibido calificaciones' when no reviews",
+        "Depends on userId from useAuthStore; effect skips if userId missing",
+        "No accept/reject, status updates, availability toggle, or GPS"
+      ],
+      "api_calls": [
+        "GET /reviews/driver/{driverId} (listDriverReviews, driverId = auth store userId) -> Review[] {id, order_id, customer_id, driver_id, rating, comment, created_at, customer_name}"
+      ],
+      "ui_notes": "Spanish UI. Heading '⭐ Mis calificaciones'. Yellow star distribution bars. Loader2 spinner (h-64); red error banner. Uses StarRating component (readonly)."
+    },
+    {
+      "name": "DriverRegisterPage",
+      "route": "/register-driver (also linked as /register-driver; standalone, NOT inside DriverLayout / no RoleGuard)",
+      "role": "public / unauthenticated (driver self-signup; creates a delivery_driver account)",
+      "purpose": "4-step wizard to onboard a new delivery driver, collecting account, personal/emergency/address, vehicle/documents, and bank details.",
+      "features": [
+        "Multi-step stepper (4 steps: Cuenta, Personal, Vehículo, Banco) with progress indicator and per-step client-side validation",
+        "Step1 validation: full_name >=3 chars, valid email regex, password >=6, password === confirm_password, phone >=6",
+        "Step2 validation: document_id >=6, birth_date required; gender radios; home address/district; emergency contact",
+        "Step3 validation: vehicle_type required; vehicle_plate required (>=3) unless vehicle_type==='bicicleta'; vehicle brand/model/year/color; optional license + insurance (number/expiry)",
+        "Step4: bank name, account type (ahorros/corriente), account number, CCI, account holder",
+        "Submit builds DriverRegisterPayload (omitting empty optionals), registers, stores session via useAuthStore.setSession, and hard-redirects to defaultHomeForRole(role) (i.e. /delivery)",
+        "Back/Continue navigation; final submit button shows Loader2 + 'Creando cuenta...'; links to /login and customer /register",
+        "No order actions / GPS / earnings — registration only"
+      ],
+      "api_calls": [
+        "POST /auth/register-driver (registerDriver) -> TokenResponse (sets session, redirects to /delivery)"
+      ],
+      "ui_notes": "Spanish UI. Centered card (max-w-3xl). 🛵 hero, 'Únete como repartidor'. Vehicle/gender/bank-type rendered as radio 'chip' selectors. Blue reassurance note about bank data on step 4. Red error banner per step."
+    }
+  ],
+  "routing_notes": [
+    "All driver app screens are nested under Route path=/delivery guarded by RoleGuard allow=[\"delivery_driver\"], with DriverLayout as the shared shell (App.tsx lines 75-85). Children: index=DriverDashboardPage, available, map, my-orders, my-orders/:id, earnings, ratings.",
+    "DriverRegisterPage is a separate top-level route /register-driver (App.tsx line 90) with NO RoleGuard and NO DriverLayout — it is the public self-signup. defaultHomeForRole('delivery_driver') returns '/delivery' (RoleGuard.tsx).",
+    "DriverLayout provides the sticky header (brand, availability toggle, logout), the 'Hola, {fullName}' line, and a fixed bottom nav: Inicio (/delivery end), Mapa (/delivery/map), Pedidos (/delivery/my-orders), Ganancias (/delivery/earnings), Rating (/delivery/ratings). Note: /delivery/available is reachable only via dashboard/my-orders links, not the bottom nav.",
+    "Availability toggle lives ONLY in DriverLayout (header Power button): POST /delivery/toggle-availability (toggleAvailability) -> {is_available, message}. Initial 'available' state is optimistically set to true on mount (not fetched from backend). Label flips between 'Disponible' (green) and 'Offline' (gray).",
+    "BACKGROUND GPS REPORTING (the key mechanism, lives in DriverLayout via useDriverLocationReporter, NOT in any individual page): DriverLayout calls useDriverLocationReporter(available === true, 15). WHEN ACTIVE: only while enabled === true, i.e. while the driver's availability is 'Disponible'; toggling Offline disables it (effect cleanup cancels the loop). INTERVAL: 15 seconds, scheduled with a RECURSIVE setTimeout (not setInterval) so the next tick is scheduled only after the previous report completes — this prevents overlapping getCurrentPosition calls when GPS is slow. CADENCE PER TICK: tick() => reportReal(); if reportReal returns false, reportFallback(); then schedule next tick in intervalSeconds*1000 ms.",
+    "GPS PAYLOAD & ENDPOINT: both real and fallback reporting call updateDriverLocation (services/tracking.ts) => PATCH /delivery/location with body {latitude, longitude, zone?}. Real path: navigator.geolocation.getCurrentPosition with options {enableHighAccuracy:true, timeout:8000, maximumAge:30000}; payload = {latitude: pos.coords.latitude, longitude: pos.coords.longitude} (no zone). FALLBACK (when navigator.geolocation absent or getCurrentPosition errors/returns false): seeds a random point near Lima base [-12.0464,-77.0428] (±0.01), then jitters by ±0.0004 each tick and posts {latitude, longitude, zone:'Lima Centro (demo)'} so the demo keeps producing movement.",
+    "Distinct from background reporting: DriverMapPage's 'Mi ubicación' and DriverAvailablePage have NO background reporting; the map's getCurrentPosition (timeout 10000) is a one-shot used only for centering/distance filtering and does NOT PATCH /delivery/location.",
+    "Driver order status workflow (DriverOrderDetailPage): accept happens earlier (POST /delivery/accept/:id on available/map pages) -> when admin sets order to 'ready', driver presses 'Recoger y salir en ruta' = PATCH /orders/:id/status {status:'on_the_way'} -> then 'Marcar como entregado' = PATCH /delivery/complete/:id. The detail page polls GET /orders/:id every 10s while active so the driver sees the admin's 'ready' transition without manual refresh.",
+    "LiveOrderMap (embedded in DriverOrderDetailPage with refreshSeconds=10) consumes GET /orders/:id/tracking which returns driver_latitude/longitude/zone/updated_at — i.e. it surfaces exactly the position data pushed by useDriverLocationReporter, closing the loop between the driver's PATCH /delivery/location reports and the customer/driver-facing live map."
+  ]
+}

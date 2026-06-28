@@ -1,9 +1,18 @@
-import axios, { AxiosError, AxiosHeaders } from "axios";
+import axios, { AxiosError } from "axios";
 import { useAuthStore } from "@/store/auth";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "/api/v1";
 
 export const api = axios.create({
+  baseURL: API_BASE,
+  headers: { "Content-Type": "application/json" },
+});
+
+// Instancia "limpia" para el refresh: comparte la misma baseURL que `api`
+// (evita que el manejo de baseURL diverja entre llamadas normales y refresh)
+// pero NO lleva interceptores, así no entra en un bucle de refresh ni reaplica
+// el Authorization viejo del store.
+const refreshClient = axios.create({
   baseURL: API_BASE,
   headers: { "Content-Type": "application/json" },
 });
@@ -22,12 +31,17 @@ async function refreshAccessToken(): Promise<string | null> {
   const { refreshToken, setTokens, logout } = useAuthStore.getState();
   if (!refreshToken) return null;
   try {
-    const { data } = await axios.post(
-      `${API_BASE}/auth/refresh`,
-      { refresh_token: refreshToken },
-      { headers: { "Content-Type": "application/json" } },
-    );
-    setTokens(data.access_token, data.refresh_token);
+    const { data } = await refreshClient.post("/auth/refresh", {
+      refresh_token: refreshToken,
+    });
+    // Algunos backends no rotan el refresh token (devuelven solo access_token);
+    // preservar el previo evita que el siguiente refresh haga logout por falta
+    // de refresh token.
+    if (!data?.access_token) {
+      logout();
+      return null;
+    }
+    setTokens(data.access_token, data.refresh_token ?? refreshToken);
     return data.access_token;
   } catch {
     logout();
@@ -39,18 +53,20 @@ api.interceptors.response.use(
   (r) => r,
   async (error: AxiosError) => {
     const original = error.config as (typeof error.config & { _retry?: boolean }) | undefined;
-    if (error.response?.status === 401 && original && !original._retry) {
+    // No intentar refresh para 401 provenientes de los propios endpoints de auth
+    // (login/refresh): un refresh fallido no debe disparar otro refresh.
+    const url = original?.url ?? "";
+    const isAuthEndpoint = url.includes("/auth/refresh") || url.includes("/auth/login");
+    if (error.response?.status === 401 && original && !original._retry && !isAuthEndpoint) {
       original._retry = true;
       refreshing ??= refreshAccessToken().finally(() => {
         refreshing = null;
       });
       const newToken = await refreshing;
       if (newToken) {
-        // En axios v1 los headers son AxiosHeaders; reemplazar el objeto por uno
-        // plano rompe Content-Type y otros headers internos. Usar .set() preserva todo.
-        const headers = AxiosHeaders.from(original.headers);
-        headers.set("Authorization", `Bearer ${newToken}`);
-        original.headers = headers;
+        // Reintenta con el MISMO config (lleva _retry). El interceptor de request
+        // reaplica el Authorization con el token ya actualizado en el store, así
+        // que no hace falta setearlo manualmente aquí.
         return api.request(original);
       }
     }

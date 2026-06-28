@@ -12,6 +12,7 @@ interface Props {
 export function StarRating({ value, onChange, size = "md", readonly }: Props) {
   const [hover, setHover] = useState<number | null>(null);
   const sizes = { sm: "h-3.5 w-3.5", md: "h-5 w-5", lg: "h-7 w-7" }[size];
+  const interactive = !readonly && !!onChange;
 
   return (
     <div className="inline-flex items-center gap-0.5">
@@ -19,13 +20,15 @@ export function StarRating({ value, onChange, size = "md", readonly }: Props) {
         const filled = (hover ?? value) >= n;
         const Icon = (
           <Star
+            aria-hidden="true"
             className={cn(
               sizes,
-              filled ? "fill-yellow-400 text-yellow-400" : "text-neutral-300",
+              "transition-colors",
+              filled ? "fill-warn-400 text-warn-400" : "text-ink-300",
             )}
           />
         );
-        if (readonly || !onChange) {
+        if (!interactive) {
           return <span key={n}>{Icon}</span>;
         }
         return (
@@ -34,8 +37,8 @@ export function StarRating({ value, onChange, size = "md", readonly }: Props) {
             type="button"
             onMouseEnter={() => setHover(n)}
             onMouseLeave={() => setHover(null)}
-            onClick={() => onChange(n)}
-            className="rounded p-0.5 hover:bg-neutral-100"
+            onClick={() => onChange?.(n)}
+            className="rounded-lg p-0.5 transition hover:bg-ink-50 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
             aria-label={`${n} estrella${n > 1 ? "s" : ""}`}
           >
             {Icon}

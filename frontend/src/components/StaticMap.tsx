@@ -1,8 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { MapContainer, Marker, Popup, useMap } from "react-leaflet";
 import { BaseTileLayer } from "@/components/BaseTileLayer";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { getStoreConfig, type StoreConfig } from "@/services/storeConfig";
+import { restaurantIcon } from "@/lib/restaurantMarker";
 
 const DefaultIcon = L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -47,8 +49,23 @@ export function StaticMap({ pins, height = 240, zoom = 14 }: Props) {
   const center: [number, number] =
     pins.length > 0 ? [pins[0].lat, pins[0].lon] : [-12.0464, -77.0428];
 
+  // Ubicación del restaurante (pin distintivo). Error silencioso: si no carga,
+  // no se muestra el pin y los marcadores existentes siguen igual.
+  const [store, setStore] = useState<StoreConfig | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    getStoreConfig()
+      .then((cfg) => {
+        if (!cancelled) setStore(cfg);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
-    <div style={{ height }} className="overflow-hidden rounded-xl border border-neutral-200">
+    <div style={{ height }} className="overflow-hidden rounded-xl border border-ink-200 shadow-card">
       <MapContainer
         center={center}
         zoom={zoom}
@@ -57,9 +74,22 @@ export function StaticMap({ pins, height = 240, zoom = 14 }: Props) {
       >
         <BaseTileLayer />
         <FitBounds pins={pins} />
+        {store && Number.isFinite(store.latitude) && Number.isFinite(store.longitude) && (
+          <Marker position={[store.latitude, store.longitude]} icon={restaurantIcon}>
+            <Popup>
+              <span className="text-sm font-medium text-ink-900">
+                🍗 {store.name}
+              </span>
+            </Popup>
+          </Marker>
+        )}
         {pins.map((p, i) => (
           <Marker key={`${p.lat}-${p.lon}-${i}`} position={[p.lat, p.lon]} icon={pinIcon(p.color)}>
-            {p.label && <Popup>{p.label}</Popup>}
+            {p.label && (
+              <Popup>
+                <span className="text-sm font-medium text-ink-900">{p.label}</span>
+              </Popup>
+            )}
           </Marker>
         ))}
       </MapContainer>
@@ -69,6 +99,13 @@ export function StaticMap({ pins, height = 240, zoom = 14 }: Props) {
 
 function FitBounds({ pins }: { pins: MapPin[] }) {
   const map = useMap();
+  // Clave estable derivada del CONTENIDO de los pins (no de la referencia del
+  // array). Muchos call-sites construyen `pins` nuevo en cada render del padre
+  // (literal / `.map()`), por lo que usar `pins` como dependencia re-ejecutaba
+  // fitBounds/setView en cada render, reseteando el zoom/encuadre y deshaciendo
+  // el paneo o zoom manual del usuario. Con la clave por contenido el efecto
+  // sólo corre cuando las coordenadas realmente cambian.
+  const key = pins.map((p) => `${p.lat},${p.lon}`).join("|");
   useEffect(() => {
     if (pins.length === 0) return;
     if (pins.length === 1) {
@@ -77,6 +114,9 @@ function FitBounds({ pins }: { pins: MapPin[] }) {
     }
     const bounds = L.latLngBounds(pins.map((p) => [p.lat, p.lon] as [number, number]));
     map.fitBounds(bounds, { padding: [40, 40] });
-  }, [pins, map]);
+    // `pins`/`map` se omiten a propósito: el reajuste debe dispararse sólo por
+    // cambio de contenido (`key`), no por nueva referencia del array en cada render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
   return null;
 }

@@ -1,0 +1,264 @@
+{
+  "screens": [
+    {
+      "name": "LoginPage",
+      "route": "/login",
+      "role": "public (any visitor; supports admin/customer/driver login)",
+      "purpose": "Authenticate an existing user by role and route them to their role-specific home. Also lets an already-logged-in user switch accounts or go to their panel.",
+      "features": [
+        "Email input (type=email, required, disabled while loading)",
+        "Password input (type=password, required, disabled while loading)",
+        "Submit button 'Iniciar sesión' -> 'Entrando...' with spinner while loading",
+        "Quick-login grid of 3 demo accounts (Admin admin@chikenhot.pe/admin123, Cliente cliente@chikenhot.pe/cliente123, Repartidor delivery@chikenhot.pe/delivery123); clicking pre-fills email/password and immediately logs in",
+        "Active-session banner (shown only if accessToken+role present): shows fullName + role label, 'Ir a mi panel' link to defaultHomeForRole(role), 'Cerrar sesión' button that removes localStorage key 'chikenhot-auth' and reloads page",
+        "On any login attempt: clears prior auth store, cart store, favorites store, and localStorage before calling backend",
+        "On success: setSession(zustand) + persistSessionSync(writes localStorage in zustand-persist format) + hard redirect via window.location.assign to explicit 'from' route (from location.state) or defaultHomeForRole(role)",
+        "Inline error box (red) on failed login from getErrorMessage",
+        "Link to /register ('Regístrate')",
+        "Link to /register-driver ('Únete aquí')"
+      ],
+      "api_calls": [
+        "POST /auth/login/json (login email/password)"
+      ],
+      "ui_notes": "Centered card (max-w-md) on min-h-80vh, chicken emoji header. Quick-login uses 3 color-coded role buttons (purple/blue/orange). Loading state disables inputs and shows spinner in submit button. Error shown in red box. No empty state. Reads auth store via separate primitive selectors to avoid getSnapshot/infinite-loop bug."
+    },
+    {
+      "name": "RegisterPage",
+      "route": "/register",
+      "role": "public (creates a 'customer' account)",
+      "purpose": "Create a new customer account and immediately start a session.",
+      "features": [
+        "Full name input (required)",
+        "Email input (type=email, required)",
+        "Phone input (optional, sent as undefined if empty)",
+        "Password input (type=password, required, minLength=6)",
+        "Submit 'Crear cuenta' -> 'Creando cuenta...' with spinner while loading",
+        "On success: setSession then navigate('/', replace) to catalog",
+        "Inline red error box from getErrorMessage",
+        "Link to /login ('Inicia sesión')"
+      ],
+      "api_calls": [
+        "POST /auth/register (payload includes role:'customer' injected by service)"
+      ],
+      "ui_notes": "Centered card (max-w-md), chicken emoji header. Spacing-4 form. Loading disables submit and shows spinner. No empty/loading-of-data state (form only). Error in red box."
+    },
+    {
+      "name": "CatalogPage",
+      "route": "/ (index)",
+      "role": "public (customer-facing home/menu)",
+      "purpose": "Browse the product menu with search and category filtering, see featured items, and add products to cart or favorites.",
+      "features": [
+        "Hero banner section (gradient, marketing copy)",
+        "Search input (free text, filters products live via search param, trimmed)",
+        "Category chips horizontal scroll: 'Todos' (✨, clears category) + one chip per category (icon+name); active chip highlighted; selecting sets category_id filter",
+        "Featured section '⭐ Destacados' (first 3 products where is_featured) shown ONLY when no search and no active category",
+        "Product grid 'Menú' responsive (1-4 cols)",
+        "ProductCard: image_url or emoji icon, name (link to /products/:id), description (line-clamp-2), price (formatCurrency), 'Añadir' button -> add(product) to cart",
+        "Favorite heart toggle on each card (filled red if favorite) -> favorites store toggle(product)",
+        "Loading spinner while products load",
+        "Empty state 'No se encontraron productos' (dashed border) when zero results",
+        "Error box (red) on category/product load failure"
+      ],
+      "api_calls": [
+        "GET /products/categories (on mount)",
+        "GET /products?category_id&search&limit=100 (on mount and whenever activeCategory or search changes)"
+      ],
+      "ui_notes": "max-w-6xl. Two independent effects: categories loaded once; products re-fetched on filter change with cancellation guard. Featured computed via useMemo. Cards use gradient placeholder background when no image. Favorite state read per-card from favorites store."
+    },
+    {
+      "name": "ProductDetailPage",
+      "route": "/products/:id",
+      "role": "public",
+      "purpose": "Show a single product's full detail and let the user choose quantity and add to cart.",
+      "features": [
+        "Back link 'Volver al menú' -> /",
+        "Product image (image_url) or large emoji icon",
+        "Category badge (icon+name) if present",
+        "Name, description, price (formatCurrency)",
+        "Quantity stepper: minus button (min 1), centered count, plus button",
+        "Add-to-cart button: when available shows 'Añadir al carrito · {price*quantity}', adds with chosen quantity then navigates to /cart; disabled showing 'No disponible' when product.is_available is false",
+        "Loading spinner (full-height) while fetching",
+        "Error/not-found state: red message + 'Volver al menú' link"
+      ],
+      "api_calls": [
+        "GET /products/:id (on mount / id change)"
+      ],
+      "ui_notes": "max-w-4xl two-column card (image left, details right). Quantity local state defaults to 1, never below 1. Loading and error are full-screen-ish centered states."
+    },
+    {
+      "name": "CartPage",
+      "route": "/cart",
+      "role": "public (cart is local; checkout requires auth)",
+      "purpose": "Review cart line items, adjust quantities, remove items, and proceed to checkout.",
+      "features": [
+        "Line items list: product icon, name, unit price 'c/u', quantity stepper (minus/plus via updateQuantity; quantity<=0 removes item), line total (price*quantity), trash/remove button",
+        "Order summary card (sticky): Subtotal row (bold) from cart subtotal()",
+        "Info note: delivery and IGV are calculated at checkout based on address",
+        "'Continuar al pago' button -> if no accessToken navigate to /login with state.from='/checkout', else navigate /checkout",
+        "'Seguir comprando' ghost link -> /",
+        "Empty state: ShoppingBag icon, 'Tu carrito está vacío', 'Ver menú' link -> /"
+      ],
+      "api_calls": [
+        "(none — cart state is local zustand persisted to localStorage 'chikenhot-cart')"
+      ],
+      "ui_notes": "max-w-5xl, 2/3 + 1/3 grid; summary sticky top-20. No delivery/tax shown here (deferred to checkout). Quantity decrement to 0 deletes the row."
+    },
+    {
+      "name": "CheckoutPage",
+      "route": "/checkout",
+      "role": "customer (ProtectedRoute — requires auth)",
+      "purpose": "Finalize an order: pick/define delivery location (saved address or map picker), choose payment method, apply coupon, see live fee/tax/total breakdown, and place the order.",
+      "features": [
+        "On mount: refreshes each cart product's price from backend (getProduct per item), replaceProducts to avoid stale localStorage prices; if any price changed shows amber 'priceChangeWarning' banner listing affected product names",
+        "Saved-address selector: radio list of user addresses (label, MapPin, 'Predet.' badge for default, full_address, reference); default address (or first) auto-selected on load",
+        "'Usar una ubicación nueva (mapa)' radio option (dashed) -> reveals LocationPicker + 'Referencia / detalle' optional input",
+        "Map picker (LocationPicker, wrapped in ErrorBoundary): address search box (Nominatim, debounced, >=3 chars), results dropdown, interactive Leaflet map (click to drop pin, draggable marker, auto-recenter/flyTo), 'Mi ubicación' button (browser geolocation, high accuracy), reverse-geocoded address display with lat/lon (debounced 500ms)",
+        "Payment method selector: 3 radio cards efectivo (💵), yape (📱), tarjeta (💳); default 'efectivo'",
+        "Notes textarea (optional, 2 rows)",
+        "Coupon section: code input (uppercased), 'Aplicar' button (spinner while applying); on valid shows green applied chip with code and -discount and an X to remove; on invalid shows message; couponError text in red",
+        "Order summary (sticky): per-item lines (qty× name + line total), Subtotal, Delivery (with inline spinner while feeLoading and distance/restaurant note + 'tarifa mínima'/'tope máximo' annotation), IGV (18%), Discount line (green, if coupon applied), Total (bold)",
+        "Delivery fee recalculated whenever selected location changes (saved address lat/lon or map location); falls back to FALLBACK_DELIVERY_FEE=5 if no coords or fee call fails",
+        "Fee/tax math: TAX_RATE=0.18; tax=subtotal*0.18; total=max(0, subtotal+deliveryFee+tax-discount)",
+        "Link 'Gestionar direcciones' -> /addresses",
+        "'Confirmar pedido' submit -> 'Procesando...' with spinner; validates a resolvable address (saved address formatted with label/full_address/reference/(lat,lon) OR map location.address + detail + (lat,lon)); on success clears cart and navigates to /orders/:id (replace)",
+        "Validation error 'Selecciona una dirección o ubica tu entrega en el mapa' if no address resolvable; generic error box from getErrorMessage on failure",
+        "Empty-cart guard: if cart empty shows 'No tienes productos en el carrito' + 'Ir al menú' link"
+      ],
+      "api_calls": [
+        "GET /products/:id (per cart item on mount, to refresh prices)",
+        "GET /addresses (load saved addresses on mount)",
+        "POST /orders/calculate-fee {latitude,longitude} (on location change, returns fee/distance/base/per_km/min/max/raw_fee/restaurant/note)",
+        "POST /coupons/apply {code, order_subtotal} (apply coupon -> {valid,discount,message})",
+        "POST /orders {items:[{product_id,quantity}], delivery_address, payment_method, notes?, coupon_code?} (place order)"
+      ],
+      "ui_notes": "max-w-5xl, 2/3 left form + 1/3 sticky summary. Delivery fee is server-computed by distance from restaurant with min/max clamping; the page annotates when the clamped fee hit min or max (comparing fee vs raw_fee). Coupon code sent to backend is uppercased trimmed. LocationPicker and the live components are wrapped in ErrorBoundary. The submit button is the single confirm action for the whole flow."
+    },
+    {
+      "name": "OrdersPage",
+      "route": "/orders",
+      "role": "customer (ProtectedRoute — requires auth)",
+      "purpose": "List the logged-in customer's past and active orders.",
+      "features": [
+        "Order cards (clickable -> /orders/:id): order_number, OrderStatusBadge, created_at date, item count ('N producto(s)'), total (formatCurrency), payment_method (capitalized)",
+        "Loading spinner (full-height) while fetching",
+        "Empty state: Package icon, 'Aún no tienes pedidos', 'Hacer mi primer pedido' link -> /",
+        "Error box (red) on load failure"
+      ],
+      "api_calls": [
+        "GET /orders (listMyOrders; supports optional status filter param though UI passes none)"
+      ],
+      "ui_notes": "max-w-4xl. Cards hover-elevate. Status rendered via shared OrderStatusBadge component. No client-side filtering/sorting UI on this page."
+    },
+    {
+      "name": "OrderDetailPage",
+      "route": "/orders/:id",
+      "role": "customer (ProtectedRoute — requires auth)",
+      "purpose": "Show a single order's full detail with live driver tracking, items, status timeline, summary, and actions (cancel, review, download invoice).",
+      "features": [
+        "Back link 'Mis pedidos' -> /orders",
+        "Header: 'Pedido #order_number', created_at date, OrderStatusBadge",
+        "Live tracking section (only when order isActive i.e. status not delivered/canceled): LiveOrderMap(orderId, refreshSeconds=10, height=300) in ErrorBoundary",
+        "Products list: each item qty× product_name, unit_price 'c/u', subtotal",
+        "Status timeline ('Seguimiento'): vertical list of timeline events (title, optional description, formatted timestamp) with check markers",
+        "Summary card: Subtotal, Delivery, IGV, Total (bold)",
+        "Delivery info card: delivery_address (MapPin), payment_method (capitalized, CreditCard), driver_name + driver_phone if assigned (Phone)",
+        "'Descargar factura' button -> downloads PDF blob (spinner while downloading)",
+        "'Calificar pedido' button (only when status=='delivered' and not already reviewed): opens review modal",
+        "Review modal: StarRating (1-5, large) with text label (Muy malo..Excelente), optional comment textarea, submit 'Publicar reseña' (spinner), cancel/X close; on success shows green '¡Gracias por tu reseña!' banner and hides review button",
+        "'Cancelar pedido' button (only when status in pending/accepted/preparing): window.confirm then cancels, updates order in place (spinner while canceling)",
+        "Loading spinner (full-height); error/not-found state with 'Volver a mis pedidos' link"
+      ],
+      "api_calls": [
+        "GET /orders/:id (on mount)",
+        "PATCH /orders/:id/cancel (cancel order)",
+        "GET /orders/:id/invoice (responseType blob -> PDF download)",
+        "POST /reviews {order_id, rating, comment?} (submit review)",
+        "(LiveOrderMap polls tracking endpoint internally every 10s)"
+      ],
+      "ui_notes": "max-w-4xl, 2/3 main (tracking, products, timeline) + 1/3 aside (summary, delivery info, action buttons). canCancel = status in [pending,accepted,preparing]; canReview = delivered && !reviewSubmitted; isActive = status not in [delivered,canceled]. Review is a modal overlay (fixed inset-0, black/40). Cancel uses native confirm()."
+    },
+    {
+      "name": "AddressesPage",
+      "route": "/addresses",
+      "role": "customer (ProtectedRoute — requires auth)",
+      "purpose": "Manage saved delivery addresses (CRUD) with a map picker and default-address selection.",
+      "features": [
+        "'Nueva dirección' button -> opens create modal with EMPTY form (label 'Casa', city 'Lima')",
+        "Address cards grid: label-icon (Casa🏠/Trabajo💼/Familia👨‍👩‍👧/Otro📍), label, 'Predeterminada' badge if default, full_address, reference, district/city",
+        "Per-card actions: Edit (pencil) -> opens edit modal prefilled; Delete (trash) -> confirm() then delete; 'Marcar como predeterminada' link (only if not default) -> updates is_default:true",
+        "Create/Edit modal form: type selector (4 buttons Casa/Trabajo/Familia/Otro), LocationPicker map (in ErrorBoundary) that fills full_address+lat+lon on pick, Distrito input, Ciudad input, Referencia input, 'Establecer como predeterminada' checkbox",
+        "Submit 'Guardar dirección'/'Guardar cambios' (disabled until full_address set; spinner while saving) -> create or update then reload list and close modal; X/Cancel to close",
+        "Loading spinner while list loads",
+        "Empty state: Home icon, 'Aún no has guardado direcciones', 'Añadir primera dirección' button",
+        "Error box (red) from getErrorMessage"
+      ],
+      "api_calls": [
+        "GET /addresses (load + reload after each mutation)",
+        "POST /addresses (create)",
+        "PUT /addresses/:id (update / set default / make-default)",
+        "DELETE /addresses/:id (delete)"
+      ],
+      "ui_notes": "max-w-4xl, 2-col card grid. Modal is a scrollable overlay (fixed inset-0, black/40). LocationPicker reused from checkout; picking a point sets full_address via reverse geocode. Default toggling done by updating the address. Delete uses native confirm()."
+    },
+    {
+      "name": "FavoritesPage",
+      "route": "/favorites",
+      "role": "public (favorites stored locally)",
+      "purpose": "Show products the user marked as favorite and let them add to cart or remove.",
+      "features": [
+        "Favorites grid (responsive 1-4 cols): image_url or emoji icon, name (link to /products/:id), description (line-clamp-2), price",
+        "Per-card 'Añadir al carrito' (+) button -> cart add(product)",
+        "Per-card remove button (trash, red) -> favorites toggle(product)",
+        "Header count '❤️ Mis favoritos (N)'",
+        "Empty state: Heart icon, 'No tienes favoritos', helper text, 'Ver menú' link -> /"
+      ],
+      "api_calls": [
+        "(none — favorites are local zustand persisted to localStorage 'chikenhot-favorites')"
+      ],
+      "ui_notes": "max-w-6xl grid. Entirely client-side from favorites store (ids + cached Product snapshots). No loading/error states needed."
+    },
+    {
+      "name": "ReviewsPage",
+      "route": "/reviews",
+      "role": "customer (ProtectedRoute — requires auth)",
+      "purpose": "List the reviews the customer has written.",
+      "features": [
+        "Review cards: 'Pedido #order_id' link -> /orders/:id, created_at date, StarRating (readonly, small), optional comment text",
+        "Loading spinner while fetching",
+        "Empty state: MessageSquare icon, 'Aún no has escrito reseñas', link 'Ver mis pedidos para reseñar' -> /orders",
+        "Error box (red) from getErrorMessage"
+      ],
+      "api_calls": [
+        "GET /reviews/my (list my reviews)"
+      ],
+      "ui_notes": "max-w-3xl stacked card list. StarRating rendered readonly. No edit/delete of reviews on this page."
+    },
+    {
+      "name": "ProfilePage",
+      "route": "/profile",
+      "role": "customer (ProtectedRoute — requires auth)",
+      "purpose": "Show the current user's account info and loyalty/membership status.",
+      "features": [
+        "Avatar (first letter of full_name), full_name, 'Cliente desde {created_at}'",
+        "Info grid: Email, Teléfono (or '—'), Rol (capitalized)",
+        "Loyalty card '#Programa de fidelización': current membership_level badge (color by BRONCE/PLATA/ORO/PLATINO), accumulated points (large number)",
+        "Loading spinner while fetching (skipped if user already cached in auth store)",
+        "Error/empty state: red message 'No se pudo cargar el perfil'"
+      ],
+      "api_calls": [
+        "GET /auth/me (getMe; result cached into auth store via setUser)"
+      ],
+      "ui_notes": "max-w-3xl. Uses cached auth-store user for instant render, then refreshes from /auth/me. Read-only — no edit-profile actions on this page. Membership styling via MEMBERSHIP_STYLES map."
+    }
+  ],
+  "routing_notes": [
+    "Routes defined in frontend/src/App.tsx. Public customer routes under <Layout>: / (CatalogPage index), /products/:id, /cart, /favorites.",
+    "Auth-gated customer routes wrapped in <ProtectedRoute> (still under Layout): /checkout, /orders, /orders/:id, /profile, /addresses, /reviews.",
+    "Auth pages outside Layout: /login, /register, /register-driver (DriverRegisterPage, not part of this customer-spec set).",
+    "ProtectedRoute (frontend/src/components/ProtectedRoute.tsx) enforces auth for the gated group; CartPage itself is public but its 'Continuar al pago' redirects to /login (state.from='/checkout') when no accessToken.",
+    "Catch-all '*' redirects to '/'. Admin (/admin/*) and delivery (/delivery/*) trees are role-guarded via RoleGuard and out of scope for the customer spec.",
+    "defaultHomeForRole (frontend/src/components/RoleGuard) determines post-login landing per role; customer lands at '/'.",
+    "Cart and Favorites are local zustand stores persisted to localStorage ('chikenhot-cart', 'chikenhot-favorites'); auth persisted as 'chikenhot-auth'. Login clears all three before authenticating to avoid inheriting prior user's data.",
+    "Checkout is the only screen that calls POST /orders/calculate-fee and POST /coupons/apply; fee is distance-based from restaurant with min/max clamp, IGV fixed at 18%, total floored at 0."
+  ]
+}

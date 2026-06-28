@@ -17,7 +17,7 @@ from app.models.coupon import Coupon, CouponUsage
 from app.core.exceptions import NotFoundException, BadRequestException, ForbiddenException
 from app.config import get_settings
 from app.schemas.order import OrderCreate, OrderResponse
-from app.services.pricing_service import calculate_delivery_fee
+from app.services.pricing_service import calculate_delivery_fee, get_restaurant_location
 
 settings = get_settings()
 
@@ -70,8 +70,14 @@ def create_order(db: Session, data: OrderCreate, customer: User) -> OrderRespons
             quantity=item_data.quantity, unit_price=product.price, subtotal=item_sub,
         ))
 
-    # Calcular delivery fee basado en distancia desde el restaurante.
-    fee_info = calculate_delivery_fee(address=data.delivery_address)
+    # Calcular delivery fee basado en distancia desde el restaurante (BD).
+    rlat, rlon, rname = get_restaurant_location(db)
+    fee_info = calculate_delivery_fee(
+        address=data.delivery_address,
+        restaurant_lat=rlat,
+        restaurant_lon=rlon,
+        restaurant_name=rname,
+    )
     delivery_fee = fee_info["fee"]
     tax = round(subtotal * settings.TAX_RATE, 2)
 

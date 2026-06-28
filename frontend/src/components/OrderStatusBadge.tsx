@@ -11,14 +11,17 @@ export const STATUS_LABELS: Record<OrderStatus, string> = {
   canceled: "Cancelado",
 };
 
+// Variante semántica de badge por estado (guía §5.9).
+// Pendiente → warn · Aceptado/Preparación/Listo → info · En ruta → info ·
+// Entregado → success · Cancelado → danger.
 const STATUS_STYLES: Record<OrderStatus, string> = {
-  pending: "bg-yellow-100 text-yellow-800",
-  accepted: "bg-blue-100 text-blue-800",
-  preparing: "bg-indigo-100 text-indigo-800",
-  ready: "bg-purple-100 text-purple-800",
-  on_the_way: "bg-orange-100 text-orange-800",
-  delivered: "bg-green-100 text-green-800",
-  canceled: "bg-red-100 text-red-800",
+  pending: "badge-warn",
+  accepted: "badge-info",
+  preparing: "badge-warn",
+  ready: "badge-info",
+  on_the_way: "badge-info",
+  delivered: "badge-success",
+  canceled: "badge-danger",
 };
 
 // Próximas transiciones válidas (alineadas con backend/app/models/order.py)

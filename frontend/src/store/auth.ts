@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User, UserRole } from "@/types/api";
@@ -63,15 +63,13 @@ export const useAuthStore = create<AuthState>()(
  * antes de la rehidratación, mandan al usuario a /login con sesión válida.
  */
 export function useAuthHydrated(): boolean {
-  // El init perezoso de useState ya pregunta por la rehidratación al primer
-  // render; el effect solo necesita suscribirse para el caso async.
-  const [hydrated, setHydrated] = useState<boolean>(() =>
-    useAuthStore.persist.hasHydrated(),
+  // useSyncExternalStore lee el snapshot (hasHydrated) de forma fresca en cada
+  // render y se suscribe a onFinishHydration. Esto elimina la carrera del patrón
+  // useState+useEffect: si la hidratación termina ENTRE el render y el effect,
+  // el snapshot ya refleja `true` y el guard no queda colgado en el loader.
+  return useSyncExternalStore(
+    (onStoreChange) => useAuthStore.persist.onFinishHydration(onStoreChange),
+    () => useAuthStore.persist.hasHydrated(),
+    () => false,
   );
-  useEffect(() => {
-    if (hydrated) return;
-    const unsub = useAuthStore.persist.onFinishHydration(() => setHydrated(true));
-    return unsub;
-  }, [hydrated]);
-  return hydrated;
 }

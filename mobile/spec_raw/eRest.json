@@ -1,0 +1,192 @@
+{
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/api/v1/delivery/toggle-availability",
+      "auth": "delivery_driver",
+      "request": "No body. Auth via Bearer JWT. require_driver enforces role == 'delivery_driver'.",
+      "response": "ToggleAvailabilityResponse: is_active is NOT a field here; returns {is_available: bool, message: str}. Service flips DeliveryProfile.is_available (creates profile if missing, default False). message = 'Ahora estás disponible' or 'Ahora estás no disponible'.",
+      "notes": "DRIVER AVAILABILITY TOGGLE. Toggles is_available on/off each call (no explicit value sent). Profile auto-created via get_or_create_profile if it does not exist. Used by round-robin auto-assignment (only is_available=True drivers get orders)."
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/delivery/location",
+      "auth": "delivery_driver",
+      "request": "LocationUpdate body: {latitude: float (required), longitude: float (required), zone: Optional[str] = None}. NOTE: there is NO 'vehicle' field in this payload — vehicle_type is stored on DeliveryProfile, not sent here. Method is PATCH (not POST).",
+      "response": "Plain dict (no response_model): {message: 'Ubicación actualizada', latitude: float, longitude: float}. Does NOT echo zone or timestamp.",
+      "notes": "DRIVER GPS REPORT endpoint. Writes profile.latitude, profile.longitude, profile.current_zone (only if zone provided), and sets profile.last_location_update = now(UTC). This last_location_update is what the customer tracking endpoint exposes as driver_updated_at. Profile auto-created if missing."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delivery/nearby-orders",
+      "auth": "delivery_driver",
+      "request": "Query params: skip: int = 0 (ge=0), limit: int = 20 (ge=1, le=50).",
+      "response": "{orders: [ {id: int, order_number: str, status: str, delivery_address: str, total: float, delivery_fee: float, payment_method: str, created_at: str(ISO)} ]}. Inline dicts, not OrderResponse.",
+      "notes": "Lists unassigned orders needing a driver: Order.status IN (PENDING, READY) AND delivery_driver_id IS NULL, ordered by created_at ASC, paginated by skip/limit."
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/delivery/accept/{order_id}",
+      "auth": "delivery_driver",
+      "request": "Path param order_id: int. No body.",
+      "response": "{message: 'Pedido {order_number} aceptado', order_id: int}.",
+      "notes": "ACCEPT ORDER. Errors: 404 if order not found; 400 'Este pedido ya tiene un repartidor asignado' if delivery_driver_id already set; 400 'Este pedido no puede ser aceptado' if status not in (PENDING, ACCEPTED, PREPARING, READY). On success sets order.delivery_driver_id = driver.id; if status was PENDING it becomes ACCEPTED; adds OrderTimeline 'Repartidor Asignado'; updates driver last_assigned_at (round-robin). There is NO separate reject endpoint — 'reject' = simply not accepting."
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/delivery/complete/{order_id}",
+      "auth": "delivery_driver",
+      "request": "Path param order_id: int. No body.",
+      "response": "{message: 'Pedido {order_number} entregado', order_id: int}.",
+      "notes": "Marks delivery complete. Errors: 404 if not found; 403 'No eres el repartidor de este pedido' if order.delivery_driver_id != driver.id; 400 \"El pedido debe estar 'en ruta' para completar\" if status != ON_THE_WAY. On success: status=DELIVERED, adds OrderTimeline 'Entregado', creates DeliveryEarning(amount=order.delivery_fee), increments profile.total_deliveries and profile.total_earnings."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delivery/earnings",
+      "auth": "delivery_driver",
+      "request": "No params. No body.",
+      "response": "EarningsSummary: {today: float, this_week: float, this_month: float, total: float, deliveries_today: int, deliveries_total: int}.",
+      "notes": "DRIVER EARNINGS. today/this_week/this_month sum DeliveryEarning.amount since today-start / week-start (Monday) / month-start (day 1). total = profile.total_earnings. deliveries_today = count of earnings since today-start. deliveries_total = profile.total_deliveries. All time math in UTC."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delivery/stats",
+      "auth": "delivery_driver",
+      "request": "No params. No body.",
+      "response": "DriverStatsResponse: {deliveries_today: int, deliveries_completed: int, earnings_today: float, average_rating: float, punctuality: float, satisfaction: float, efficiency: float}.",
+      "notes": "DRIVER RATINGS/STATS. deliveries_today = today_count + 4 (hardcoded +4 'incluye entregas activas'). deliveries_completed = real today_count. earnings_today = sum of today's DeliveryEarning amounts. average_rating = profile.average_rating or fallback 4.8. punctuality=95.0, satisfaction=92.0, efficiency=88.0 are HARDCODED constants. Same function backs GET /dashboard/driver."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delivery/drivers",
+      "auth": "admin",
+      "request": "No params. No body. require_admin enforces role == 'admin'.",
+      "response": "List of dicts, one per DeliveryProfile joined to User. Each: id, user_id, full_name, email, phone, document_id, birth_date, gender, home_address, home_district, emergency_contact_name, emergency_contact_phone, emergency_contact_relation, vehicle_type, vehicle_brand, vehicle_model, vehicle_year, vehicle_color, vehicle_plate, license_number, license_expiry, insurance_number, insurance_expiry, bank_name, bank_account_type, bank_account, bank_cci, bank_account_holder, is_available (bool), latitude (float|null), longitude (float|null), current_zone, total_deliveries (int), average_rating (float), total_earnings (float).",
+      "notes": "Admin-only full driver roster including PII (DNI, bank, emergency contact) and live location."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/orders/{order_id}/tracking",
+      "auth": "any-auth",
+      "request": "Path param order_id: int. No body. Bearer JWT required (get_current_user). Authorization rules: a 'customer' may only access own order (else 403 'No tienes acceso a este pedido'); a 'delivery_driver' may only access order assigned to them (else 403); admin (any other role) unrestricted. 404 'Pedido no encontrado' if order missing.",
+      "response": "Plain dict (no response_model): {order_id: int, order_number: str, status: str, driver_id: int|null (= order.delivery_driver_id), driver_name: str|null, driver_phone: str|null, driver_latitude: float|null (DeliveryProfile.latitude), driver_longitude: float|null (DeliveryProfile.longitude), driver_zone: str|null (profile.current_zone), driver_vehicle_type: str|null (profile.vehicle_type.value enum: 'moto'|'bicicleta'|'auto'), driver_updated_at: str(ISO)|null (profile.last_location_update.isoformat()), delivery_address: str, is_active: bool}.",
+      "notes": "CUSTOMER LIVE-TRACKING POLL endpoint (the one the customer polls). Lives in orders.py, NOT delivery.py. is_active = (order.status NOT IN ('delivered','canceled')) — boolean. There is NO 'eta' field returned (no ETA computed anywhere). driver profile is looked up only if order.delivery_driver_id is set; when no driver assigned all driver_* fields are null. driver_latitude/driver_longitude/driver_updated_at come from the same DeliveryProfile that the driver updates via PATCH /api/v1/delivery/location. status values come from OrderStatus enum (e.g. pending, accepted, preparing, ready, on_the_way, delivered, canceled)."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/addresses",
+      "auth": "any-auth",
+      "request": "No params. No body. get_current_user (any authenticated role).",
+      "response": "list[AddressResponse]: each {id: int, user_id: int, label: str, full_address: str, reference: str|null, district: str|null, city: str|null, latitude: float|null, longitude: float|null, is_default: bool, created_at: datetime}.",
+      "notes": "Returns only addresses where Address.user_id == current_user.id. Path has no trailing slash (route registered as '')."
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/addresses",
+      "auth": "any-auth",
+      "request": "AddressCreate: {label: str = 'Casa', full_address: str (required), reference: Optional[str]=None, district: Optional[str]=None, city: Optional[str]=None, latitude: Optional[float]=None, longitude: Optional[float]=None, is_default: bool = False}.",
+      "response": "AddressResponse (see GET /addresses shape).",
+      "notes": "If is_default=True, clears is_default on all the user's other addresses first. Creates Address with user_id = current_user.id."
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/addresses/{address_id}",
+      "auth": "any-auth (owner only)",
+      "request": "Path address_id: int. AddressUpdate (all optional): {label?, full_address?, reference?, district?, city?, latitude?, longitude?, is_default?}. Uses exclude_unset so only provided fields update.",
+      "response": "AddressResponse.",
+      "notes": "404 'Dirección no encontrada' if missing; 403 ForbiddenException if address.user_id != current_user.id. If is_default truthy in update, clears is_default on user's other addresses."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/addresses/{address_id}",
+      "auth": "any-auth (owner only)",
+      "request": "Path address_id: int. No body.",
+      "response": "{message: 'Dirección eliminada'}.",
+      "notes": "404 'Dirección no encontrada' if missing; 403 if not owner."
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/reviews",
+      "auth": "any-auth (customer who owns the order)",
+      "request": "ReviewCreate: {order_id: int (required), rating: float (required, ge=1.0 le=5.0), comment: Optional[str]=None}.",
+      "response": "ReviewResponse: {id: int, order_id: int, customer_id: int, driver_id: int|null, rating: float, comment: str|null, created_at: datetime, customer_name: str|null (set to current_user.full_name)}.",
+      "notes": "RATING/REVIEW creation. Errors: 404 'Pedido no encontrado'; 400 'Solo puedes reseñar tus propios pedidos' if order.customer_id != current_user.id; 400 'Solo puedes reseñar pedidos entregados' if order.status != DELIVERED; 400 'Ya existe una reseña para este pedido' if a Review already exists for that order_id (one review per order). driver_id auto-set from order.delivery_driver_id. NOTE: writing a review does NOT recompute DeliveryProfile.average_rating here."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/reviews/my",
+      "auth": "any-auth",
+      "request": "No params. No body.",
+      "response": "list[ReviewResponse] (customer_name = current_user.full_name on each).",
+      "notes": "Returns reviews where Review.customer_id == current_user.id."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/reviews/driver/{driver_id}",
+      "auth": "public",
+      "request": "Path driver_id: int. No auth dependency — publicly accessible.",
+      "response": "list[ReviewResponse]: {id, order_id, customer_id, driver_id, rating, comment, created_at}; customer_name is NOT set here (omitted/None).",
+      "notes": "PUBLIC driver ratings list. Returns all reviews where Review.driver_id == driver_id. No authentication required."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/coupons",
+      "auth": "public",
+      "request": "No params. No body. No auth dependency.",
+      "response": "list[CouponResponse]: each {id: int, code: str, description: str|null, discount_percent: float|null, discount_amount: float|null, min_order_amount: float, max_uses: int, current_uses: int, is_active: bool, expires_at: datetime|null, created_at: datetime}.",
+      "notes": "PUBLIC. Lists active coupons: is_active == True AND (expires_at IS NULL OR expires_at > now(UTC))."
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/coupons",
+      "auth": "admin",
+      "request": "CouponCreate: {code: str (required), description: Optional[str]=None, discount_percent: Optional[float]=None, discount_amount: Optional[float]=None, min_order_amount: float = 0.0, max_uses: int = 1, expires_at: Optional[datetime]=None}.",
+      "response": "CouponResponse (see GET /coupons).",
+      "notes": "Admin-only create. Persists Coupon(**data). No validation that exactly one of discount_percent/discount_amount is set; code stored as-given (not uppercased on create, though apply uppercases input before matching)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/coupons/apply",
+      "auth": "any-auth",
+      "request": "ApplyCouponRequest: {code: str (required), order_subtotal: float (required)}.",
+      "response": "ApplyCouponResponse: {valid: bool, discount: float, message: str}.",
+      "notes": "COUPON VALIDATION. Lookup by code.upper(). Returns valid=False (discount=0) with message for each failure: 'Cupón no encontrado' (no match), 'Cupón inactivo' (is_active False), 'Cupón expirado' (expires_at < now UTC), 'Cupón agotado' (current_uses >= max_uses), 'El pedido mínimo es S/ {min_order_amount:.2f}' (order_subtotal < min_order_amount). On success: discount = subtotal*(discount_percent/100) if discount_percent set, else discount_amount; rounded to 2 decimals; message 'Cupón aplicado: -S/ {discount:.2f}'. Always HTTP 200 even when invalid (validity in body, not status code). Does NOT increment current_uses (no usage recorded here)."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/dashboard/admin",
+      "auth": "admin",
+      "request": "No params. No body. require_admin.",
+      "response": "dict: {orders_today: int, orders_change_percent: int, revenue_today: float, revenue_change_percent: int, active_users: int, total_drivers: int, available_drivers: int, pending_orders: int}.",
+      "notes": "ADMIN DASHBOARD STATS. orders_today = orders created since today-start; change% vs yesterday (0 if no yesterday orders). revenue_today = sum Order.total since today-start excluding CANCELED; change% vs yesterday. active_users = User.is_active True count. total_drivers = DeliveryProfile count. available_drivers = profiles with is_available True. pending_orders = orders with status IN (PENDING, ACCEPTED). UTC time windows."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/dashboard/customer",
+      "auth": "customer",
+      "request": "No params. No body. require_customer (role == 'customer').",
+      "response": "dict: {total_orders: int, active_orders: int, points: int (user.points), membership_level: (user.membership_level), last_order_total: float (0 if none), last_order_date: str(ISO)|null}.",
+      "notes": "CUSTOMER DASHBOARD. total_orders = all orders for user. active_orders = orders NOT IN (DELIVERED, CANCELED). last_order = most recent by created_at desc."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/dashboard/driver",
+      "auth": "delivery_driver",
+      "request": "No params. No body. require_driver.",
+      "response": "DriverStatsResponse: {deliveries_today: int, deliveries_completed: int, earnings_today: float, average_rating: float, punctuality: float, satisfaction: float, efficiency: float}.",
+      "notes": "DRIVER DASHBOARD. Delegates to delivery_service.get_driver_stats — IDENTICAL response to GET /api/v1/delivery/stats (same hardcoded +4 on deliveries_today and constants punctuality=95.0, satisfaction=92.0, efficiency=88.0, average_rating fallback 4.8)."
+    }
+  ],
+  "notes": [
+    "Global prefix '/api/v1' applied in backend/app/main.py via API_PREFIX; each router adds its own prefix (/delivery, /addresses, /reviews, /coupons, /dashboard, /orders).",
+    "Roles enforced via app/core/dependencies.py RoleChecker. require_admin=['admin'], require_customer=['customer'], require_driver=['delivery_driver'], get_current_user=any active authenticated user. User.role values: 'admin', 'customer', 'delivery_driver'.",
+    "LIVE-TRACKING SUMMARY (exact): Driver reports GPS via PATCH /api/v1/delivery/location with body {latitude, longitude, zone?} — NO 'vehicle' field in the payload (vehicle_type lives on DeliveryProfile, set elsewhere). Customer polls GET /api/v1/orders/{order_id}/tracking which returns driver_latitude, driver_longitude, driver_updated_at (ISO of profile.last_location_update), driver_zone, driver_vehicle_type ('moto'|'bicicleta'|'auto'), status, is_active (bool: status not in delivered/canceled). There is NO 'eta' field anywhere in the codebase.",
+    "The tracking endpoint is in backend/app/routers/orders.py (lines 95-145), NOT in delivery.py — included because the prompt explicitly asked for the customer-poll tracking endpoint and the GPS-report endpoint.",
+    "No dedicated 'reject order' endpoint exists; a driver rejects implicitly by not calling POST /delivery/accept/{order_id}.",
+    "Driver flow status gate: accept allowed from PENDING/ACCEPTED/PREPARING/READY; complete requires ON_THE_WAY -> DELIVERED. complete creates a DeliveryEarning(amount=order.delivery_fee) and bumps profile.total_deliveries and total_earnings.",
+    "Driver stats/dashboard contain hardcoded/synthetic values: deliveries_today = real count + 4; punctuality=95.0, satisfaction=92.0, efficiency=88.0 constants; average_rating defaults to 4.8 when profile.average_rating is falsy.",
+    "POST /coupons/apply always returns HTTP 200 (validity carried in body 'valid' flag) and does NOT increment current_uses; usage is not recorded at apply time. code matched case-insensitively via code.upper().",
+    "POST /reviews enforces one review per order and DELIVERED status + ownership; it does not recompute the driver's average_rating.",
+    "Relevant files (absolute): C:/Users/kenny/Documents/app_delivery/backend/app/routers/delivery.py, .../routers/addresses.py, .../routers/reviews.py, .../routers/coupons.py, .../routers/dashboard.py, .../routers/orders.py (tracking), .../schemas/delivery.py, address.py, review.py, coupon.py, order.py, .../services/delivery_service.py, .../services/dashboard_service.py, .../models/delivery.py, .../core/dependencies.py, .../main.py."
+  ]
+}

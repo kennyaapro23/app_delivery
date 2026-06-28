@@ -26,25 +26,61 @@ def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
 
 
 def extract_coords(address: str) -> Optional[tuple[float, float]]:
-    """Extrae (lat, lon) de un delivery_address con sufijo '(lat, lon)'."""
+    """Extrae (lat, lon) de un delivery_address con sufijo '(lat, lon)'.
+
+    Las coords reales se emiten SIEMPRE al final del string (web y app móvil).
+    Tomamos la ÚLTIMA coincidencia para que un par '(decimal, decimal)' escrito
+    por el usuario en la dirección/referencia (p.ej. 'alt. (12.5, 3.0)') no se
+    interprete como destino en lugar de las coords reales del sufijo.
+    """
     if not address:
         return None
-    m = _COORDS_RE.search(address)
-    if not m:
+    matches = _COORDS_RE.findall(address)
+    if not matches:
         return None
-    return float(m.group(1)), float(m.group(2))
+    lat, lon = matches[-1]
+    return float(lat), float(lon)
+
+
+def get_restaurant_location(db) -> tuple[float, float, str]:
+    """Ubicación del restaurante desde StoreConfig (fallback a settings).
+
+    Permite que el admin fije el punto de despacho desde la app sin redeploy.
+    Si no hay fila o falla la consulta, usa los valores por defecto de config.
+    """
+    try:
+        from app.models.store_config import StoreConfig
+        cfg = db.query(StoreConfig).filter(StoreConfig.id == 1).first()
+        if cfg and cfg.latitude is not None and cfg.longitude is not None:
+            return cfg.latitude, cfg.longitude, cfg.name
+    except Exception:
+        pass
+    return (
+        settings.RESTAURANT_LATITUDE,
+        settings.RESTAURANT_LONGITUDE,
+        settings.RESTAURANT_NAME,
+    )
 
 
 def calculate_delivery_fee(
     destination_lat: Optional[float] = None,
     destination_lon: Optional[float] = None,
     address: Optional[str] = None,
+    restaurant_lat: Optional[float] = None,
+    restaurant_lon: Optional[float] = None,
+    restaurant_name: Optional[str] = None,
 ) -> dict:
     """Calcula la tarifa de delivery basada en distancia.
 
-    Acepta (lat, lon) directos o un address con coords embebidas.
+    Acepta (lat, lon) directos o un address con coords embebidas. La ubicación
+    del restaurante puede inyectarse (desde StoreConfig); si no, usa settings.
     Devuelve un dict con todos los datos del cálculo (para mostrar al cliente).
     """
+    # Ubicación del restaurante (inyectada desde BD o fallback a config).
+    r_lat = restaurant_lat if restaurant_lat is not None else settings.RESTAURANT_LATITUDE
+    r_lon = restaurant_lon if restaurant_lon is not None else settings.RESTAURANT_LONGITUDE
+    r_name = restaurant_name or settings.RESTAURANT_NAME
+
     # Resolver coordenadas
     if destination_lat is None or destination_lon is None:
         coords = extract_coords(address or "")
@@ -66,16 +102,16 @@ def calculate_delivery_fee(
             "min": fee_min,
             "max": fee_max,
             "restaurant": {
-                "name": settings.RESTAURANT_NAME,
-                "latitude": settings.RESTAURANT_LATITUDE,
-                "longitude": settings.RESTAURANT_LONGITUDE,
+                "name": r_name,
+                "latitude": r_lat,
+                "longitude": r_lon,
             },
             "note": "Tarifa por defecto: no se pudo determinar la ubicación.",
         }
 
     distance_km = haversine_km(
-        settings.RESTAURANT_LATITUDE,
-        settings.RESTAURANT_LONGITUDE,
+        r_lat,
+        r_lon,
         destination_lat,
         destination_lon,
     )
@@ -92,9 +128,9 @@ def calculate_delivery_fee(
         "max": fee_max,
         "raw_fee": round(raw_fee, 2),
         "restaurant": {
-            "name": settings.RESTAURANT_NAME,
-            "latitude": settings.RESTAURANT_LATITUDE,
-            "longitude": settings.RESTAURANT_LONGITUDE,
+            "name": r_name,
+            "latitude": r_lat,
+            "longitude": r_lon,
         },
         "note": (
             f"S/ {base:.2f} base + {distance_km:.2f} km × S/ {per_km:.2f}"

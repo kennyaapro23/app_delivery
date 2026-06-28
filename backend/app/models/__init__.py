@@ -10,6 +10,7 @@ from app.models.delivery import DeliveryProfile, DeliveryEarning
 from app.models.address import Address
 from app.models.review import Review
 from app.models.coupon import Coupon, CouponUsage
+from app.models.store_config import StoreConfig
 
 __all__ = [
     "User",
@@ -24,4 +25,5 @@ __all__ = [
     "Review",
     "Coupon",
     "CouponUsage",
+    "StoreConfig",
 ]

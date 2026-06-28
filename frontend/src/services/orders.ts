@@ -50,7 +50,26 @@ export async function calculateDeliveryFee(payload: {
 
 export async function downloadInvoice(id: number, orderNumber: string) {
   const res = await api.get(`/orders/${id}/invoice`, { responseType: "blob" });
-  const blob = new Blob([res.data], { type: "application/pdf" });
+
+  // Aunque el status sea 2xx, algunos backends devuelven un JSON de error con
+  // content-type no-PDF. Sin validar, construiríamos un "PDF" con ese JSON y el
+  // navegador descargaría un archivo ilegible sin avisar.
+  const contentType = String(res.headers["content-type"] ?? "");
+  const data = res.data as Blob;
+  if (!contentType.includes("application/pdf")) {
+    let message = "No se pudo generar la factura";
+    try {
+      const text = await data.text();
+      const parsed = JSON.parse(text);
+      if (typeof parsed?.detail === "string") message = parsed.detail;
+      else if (text.trim()) message = text;
+    } catch {
+      // cuerpo no parseable: usar mensaje por defecto
+    }
+    throw new Error(message);
+  }
+
+  const blob = new Blob([data], { type: "application/pdf" });
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;

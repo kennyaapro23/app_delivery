@@ -24,17 +24,20 @@ export const useCartStore = create<CartState>()(
       items: [],
       add: (product, quantity = 1) =>
         set((state) => {
+          // Sanea la cantidad: evita NaN (input sin parsear), negativos o cero,
+          // que corromperían el ítem y se enviarían a createOrder.
+          const q = Math.max(1, Math.floor(Number(quantity) || 1));
           const existing = state.items.find((i) => i.product.id === product.id);
           if (existing) {
             return {
               items: state.items.map((i) =>
                 i.product.id === product.id
-                  ? { ...i, quantity: i.quantity + quantity }
+                  ? { ...i, quantity: i.quantity + q }
                   : i,
               ),
             };
           }
-          return { items: [...state.items, { product, quantity }] };
+          return { items: [...state.items, { product, quantity: q }] };
         }),
       remove: (productId) =>
         set((state) => ({
@@ -53,16 +56,32 @@ export const useCartStore = create<CartState>()(
         set((state) => {
           const byId = new Map(fresh.map((p) => [p.id, p]));
           return {
-            items: state.items.map((i) => {
-              const updated = byId.get(i.product.id);
-              return updated ? { ...i, product: updated } : i;
-            }),
+            // Además de refrescar el snapshot del producto, elimina los ítems
+            // cuyo producto refrescado quedó no disponible (is_available=false):
+            // de lo contrario el usuario los vería y pagaría, pero el backend
+            // rechazaría la orden o cobraría un total distinto.
+            items: state.items
+              .filter((i) => {
+                const updated = byId.get(i.product.id);
+                return !updated || updated.is_available;
+              })
+              .map((i) => {
+                const updated = byId.get(i.product.id);
+                return updated ? { ...i, product: updated } : i;
+              }),
           };
         }),
       clear: () => set({ items: [] }),
       subtotal: () =>
-        get().items.reduce((acc, i) => acc + i.product.price * i.quantity, 0),
-      count: () => get().items.reduce((acc, i) => acc + i.quantity, 0),
+        get().items.reduce(
+          (acc, i) => (i.product.is_available ? acc + i.product.price * i.quantity : acc),
+          0,
+        ),
+      count: () =>
+        get().items.reduce(
+          (acc, i) => (i.product.is_available ? acc + i.quantity : acc),
+          0,
+        ),
     }),
     { name: "chikenhot-cart" },
   ),

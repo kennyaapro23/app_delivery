@@ -48,6 +48,17 @@ export function LocationPicker({ value, onChange }: Props) {
   const [searching, setSearching] = useState(false);
   const debounceRef = useRef<number | null>(null);
 
+  // Auto-detectar GPS al montar si no hay ubicación previa.
+  useEffect(() => {
+    if (value) return;
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setPosition([pos.coords.latitude, pos.coords.longitude]),
+      () => {}, // si falla, queda en Lima Centro
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
+  }, []);
+
   // Sincroniza la posición interna cuando el padre cambia `value` (p.ej. al
   // abrir el formulario "Editar dirección" con lat/lon previas). Sin esto,
   // `position` queda fijado en DEFAULT_CENTER y el reverseGeocode pisaría la
@@ -134,27 +145,30 @@ export function LocationPicker({ value, onChange }: Props) {
     <div className="space-y-3">
       {/* Buscador */}
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
         <input
-          className="input-base pl-10"
+          className="input-base pl-10 pr-10"
           placeholder="Buscar dirección (ej: Av. Larco 123, Miraflores)"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         {searching && (
-          <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-neutral-400" />
+          <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-brand-500" />
         )}
         {results.length > 0 && (
-          <ul className="absolute z-[1000] mt-1 max-h-60 w-full overflow-auto rounded-lg border border-neutral-200 bg-white shadow-lg">
+          <ul className="absolute z-[1000] mt-1.5 max-h-60 w-full overflow-auto rounded-xl border border-ink-200 bg-white p-1 shadow-pop">
             {results.map((r, i) => (
               <li key={`${r.lat}-${r.lon}-${i}`}>
                 <button
                   type="button"
-                  className="block w-full px-3 py-2 text-left text-sm hover:bg-neutral-50"
+                  className="flex w-full items-start gap-2 rounded-lg px-3 py-2 text-left text-sm transition hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
                   onClick={() => pickResult(r)}
                 >
-                  <div className="font-medium">{formatShortAddress(r)}</div>
-                  <div className="truncate text-xs text-neutral-500">{r.display_name}</div>
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-500" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-medium text-ink-900">{formatShortAddress(r)}</span>
+                    <span className="block truncate text-xs text-ink-500">{r.display_name}</span>
+                  </span>
                 </button>
               </li>
             ))}
@@ -163,7 +177,7 @@ export function LocationPicker({ value, onChange }: Props) {
       </div>
 
       {/* Mapa */}
-      <div className="relative h-72 overflow-hidden rounded-xl border border-neutral-200">
+      <div className="relative h-72 overflow-hidden rounded-xl border border-ink-200 shadow-card">
         <MapContainer
           center={position}
           zoom={16}
@@ -179,39 +193,50 @@ export function LocationPicker({ value, onChange }: Props) {
           type="button"
           onClick={handleUseMyLocation}
           disabled={locating}
-          className="absolute right-3 top-3 z-[1000] inline-flex items-center gap-1 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold shadow hover:bg-neutral-50 disabled:opacity-50"
+          className="absolute right-3 top-3 z-[1000] inline-flex items-center gap-1.5 rounded-lg bg-white/90 px-3 py-1.5 text-xs font-semibold text-ink-700 shadow-pop backdrop-blur transition hover:bg-white active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           title="Usar mi ubicación"
         >
           {locating ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            <Loader2 className="h-3.5 w-3.5 animate-spin text-brand-500" />
           ) : (
-            <Crosshair className="h-3.5 w-3.5" />
+            <Crosshair className="h-3.5 w-3.5 text-brand-500" />
           )}
-          Mi ubicación
+          {locating ? "Ubicando…" : "Mi ubicación"}
         </button>
+
+        {/* Hint de interacción */}
+        <div className="pointer-events-none absolute bottom-3 left-3 z-[1000] inline-flex items-center gap-1.5 rounded-lg bg-white/90 px-2.5 py-1 text-[11px] font-medium text-ink-600 shadow-card backdrop-blur">
+          <MapPin className="h-3 w-3 text-brand-500" />
+          Toca o arrastra el pin para ajustar
+        </div>
       </div>
 
       {/* Dirección resuelta */}
-      <div className="rounded-lg bg-neutral-50 px-3 py-2 text-sm">
-        <div className="flex items-start gap-2">
-          <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-500" />
-          <div className="flex-1">
+      <div className="rounded-xl border border-ink-200 bg-surface-muted px-3 py-2.5 text-sm shadow-card">
+        <div className="flex items-start gap-2.5">
+          <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-50">
+            <MapPin className="h-4 w-4 text-brand-500" />
+          </span>
+          <div className="min-w-0 flex-1">
             {resolving && !value ? (
-              <span className="text-neutral-400">Resolviendo dirección…</span>
+              <span className="inline-flex items-center gap-1.5 text-ink-400">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                Resolviendo dirección…
+              </span>
             ) : value ? (
               <>
-                <p className="font-medium">{value.address}</p>
-                <p className="text-xs text-neutral-500">
+                <p className="font-medium text-ink-900">{value.address}</p>
+                <p className="text-xs text-ink-500">
                   {value.lat.toFixed(6)}, {value.lon.toFixed(6)}
                 </p>
               </>
             ) : (
-              <span className="text-neutral-400">
+              <span className="text-ink-400">
                 Haz click en el mapa o busca tu dirección
               </span>
             )}
           </div>
-          {resolving && value && <Loader2 className="h-4 w-4 animate-spin text-neutral-400" />}
+          {resolving && value && <Loader2 className="mt-0.5 h-4 w-4 shrink-0 animate-spin text-brand-500" />}
         </div>
       </div>
     </div>

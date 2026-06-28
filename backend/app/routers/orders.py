@@ -11,7 +11,7 @@ from io import BytesIO
 from app.database import get_db
 from app.schemas.order import OrderCreate, OrderResponse, OrderListResponse, OrderStatusUpdate
 from app.services import order_service, invoice_service
-from app.services.pricing_service import calculate_delivery_fee
+from app.services.pricing_service import calculate_delivery_fee, get_restaurant_location
 from app.core.dependencies import get_current_user, require_admin_or_driver
 from app.core.exceptions import NotFoundException, ForbiddenException
 from app.models.order import Order
@@ -29,12 +29,16 @@ class CalculateFeeRequest(BaseModel):
 
 
 @router.post("/calculate-fee")
-def preview_delivery_fee(data: CalculateFeeRequest):
+def preview_delivery_fee(data: CalculateFeeRequest, db: Session = Depends(get_db)):
     """Previsualiza la tarifa de delivery para unas coordenadas (público)."""
+    rlat, rlon, rname = get_restaurant_location(db)
     return calculate_delivery_fee(
         destination_lat=data.latitude,
         destination_lon=data.longitude,
         address=data.address,
+        restaurant_lat=rlat,
+        restaurant_lon=rlon,
+        restaurant_name=rname,
     )
 
 

@@ -5,30 +5,115 @@
 @layer base {
   html {
     font-family: "Inter", system-ui, -apple-system, sans-serif;
+    scroll-behavior: smooth;
   }
   body {
-    @apply bg-neutral-50 text-neutral-900 antialiased;
+    @apply bg-ink-50 text-ink-900 antialiased;
     margin: 0;
+  }
+  /* Selección de texto con tono de marca */
+  ::selection {
+    @apply bg-brand-100 text-brand-900;
+  }
+  /* Foco accesible global para elementos interactivos sin estilo propio */
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-400 ring-offset-2;
   }
 }
 
 @layer components {
+  /* ===== BOTONES (existentes — mejorados) ===== */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 py-2
+           text-sm font-semibold text-white shadow-card transition
+           hover:bg-brand-600 hover:shadow-card-hover
+           active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2
+           disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none disabled:active:scale-100;
   }
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 shadow-sm transition hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-ink-200 bg-white px-4 py-2
+           text-sm font-semibold text-ink-700 shadow-card transition
+           hover:bg-ink-50 hover:border-ink-300
+           active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2
+           disabled:cursor-not-allowed disabled:opacity-50;
   }
   .btn-danger {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-red-600 disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-danger-500 px-4 py-2
+           text-sm font-semibold text-white shadow-card transition
+           hover:bg-danger-600 hover:shadow-card-hover
+           active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger-400 focus-visible:ring-offset-2
+           disabled:cursor-not-allowed disabled:opacity-50;
   }
+  /* NUEVO: acción secundaria suave (tono marca) */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-brand-50 px-4 py-2
+           text-sm font-semibold text-brand-700 transition
+           hover:bg-brand-100
+           active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2
+           disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* ===== INPUTS / FORM ===== */
   .input-base {
-    @apply block w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm placeholder:text-neutral-400 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-200;
+    @apply block w-full rounded-lg border border-ink-200 bg-white px-3 py-2 text-sm text-ink-900
+           placeholder:text-ink-400 transition
+           hover:border-ink-300
+           focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-200
+           disabled:cursor-not-allowed disabled:bg-ink-50 disabled:opacity-60;
   }
+  .label {
+    @apply mb-1 block text-sm font-medium text-ink-700;
+  }
+
+  /* ===== SUPERFICIES ===== */
   .card {
-    @apply rounded-xl border border-neutral-200 bg-white shadow-sm;
+    @apply rounded-xl border border-ink-200 bg-white shadow-card;
   }
+  .card-hover {
+    @apply rounded-xl border border-ink-200 bg-white shadow-card transition
+           hover:-translate-y-0.5 hover:border-ink-300 hover:shadow-card-hover;
+  }
+  .surface {
+    @apply rounded-2xl border border-ink-200 bg-surface-muted p-6;
+  }
+
+  /* ===== CHIPS ===== */
+  .chip {
+    @apply inline-flex shrink-0 items-center gap-2 rounded-full border border-ink-200 bg-white
+           px-4 py-2 text-sm font-medium text-ink-700 transition
+           hover:border-ink-300 hover:bg-ink-50
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300
+           disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* ===== BADGES ===== */
   .badge {
     @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  .badge-success {
+    @apply bg-success-50 text-success-700;
+  }
+  .badge-warn {
+    @apply bg-warn-50 text-warn-700;
+  }
+  .badge-danger {
+    @apply bg-danger-50 text-danger-700;
+  }
+  .badge-info {
+    @apply bg-info-50 text-info-700;
+  }
+
+  /* ===== TÍTULOS ===== */
+  .section-title {
+    @apply font-display text-xl font-bold leading-snug text-ink-900;
+  }
+
+  /* ===== ESTADOS DE CARGA ===== */
+  .skeleton {
+    @apply animate-pulse bg-ink-100;
   }
 }

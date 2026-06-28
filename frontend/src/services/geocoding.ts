@@ -6,6 +6,38 @@
 
 const NOMINATIM = "https://nominatim.openstreetmap.org";
 
+// Rate limiter a nivel de servicio para cumplir la política de Nominatim
+// (máx 1 req/seg). Serializa las peticiones y garantiza >=1s entre cada una,
+// incluso si varios componentes (LocationPicker, LiveOrderMap) disparan a la vez.
+const MIN_INTERVAL_MS = 1000;
+let lastRequest = 0;
+let queue: Promise<void> = Promise.resolve();
+
+async function nominatimFetch(url: string, signal?: AbortSignal): Promise<Response> {
+  const slot = queue.then(async () => {
+    const wait = MIN_INTERVAL_MS - (Date.now() - lastRequest);
+    if (wait > 0) {
+      await new Promise<void>((resolve, reject) => {
+        const t = setTimeout(resolve, wait);
+        // Si abortan mientras esperamos el slot, no consumimos el turno con un fetch.
+        signal?.addEventListener(
+          "abort",
+          () => {
+            clearTimeout(t);
+            reject(new DOMException("Aborted", "AbortError"));
+          },
+          { once: true },
+        );
+      });
+    }
+    lastRequest = Date.now();
+  });
+  // La cola avanza aunque esta petición sea abortada, para no bloquear las demás.
+  queue = slot.catch(() => {});
+  await slot;
+  return fetch(url, { headers: { "Accept-Language": "es" }, signal });
+}
+
 export interface GeocodeResult {
   lat: number;
   lon: number;
@@ -35,10 +67,7 @@ export async function searchAddress(query: string, signal?: AbortSignal): Promis
   // Sesgo hacia Perú; cambia o quita si quieres búsqueda global.
   url.searchParams.set("countrycodes", "pe");
 
-  const res = await fetch(url.toString(), {
-    headers: { "Accept-Language": "es" },
-    signal,
-  });
+  const res = await nominatimFetch(url.toString(), signal);
   if (!res.ok) throw new Error(`Nominatim ${res.status}`);
   const json = (await res.json()) as Array<{
     lat: string;
@@ -46,12 +75,15 @@ export async function searchAddress(query: string, signal?: AbortSignal): Promis
     display_name: string;
     address?: GeocodeResult["address"];
   }>;
-  return json.map((r) => ({
-    lat: parseFloat(r.lat),
-    lon: parseFloat(r.lon),
-    display_name: r.display_name,
-    address: r.address,
-  }));
+  return json
+    .map((r) => ({
+      lat: parseFloat(r.lat),
+      lon: parseFloat(r.lon),
+      display_name: r.display_name,
+      address: r.address,
+    }))
+    // Descarta coordenadas inválidas: un lat/lon NaN rompe Leaflet (setView/Marker).
+    .filter((r) => Number.isFinite(r.lat) && Number.isFinite(r.lon));
 }
 
 /** Obtener dirección a partir de coordenadas (reverse geocoding). */
@@ -62,10 +94,7 @@ export async function reverseGeocode(lat: number, lon: number, signal?: AbortSig
   url.searchParams.set("format", "json");
   url.searchParams.set("addressdetails", "1");
 
-  const res = await fetch(url.toString(), {
-    headers: { "Accept-Language": "es" },
-    signal,
-  });
+  const res = await nominatimFetch(url.toString(), signal);
   if (!res.ok) return null;
   const json = (await res.json()) as {
     lat: string;
@@ -74,9 +103,13 @@ export async function reverseGeocode(lat: number, lon: number, signal?: AbortSig
     address?: GeocodeResult["address"];
   };
   if (!json?.display_name) return null;
+  const parsedLat = parseFloat(json.lat);
+  const parsedLon = parseFloat(json.lon);
+  // Coordenadas inválidas: devolver null en vez de pasar NaN a Leaflet.
+  if (!Number.isFinite(parsedLat) || !Number.isFinite(parsedLon)) return null;
   return {
-    lat: parseFloat(json.lat),
-    lon: parseFloat(json.lon),
+    lat: parsedLat,
+    lon: parsedLon,
     display_name: json.display_name,
     address: json.address,
   };

@@ -15,10 +15,11 @@ from app.database import engine, SessionLocal, Base
 from app.models import (  # noqa: F401
     User, Product, Category, Order, OrderItem, OrderTimeline,
     DeliveryProfile, DeliveryEarning, Address, Review, Coupon, CouponUsage,
+    StoreConfig,
 )
 
 # Importar routers
-from app.routers import auth, users, products, orders, delivery, addresses, reviews, coupons, dashboard
+from app.routers import auth, users, products, orders, delivery, addresses, reviews, coupons, dashboard, store_config
 
 settings = get_settings()
 
@@ -87,6 +88,7 @@ app.include_router(addresses.router, prefix=API_PREFIX)
 app.include_router(reviews.router, prefix=API_PREFIX)
 app.include_router(coupons.router, prefix=API_PREFIX)
 app.include_router(dashboard.router, prefix=API_PREFIX)
+app.include_router(store_config.router, prefix=API_PREFIX)
 
 
 @app.get("/", tags=["Root"])

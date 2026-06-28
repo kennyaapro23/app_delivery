@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Loader2, ChevronRight, Package } from "lucide-react";
+import { ChevronRight, Package, AlertCircle } from "lucide-react";
 import { listMyOrders } from "@/services/orders";
 import { OrderStatusBadge } from "@/components/OrderStatusBadge";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -14,7 +14,7 @@ export function DriverMyOrdersPage() {
 
   useEffect(() => {
     listMyOrders()
-      .then((d) => setOrders(d.orders))
+      .then((d) => setOrders(Array.isArray(d?.orders) ? d.orders : []))
       .catch((e) => setError(getErrorMessage(e)))
       .finally(() => setLoading(false));
   }, []);
@@ -24,31 +24,62 @@ export function DriverMyOrdersPage() {
 
   if (loading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-brand-500" />
+      <div className="mx-auto max-w-6xl px-4 py-8">
+        <div className="skeleton mb-6 h-8 w-48 rounded-lg" />
+        <div className="skeleton mb-3 h-4 w-24 rounded" />
+        <div className="space-y-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="card flex items-center justify-between p-4">
+              <div className="space-y-2">
+                <div className="skeleton h-4 w-32 rounded" />
+                <div className="skeleton h-3 w-24 rounded" />
+              </div>
+              <div className="skeleton h-8 w-16 rounded" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
   if (error) {
-    return <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>;
+    return (
+      <div className="mx-auto max-w-6xl px-4 py-8">
+        <div className="flex items-start gap-2 rounded-lg border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-700">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          <span>{error}</span>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h1 className="mb-4 text-xl font-bold">Mis pedidos</h1>
+    <div className="mx-auto max-w-6xl px-4 py-8">
+      <h1 className="mb-6 font-display text-3xl font-bold leading-tight tracking-tight text-ink-900">
+        Mis pedidos
+      </h1>
 
-      <section className="mb-6">
-        <h2 className="mb-2 text-sm font-semibold text-neutral-600">Activos ({active.length})</h2>
+      <section className="mb-8">
+        <div className="mb-4 flex items-center gap-2">
+          <h2 className="section-title">Activos</h2>
+          <span className="badge badge-info">{active.length}</span>
+        </div>
         {active.length === 0 ? (
-          <div className="rounded-xl border border-dashed py-8 text-center text-sm text-neutral-500">
-            <Package className="mx-auto h-8 w-8 text-neutral-300" />
-            <p className="mt-2">No tienes pedidos asignados</p>
-            <Link to="/delivery/available" className="mt-3 inline-block text-brand-600 underline">
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-ink-300 bg-surface-muted px-6 py-12 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-50 text-brand-500">
+              <Package className="h-7 w-7" />
+            </div>
+            <h3 className="mt-4 font-display text-lg font-bold text-ink-800">
+              No tienes pedidos asignados
+            </h3>
+            <p className="mt-1 text-sm text-ink-500">
+              Acepta un pedido disponible para empezar a entregar.
+            </p>
+            <Link to="/delivery/available" className="btn-secondary mt-5">
               Ver pedidos disponibles
             </Link>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {active.map((o) => (
               <OrderRow key={o.id} order={o} />
             ))}
@@ -58,8 +89,8 @@ export function DriverMyOrdersPage() {
 
       {past.length > 0 && (
         <section>
-          <h2 className="mb-2 text-sm font-semibold text-neutral-600">Historial</h2>
-          <div className="space-y-2">
+          <h2 className="section-title mb-4">Historial</h2>
+          <div className="space-y-3">
             {past.slice(0, 20).map((o) => (
               <OrderRow key={o.id} order={o} />
             ))}
@@ -74,21 +105,25 @@ function OrderRow({ order }: { order: Order }) {
   return (
     <Link
       to={`/delivery/my-orders/${order.id}`}
-      className="card flex items-center justify-between p-4 transition hover:shadow-md"
+      className="card-hover group flex items-center justify-between gap-4 p-4"
     >
-      <div>
-        <div className="flex items-center gap-2">
-          <span className="font-bold">{order.order_number}</span>
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="font-semibold text-ink-900 transition group-hover:text-brand-600">
+            {order.order_number}
+          </span>
           <OrderStatusBadge status={order.status} />
         </div>
-        <p className="mt-1 text-xs text-neutral-500">{formatDate(order.created_at)}</p>
+        <p className="mt-1 text-xs text-ink-500">{formatDate(order.created_at)}</p>
       </div>
-      <div className="flex items-center gap-2 text-right">
+      <div className="flex shrink-0 items-center gap-3 text-right">
         <div>
-          <div className="font-semibold">{formatCurrency(order.delivery_fee)}</div>
-          <div className="text-xs text-neutral-500">delivery</div>
+          <div className="font-display text-base font-bold text-brand-600">
+            {formatCurrency(order.delivery_fee)}
+          </div>
+          <div className="text-xs text-ink-500">delivery</div>
         </div>
-        <ChevronRight className="h-4 w-4 text-neutral-400" />
+        <ChevronRight className="h-4 w-4 text-ink-400 transition group-hover:translate-x-0.5 group-hover:text-brand-500" />
       </div>
     </Link>
   );

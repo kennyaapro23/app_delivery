@@ -3,7 +3,8 @@ import { Layout } from "@/components/Layout";
 import { AdminLayout } from "@/components/AdminLayout";
 import { DriverLayout } from "@/components/DriverLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { RoleGuard } from "@/components/RoleGuard";
+import { RoleGuard, defaultHomeForRole } from "@/components/RoleGuard";
+import { useAuthStore, useAuthHydrated } from "@/store/auth";
 
 // Cliente
 import { LoginPage } from "@/pages/LoginPage";
@@ -28,6 +29,7 @@ import { AdminProductsPage } from "@/pages/admin/AdminProductsPage";
 import { AdminUsersPage } from "@/pages/admin/AdminUsersPage";
 import { AdminDriversPage } from "@/pages/admin/AdminDriversPage";
 import { AdminCouponsPage } from "@/pages/admin/AdminCouponsPage";
+import { AdminStoreConfigPage } from "@/pages/admin/AdminStoreConfigPage";
 
 // Driver
 import { DriverDashboardPage } from "@/pages/driver/DriverDashboardPage";
@@ -37,6 +39,19 @@ import { DriverMyOrdersPage } from "@/pages/driver/DriverMyOrdersPage";
 import { DriverOrderDetailPage } from "@/pages/driver/DriverOrderDetailPage";
 import { DriverEarningsPage } from "@/pages/driver/DriverEarningsPage";
 import { DriverRatingsPage } from "@/pages/driver/DriverRatingsPage";
+
+/**
+ * Redirige según el rol cuando hay sesión; en otro caso manda a la home pública.
+ * Espera la rehidratación para no decidir con role=null en un hard-reload.
+ */
+function RoleAwareRedirect() {
+  const hydrated = useAuthHydrated();
+  const token = useAuthStore((s) => s.accessToken);
+  const role = useAuthStore((s) => s.role);
+  if (!hydrated) return null;
+  if (token && role) return <Navigate to={defaultHomeForRole(role)} replace />;
+  return <Navigate to="/" replace />;
+}
 
 export default function App() {
   return (
@@ -48,7 +63,7 @@ export default function App() {
           <Route path="products/:id" element={<ProductDetailPage />} />
           <Route path="cart" element={<CartPage />} />
           <Route path="favorites" element={<FavoritesPage />} />
-          <Route element={<ProtectedRoute />}>
+          <Route element={<ProtectedRoute allow={["customer"]} />}>
             <Route path="checkout" element={<CheckoutPage />} />
             <Route path="orders" element={<OrdersPage />} />
             <Route path="orders/:id" element={<OrderDetailPage />} />
@@ -68,6 +83,7 @@ export default function App() {
             <Route path="users" element={<AdminUsersPage />} />
             <Route path="drivers" element={<AdminDriversPage />} />
             <Route path="coupons" element={<AdminCouponsPage />} />
+            <Route path="store" element={<AdminStoreConfigPage />} />
           </Route>
         </Route>
 
@@ -89,7 +105,7 @@ export default function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/register-driver" element={<DriverRegisterPage />} />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<RoleAwareRedirect />} />
       </Routes>
     </BrowserRouter>
   );

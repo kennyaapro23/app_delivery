@@ -25,6 +25,10 @@ npm-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# ----- Mobile / Flutter -----
+*.apk
+*.aab
+
 # ----- Editor / OS -----
 .vscode/
 .idea/

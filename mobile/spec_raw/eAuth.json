@@ -1,0 +1,105 @@
+{
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "auth": "public",
+      "request": "OAuth2PasswordRequestForm (application/x-www-form-urlencoded): username:str (used as the email), password:str. Optional OAuth2 fields grant_type/scope/client_id/client_secret accepted but ignored. Rate-limited via auth_rate_limit.",
+      "response": "TokenResponse: access_token:str, refresh_token:str, token_type:str='bearer', user_id:int, role:str, full_name:str",
+      "notes": "OAuth2 form login; also the tokenUrl for OAuth2PasswordBearer ('/api/v1/auth/login'). form_data.username is passed as email to authenticate_user, then create_tokens. Bad credentials or inactive account -> CredentialsException 401 ('Email o contrasena incorrectos' / 'Cuenta desactivada')."
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login/json",
+      "auth": "public",
+      "request": "LoginRequest (JSON body): email:EmailStr, password:str. Rate-limited via auth_rate_limit.",
+      "response": "TokenResponse: access_token:str, refresh_token:str, token_type:str='bearer', user_id:int, role:str, full_name:str",
+      "notes": "JSON login variant for the frontend. Same authenticate_user + create_tokens flow and same 401 errors as /login."
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/register",
+      "auth": "public",
+      "request": "RegisterRequest (JSON body): email:EmailStr, password:str, full_name:str, phone:str|None=None, role:str='customer' (valid: 'admin','customer','delivery_driver' from UserRole). Rate-limited via auth_rate_limit.",
+      "response": "TokenResponse: access_token:str, refresh_token:str, token_type:str='bearer', user_id:int, role:str, full_name:str",
+      "notes": "Creates a User (default role 'customer'); returns tokens immediately (auto-login). Duplicate email -> ConflictException 409 ('Ya existe una cuenta con este email'). Invalid role -> BadRequestException 400. New user defaults: is_active=True, points=0, membership_level=BRONCE. Password bcrypt-hashed (truncated to 72 bytes)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/register-driver",
+      "auth": "public",
+      "request": "DriverRegisterRequest (JSON body). Account: email:EmailStr, password:str, full_name:str, phone:str|None=None. Personal: document_id:str|None, birth_date:str|None, gender:str|None('masculino'|'femenino'|'otro'), home_address:str|None, home_district:str|None. Emergency: emergency_contact_name:str|None, emergency_contact_phone:str|None, emergency_contact_relation:str|None. Vehicle: vehicle_type:str|None('moto'|'bicicleta'|'auto'), vehicle_brand:str|None, vehicle_model:str|None, vehicle_year:int|None, vehicle_color:str|None, vehicle_plate:str|None, license_number:str|None, license_expiry:str|None, insurance_number:str|None, insurance_expiry:str|None. Bank: bank_name:str|None, bank_account_type:str|None('ahorros'|'corriente'), bank_account:str|None, bank_cci:str|None, bank_account_holder:str|None. All fields except the 3 account ones default to None. Rate-limited via auth_rate_limit.",
+      "response": "TokenResponse: access_token:str, refresh_token:str, token_type:str='bearer', user_id:int, role:str(='delivery_driver'), full_name:str",
+      "notes": "Creates a User with role=delivery_driver PLUS a DeliveryProfile in one call (single DB transaction: db.flush() then commit). DeliveryProfile.is_available defaults to False. vehicle_type, if provided, is validated against VehicleType enum -> BadRequestException 400 if invalid, then coerced to the enum. Duplicate email -> ConflictException 409. Returns tokens (auto-login)."
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/refresh",
+      "auth": "public (requires a valid refresh token in the body, NOT a Bearer header)",
+      "request": "RefreshTokenRequest (JSON body): refresh_token:str",
+      "response": "TokenResponse: access_token:str, refresh_token:str, token_type:str='bearer', user_id:int, role:str, full_name:str",
+      "notes": "NOT rate-limited (no auth_rate_limit dependency). Decodes the refresh token and requires payload['type']=='refresh', else CredentialsException 401 ('Refresh token invalido'). Looks up the user by 'sub'; if missing or inactive -> CredentialsException 401 ('Usuario no encontrado o inactivo'). Issues a brand-new access AND refresh token pair (full rotation). No server-side token revocation/blacklist."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "auth": "any-auth (Bearer access token via get_current_user)",
+      "request": "No body/params. Requires Authorization: Bearer <access_token> header.",
+      "response": "UserResponse: id:int, email:EmailStr, full_name:str, phone:str|None, role:str, is_active:bool, points:int, membership_level:str, created_at:datetime",
+      "notes": "Returns the authenticated user's own profile (the SQLAlchemy User serialized via UserResponse, from_attributes=True). get_current_user decodes the token, loads User by 'sub', and raises CredentialsException 401 if token invalid, user missing, or user is_active=False. Note: get_current_user does NOT verify token 'type', so a refresh token in the Bearer header would also be accepted here."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users/stats",
+      "auth": "admin (require_admin = RoleChecker(['admin']))",
+      "request": "No body/params. Requires Bearer access token of an admin.",
+      "response": "UserStatsResponse: total_users:int, active_users:int, customers:int, drivers:int, admins:int, new_this_week:int",
+      "notes": "Admin-only aggregate counts. new_this_week = users with created_at within the last 7 days. Declared before the '/{user_id}' route so 'stats' is not captured as a user_id. Non-admin -> ForbiddenException 403 ('Se requiere rol: admin')."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users",
+      "auth": "admin (require_admin)",
+      "request": "Query params: skip:int=0 (ge=0), limit:int=50 (ge=1, le=100), role:str|None=None (filters User.role exact match), search:str|None=None (case-insensitive ILIKE match on full_name OR email).",
+      "response": "UserListResponse: users: list[UserResponse], total:int. Each UserResponse: id:int, email:EmailStr, full_name:str, phone:str|None, role:str, is_active:bool, points:int, membership_level:str, created_at:datetime. NOTE: total is the count of ALL matching rows (pre-pagination), not len(users).",
+      "notes": "Path is exactly '/api/v1/users' (router prefix '/users', empty route path ''). Results ordered by created_at DESC, then offset/limit applied. Admin-only."
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users/{user_id}",
+      "auth": "admin (require_admin)",
+      "request": "Path param: user_id:int. Bearer admin token.",
+      "response": "UserResponse: id:int, email:EmailStr, full_name:str, phone:str|None, role:str, is_active:bool, points:int, membership_level:str, created_at:datetime",
+      "notes": "Admin-only fetch of any user by ID. Not found -> NotFoundException 404 ('Usuario no encontrado')."
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/users/{user_id}",
+      "auth": "any-auth, but ownership-or-admin enforced in handler (uses get_current_user, NOT require_admin)",
+      "request": "Path param: user_id:int. Body UserUpdate (JSON, all optional, only set fields applied via model_dump(exclude_unset=True)): full_name:str|None=None, phone:str|None=None, email:EmailStr|None=None, is_active:bool|None=None.",
+      "response": "UserResponse: id:int, email:EmailStr, full_name:str, phone:str|None, role:str, is_active:bool, points:int, membership_level:str, created_at:datetime",
+      "notes": "Authorization: if current_user.role != 'admin' AND current_user.id != user_id -> ForbiddenException 403 ('Solo puedes editar tu propio perfil'). So a non-admin may edit ONLY their own profile; an admin may edit anyone. Caveat: a non-admin editing their own record CAN set is_active=False (self-deactivate) and change their own email, since UserUpdate exposes those fields and no field-level role check exists. role/points/membership_level are NOT editable through this schema. Target not found -> NotFoundException 404."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/users/{user_id}",
+      "auth": "admin (require_admin)",
+      "request": "Path param: user_id:int. Bearer admin token.",
+      "response": "UserResponse: id:int, email:EmailStr, full_name:str, phone:str|None, role:str, is_active:bool(=False after call), points:int, membership_level:str, created_at:datetime",
+      "notes": "Soft delete: sets is_active=False and returns the updated user; the row is NOT physically deleted. Not found -> NotFoundException 404. Admin-only."
+    }
+  ],
+  "notes": [
+    "TOKEN FORMAT (core/security.py): JWTs signed with HS256 (settings.ALGORITHM) using settings.SECRET_KEY. Payload built in auth_service.create_tokens as {'sub': str(user.id), 'role': user.role}. create_access_token adds {'exp': now+ACCESS_TOKEN_EXPIRE_MINUTES, 'type':'access'}; create_refresh_token adds {'exp': now+REFRESH_TOKEN_EXPIRE_DAYS days, 'type':'refresh'}. exp uses timezone-aware UTC. decode_token returns the payload dict or None on any JWTError (no distinct expired-vs-invalid signal).",
+    "TOKEN EXPIRY (config.py defaults): ACCESS_TOKEN_EXPIRE_MINUTES=60 (1 hour), REFRESH_TOKEN_EXPIRE_DAYS=7. Both overridable via env. SECRET_KEY default is the insecure dev sentinel; in ENVIRONMENT=production the app refuses to start if SECRET_KEY is the default or <32 chars, if DEBUG is True, or if CORS_ORIGINS contains '*'.",
+    "AUTH DEPENDENCIES (core/dependencies.py): oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/v1/auth/login'). get_current_user: decode token -> require non-None payload and 'sub' -> load User by id -> require user exists and is_active, else CredentialsException (401). It does NOT check token 'type', so a refresh token would also authenticate at protected endpoints. get_current_active_user is a defined but (in these routers) unused extra is_active guard.",
+    "ROLE DEPENDENCIES: RoleChecker(allowed_roles) builds on get_current_user and raises ForbiddenException (403, 'Se requiere rol: <roles>') if current_user.role not in allowed_roles. Prebuilt shortcuts: require_admin=['admin'], require_customer=['customer'], require_driver=['delivery_driver'], require_admin_or_driver=['admin','delivery_driver']. Only require_admin and get_current_user are used by the users router.",
+    "REFRESH FLOW (auth_service.refresh_access_token): POST /api/v1/auth/refresh with {refresh_token}. Validates payload['type']=='refresh' (rejects access tokens), reloads the user, requires is_active, then returns a fully new access+refresh pair via create_tokens (rotation). No blacklist/revocation: old tokens stay valid until natural expiry; logout is purely client-side. /refresh is NOT behind the rate limiter, unlike /login, /login/json, /register, /register-driver.",
+    "PASSWORD RULES: NO complexity/length validation anywhere (schemas use plain `password: str`). hash_password truncates the password to the first 72 bytes (bcrypt limit) before bcrypt.hashpw with a fresh gensalt; verify_password truncates the same way and returns False on bcrypt ValueError. Stored as users.hashed_password (String(255)). Email uniqueness enforced at registration (ConflictException) and by a DB unique index on users.email.",
+    "MEMBERSHIP & POINTS (models/user.py): User.points:int default 0; User.membership_level is SAEnum(MembershipLevel) default BRONCE. MembershipLevel values: 'BRONCE','PLATA','ORO','PLATINO'. Within these reviewed files there is NO logic that increments points or promotes/recalculates membership level (any such logic, if present, lives in the orders/other services, not in auth/users). UserUpdate does not expose points or membership_level, so they cannot be changed via the user CRUD endpoints. UserResponse serializes the enum as its string value.",
+    "RATE LIMITING (core/rate_limit.py): auth_rate_limit is an in-process sliding-window RateLimiter keyed by client IP (X-Forwarded-For first hop, else request.client.host). Defaults AUTH_RATE_LIMIT_MAX_ATTEMPTS=10 per AUTH_RATE_LIMIT_WINDOW_SECONDS=60. On exceed -> RateLimitException with Retry-After (429). State is per-process/in-memory only (not shared across workers/replicas; Redis recommended for production per the module docstring). Applied to /login, /login/json, /register, /register-driver; NOT to /refresh or /auth/me.",
+    "ROUTING/PREFIX: main.py mounts each router under API_PREFIX='/api/v1'. auth.router prefix='/auth' (tag 'Autenticacion'); users.router prefix='/users' (tag 'Usuarios'). Full paths therefore are /api/v1/auth/... and /api/v1/users.... The list route is registered with empty path '' giving exactly /api/v1/users (no trailing slash). CORS allows credentials with explicit origins; security headers middleware sets X-Content-Type-Options, X-Frame-Options=DENY, Referrer-Policy, Permissions-Policy (and HSTS in production).",
+    "EXCEPTIONS -> HTTP STATUS (referenced from app.core.exceptions, used throughout): CredentialsException=401, ForbiddenException=403, NotFoundException=404, ConflictException=409, BadRequestException=400, RateLimitException=429. (Status codes inferred from standard FastAPI exception usage; the exceptions module itself was not opened in this pass.)",
+    "FILES READ: backend/app/routers/auth.py, backend/app/routers/users.py, backend/app/schemas/auth.py, backend/app/schemas/user.py, backend/app/core/security.py, backend/app/core/dependencies.py. Cross-referenced for accuracy: backend/app/services/auth_service.py, backend/app/services/user_service.py, backend/app/core/rate_limit.py, backend/app/config.py, backend/app/main.py, backend/app/models/user.py."
+  ]
+}

@@ -7,6 +7,8 @@ import "leaflet/dist/leaflet.css";
 import { Loader2, Bike, MapPin, Clock, Route } from "lucide-react";
 import { getOrderTracking, type OrderTracking } from "@/services/tracking";
 import { searchAddress } from "@/services/geocoding";
+import { getStoreConfig, type StoreConfig } from "@/services/storeConfig";
+import { restaurantIcon } from "@/lib/restaurantMarker";
 
 // Velocidades promedio en ciudad (km/h) por tipo de vehículo.
 const SPEEDS_KMH: Record<string, number> = {
@@ -37,10 +39,24 @@ function formatEta(minutes: number): string {
 }
 
 function timeAgoSec(sec: number): string {
+  // Si el reloj del cliente va por detrás del timestamp del servidor (sec < 0),
+  // tratamos como "ahora" en vez de mostrar tiempos negativos.
   if (sec < 5) return "ahora";
   if (sec < 60) return `hace ${Math.round(sec)}s`;
   const m = Math.floor(sec / 60);
   return `hace ${m} min`;
+}
+
+/**
+ * Parsea un timestamp ISO-8601 a epoch ms. Si el backend serializa timestamps
+ * "naive" (sin sufijo `Z` ni offset, p.ej. `2026-06-28T15:00:00`), el navegador
+ * los interpretaría en zona LOCAL en vez de UTC, desfasando las fechas horas.
+ * Para timestamps naive asumimos UTC añadiendo `Z` antes de parsear.
+ */
+function parseServerTimestamp(value: string): number {
+  const hasZone = /[zZ]$|[+-]\d{2}:?\d{2}$/.test(value.trim());
+  const normalized = hasZone ? value : `${value}Z`;
+  return new Date(normalized).getTime();
 }
 
 const COORDS_RE = /\((-?\d+\.\d+),\s*(-?\d+\.\d+)\)/;
@@ -92,12 +108,36 @@ export function LiveOrderMap({ orderId, refreshSeconds = 5, height = 320 }: Prop
   const [loading, setLoading] = useState(true);
   const [geocodedDest, setGeocodedDest] = useState<{ lat: number; lon: number } | null>(null);
   const [lastFetchAt, setLastFetchAt] = useState<number>(Date.now());
+  const [store, setStore] = useState<StoreConfig | null>(null);
   const intervalRef = useRef<number | null>(null);
+
+  // Ubicación del restaurante para pintar su pin. Error silencioso: si no carga,
+  // simplemente no mostramos el marcador y el resto del mapa sigue funcionando.
+  useEffect(() => {
+    let cancelled = false;
+    getStoreConfig()
+      .then((cfg) => {
+        if (!cancelled) setStore(cfg);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
 
-    const fetchOnce = async () => {
+    // Función auxiliar para detener el polling de forma idempotente. No depende
+    // del orden de asignación de `intervalRef.current`.
+    const stopPolling = () => {
+      if (intervalRef.current != null) {
+        window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+
+    const tick = async () => {
       try {
         const d = await getOrderTracking(orderId);
         if (cancelled) return;
@@ -105,11 +145,12 @@ export function LiveOrderMap({ orderId, refreshSeconds = 5, height = 320 }: Prop
         setLastFetchAt(Date.now());
         setError(null);
         // Si el pedido ya no está activo (entregado/cancelado), corta el polling
-        // para no quemar red con un pedido cerrado.
-        if (!d.is_active && intervalRef.current) {
-          window.clearInterval(intervalRef.current);
-          intervalRef.current = null;
-        }
+        // para no quemar red con un pedido cerrado. Llamamos a `stopPolling`
+        // siempre que `is_active` sea false: aunque el primer `tick()` resuelva
+        // ANTES de crear el intervalo, este efecto ya habrá ejecutado la línea
+        // del setInterval cuando el microtask de la promesa corra, así que
+        // `intervalRef.current` apuntará al intervalo y se cancelará bien.
+        if (!d.is_active) stopPolling();
       } catch {
         if (!cancelled) setError("No se pudo obtener seguimiento");
       } finally {
@@ -117,14 +158,15 @@ export function LiveOrderMap({ orderId, refreshSeconds = 5, height = 320 }: Prop
       }
     };
 
-    fetchOnce();
-    intervalRef.current = window.setInterval(fetchOnce, refreshSeconds * 1000);
+    // Creamos el intervalo ANTES de disparar el primer fetch para que, si la
+    // primera respuesta llega con is_active=false, `stopPolling` ya tenga el id
+    // del intervalo que cancelar (evita el polling huérfano contra un pedido
+    // cerrado).
+    intervalRef.current = window.setInterval(tick, refreshSeconds * 1000);
+    tick();
     return () => {
       cancelled = true;
-      if (intervalRef.current) {
-        window.clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
+      stopPolling();
     };
   }, [orderId, refreshSeconds]);
 
@@ -157,16 +199,24 @@ export function LiveOrderMap({ orderId, refreshSeconds = 5, height = 320 }: Prop
 
   if (loading) {
     return (
-      <div className="flex h-48 items-center justify-center rounded-xl border border-neutral-200 bg-neutral-50">
+      <div
+        style={{ height }}
+        className="flex flex-col items-center justify-center gap-2 rounded-xl border border-ink-200 bg-surface-muted text-sm text-ink-500"
+      >
         <Loader2 className="h-6 w-6 animate-spin text-brand-500" />
+        <span>Cargando seguimiento…</span>
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="rounded-xl border border-dashed border-neutral-300 p-6 text-center text-sm text-neutral-500">
-        {error ?? "Sin datos de seguimiento"}
+      <div
+        style={{ height }}
+        className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-ink-300 bg-surface-muted px-6 text-center text-sm text-ink-500"
+      >
+        <MapPin className="h-6 w-6 text-ink-400" />
+        <span>{error ?? "Sin datos de seguimiento"}</span>
       </div>
     );
   }
@@ -186,34 +236,68 @@ export function LiveOrderMap({ orderId, refreshSeconds = 5, height = 320 }: Prop
 
   return (
     <div className="space-y-2">
-      <div style={{ height }} className="relative overflow-hidden rounded-xl border border-neutral-200">
+      <div style={{ height }} className="relative overflow-hidden rounded-xl border border-ink-200 shadow-card">
         <MapContainer center={center} zoom={14} style={{ height: "100%", width: "100%" }} scrollWheelZoom={false}>
           <BaseTileLayer />
           <AutoFit dest={dest} driver={driver} />
+          {store && Number.isFinite(store.latitude) && Number.isFinite(store.longitude) && (
+            <Marker position={[store.latitude, store.longitude]} icon={restaurantIcon}>
+              <Popup>
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-1.5 font-semibold text-ink-900">
+                    <span className="text-base">🍗</span>
+                    {store.name}
+                  </div>
+                  {store.address && (
+                    <div className="text-xs text-ink-500">{store.address}</div>
+                  )}
+                </div>
+              </Popup>
+            </Marker>
+          )}
           {dest && (
             <Marker position={[dest.lat, dest.lon]} icon={destinationIcon}>
-              <Popup>📍 Destino de entrega</Popup>
+              <Popup>
+                <div className="flex items-center gap-1.5 font-semibold text-ink-900">
+                  <span className="text-base">📍</span> Destino de entrega
+                </div>
+              </Popup>
             </Marker>
           )}
           {driver && (
             <Marker position={[driver.lat, driver.lon]} icon={driverIcon}>
               <Popup>
-                🛵 {data.driver_name ?? "Repartidor"}
-                {data.driver_phone && <><br />📞 {data.driver_phone}</>}
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-1.5 font-semibold text-ink-900">
+                    <span className="text-base">🛵</span>
+                    {data.driver_name ?? "Repartidor"}
+                  </div>
+                  {data.driver_phone && (
+                    <a
+                      href={`tel:${data.driver_phone}`}
+                      className="flex items-center gap-1.5 text-info-700 hover:underline"
+                    >
+                      <span>📞</span> {data.driver_phone}
+                    </a>
+                  )}
+                </div>
               </Popup>
             </Marker>
           )}
           {driver && dest && (
             <Polyline
               positions={[[driver.lat, driver.lon], [dest.lat, dest.lon]]}
-              pathOptions={{ color: "#3b82f6", weight: 3, dashArray: "8 6", opacity: 0.7 }}
+              pathOptions={{ color: "#1570ef", weight: 4, dashArray: "8 6", opacity: 0.75 }}
             />
           )}
         </MapContainer>
 
         {data.is_active && (
-          <div className="absolute right-2 top-2 z-[1000] inline-flex items-center gap-1 rounded-full bg-white px-2 py-1 text-xs font-semibold text-neutral-700 shadow">
-            <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-green-500" />
+          <div className="absolute right-2 top-2 z-[1000] inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-ink-700 shadow-pop backdrop-blur">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success-500 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-success-500" />
+            </span>
             En vivo
           </div>
         )}
@@ -223,9 +307,9 @@ export function LiveOrderMap({ orderId, refreshSeconds = 5, height = 320 }: Prop
       {/* Banner de ETA / distancia */}
       <EtaBanner data={data} driver={driver} dest={dest} />
 
-      <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-neutral-500">
-        <span className="inline-flex items-center gap-1">
-          <Bike className="h-3 w-3" />
+      <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-ink-500">
+        <span className="inline-flex items-center gap-1.5 font-medium text-ink-600">
+          <Bike className="h-3.5 w-3.5 text-ink-400" />
           {data.driver_name ?? "Sin repartidor asignado"}
         </span>
         {data.driver_updated_at ? (
@@ -235,10 +319,10 @@ export function LiveOrderMap({ orderId, refreshSeconds = 5, height = 320 }: Prop
             refreshSeconds={refreshSeconds}
           />
         ) : driver ? (
-          <span>—</span>
+          <span className="text-ink-400">—</span>
         ) : (
-          <span className="inline-flex items-center gap-1">
-            <MapPin className="h-3 w-3" /> Esperando ubicación
+          <span className="inline-flex items-center gap-1.5">
+            <MapPin className="h-3.5 w-3.5 text-ink-400" /> Esperando ubicación
           </span>
         )}
       </div>
@@ -264,13 +348,16 @@ function RefreshIndicator({
     const id = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(id);
   }, []);
-  const ageSec = (now - new Date(driverUpdatedAt).getTime()) / 1000;
+  const ageSec = (now - parseServerTimestamp(driverUpdatedAt)) / 1000;
   const countdown = Math.max(0, refreshSeconds - Math.floor((now - lastFetchAt) / 1000));
   return (
-    <span>
-      GPS del repartidor: {timeAgoSec(ageSec)}
-      <span className="ml-1 text-neutral-300">·</span>
-      <span className="ml-1">Actualiza en {countdown}s</span>
+    <span className="inline-flex items-center gap-1.5">
+      <span>GPS del repartidor: {timeAgoSec(ageSec)}</span>
+      <span className="text-ink-300">·</span>
+      <span className="inline-flex items-center gap-1 text-ink-400">
+        <Clock className="h-3 w-3" />
+        Actualiza en {countdown}s
+      </span>
     </span>
   );
 }
@@ -295,8 +382,8 @@ function EtaBanner({
   if (!eta) {
     if (!data.is_active) return null;
     return (
-      <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-        <Clock className="h-4 w-4" />
+      <div className="flex items-center gap-2 rounded-lg border border-warn-200 bg-warn-50 px-3 py-2 text-sm text-warn-700">
+        <Clock className="h-4 w-4 shrink-0" />
         <span>Esperando ubicación del repartidor para calcular ETA…</span>
       </div>
     );
@@ -305,29 +392,31 @@ function EtaBanner({
   // Color del banner según el estado
   const tone =
     data.status === "on_the_way"
-      ? "border-green-200 bg-green-50 text-green-800"
+      ? "border-success-200 bg-success-50 text-success-700"
       : data.status === "delivered"
-      ? "border-neutral-200 bg-neutral-50 text-neutral-600"
-      : "border-blue-200 bg-blue-50 text-blue-800";
+      ? "border-ink-200 bg-surface-muted text-ink-600"
+      : "border-info-200 bg-info-50 text-info-700";
 
   return (
-    <div className={`flex items-center justify-between gap-3 rounded-lg border px-3 py-2 ${tone}`}>
-      <div className="flex items-center gap-2">
-        <Clock className="h-5 w-5" />
+    <div className={`flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 shadow-card ${tone}`}>
+      <div className="flex items-center gap-2.5">
+        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/70">
+          <Clock className="h-5 w-5" />
+        </span>
         <div>
-          <div className="text-xs uppercase tracking-wide opacity-70">
+          <div className="text-[11px] font-semibold uppercase tracking-wide opacity-70">
             {data.status === "on_the_way"
               ? "Llegada estimada"
               : data.status === "delivered"
               ? "Entregado"
               : "ETA aprox."}
           </div>
-          <div className="text-lg font-bold leading-tight">
+          <div className="font-display text-lg font-bold leading-tight">
             {data.status === "delivered" ? "—" : formatEta(eta.minutes)}
           </div>
         </div>
       </div>
-      <div className="flex items-center gap-1 text-xs">
+      <div className="inline-flex items-center gap-1 rounded-full bg-white/70 px-2.5 py-1 text-xs font-semibold">
         <Route className="h-3.5 w-3.5" />
         {eta.km.toFixed(2)} km
       </div>

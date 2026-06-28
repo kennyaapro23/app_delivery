@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  Loader2, Star, MapPin, List, Map as MapIcon, X,
+  Star, MapPin, List, Map as MapIcon, X,
   Phone, Mail, FileText, Calendar, Heart, CreditCard, Car,
+  AlertCircle, Bike,
 } from "lucide-react";
 import { MapContainer, Marker, Popup } from "react-leaflet";
 import { BaseTileLayer } from "@/components/BaseTileLayer";
@@ -15,7 +16,7 @@ import { getErrorMessage } from "@/lib/api";
 const DEFAULT_CENTER: [number, number] = [-12.0464, -77.0428];
 
 function driverIcon(available: boolean) {
-  const color = available ? "#10b981" : "#9ca3af";
+  const color = available ? "#12b76a" : "#a8a097";
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
       <circle cx="18" cy="18" r="14" fill="${color}" stroke="white" stroke-width="3"/>
@@ -60,41 +61,70 @@ export function AdminDriversPage() {
       : DEFAULT_CENTER;
 
   return (
-    <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Repartidores</h1>
-        <div className="inline-flex rounded-lg border border-neutral-200 bg-white p-1">
+    <div className="mx-auto max-w-6xl px-4 py-8">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="font-display text-3xl font-bold leading-tight tracking-tight text-ink-900">
+            Repartidores
+          </h1>
+          <p className="mt-1 text-sm text-ink-500">
+            Consulta el equipo de reparto y su ubicación en tiempo real.
+          </p>
+        </div>
+        <div className="inline-flex rounded-lg border border-ink-200 bg-white p-1 shadow-card">
           <button onClick={() => setTab("list")}
-                  className={cn("inline-flex items-center gap-1 rounded-md px-3 py-1 text-sm font-medium transition",
-                                tab === "list" ? "bg-brand-500 text-white" : "text-neutral-600 hover:bg-neutral-100")}>
+                  className={cn("inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300",
+                                tab === "list" ? "bg-brand-500 text-white shadow-card" : "text-ink-600 hover:bg-ink-50")}>
             <List className="h-4 w-4" /> Lista
           </button>
           <button onClick={() => setTab("map")}
-                  className={cn("inline-flex items-center gap-1 rounded-md px-3 py-1 text-sm font-medium transition",
-                                tab === "map" ? "bg-brand-500 text-white" : "text-neutral-600 hover:bg-neutral-100")}>
+                  className={cn("inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300",
+                                tab === "map" ? "bg-brand-500 text-white shadow-card" : "text-ink-600 hover:bg-ink-50")}>
             <MapIcon className="h-4 w-4" /> Mapa
           </button>
         </div>
       </div>
 
-      {error && <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>}
+      {error && (
+        <div className="mb-6 flex items-start gap-2 rounded-lg border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-700">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /> {error}
+        </div>
+      )}
 
       {loading ? (
-        <div className="flex h-40 items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-brand-500" />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="card space-y-4 p-5">
+              <div className="flex items-center gap-3">
+                <div className="skeleton h-12 w-12 rounded-full" />
+                <div className="flex-1 space-y-2">
+                  <div className="skeleton h-4 w-2/3 rounded" />
+                  <div className="skeleton h-3 w-1/2 rounded" />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="skeleton h-10 rounded-lg" />
+                <div className="skeleton h-10 rounded-lg" />
+                <div className="skeleton h-10 rounded-lg" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : drivers.length === 0 ? (
-        <div className="rounded-xl border border-dashed py-12 text-center text-neutral-500">
-          No hay perfiles de repartidor todavía
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-ink-300 bg-surface-muted px-6 py-16 text-center">
+          <Bike className="h-12 w-12 text-ink-300" />
+          <h3 className="mt-4 font-display text-lg font-bold text-ink-800">Aún no hay repartidores</h3>
+          <p className="mt-1 text-sm text-ink-500">No hay perfiles de repartidor registrados todavía.</p>
         </div>
       ) : tab === "map" ? (
         withLocation.length === 0 ? (
-          <div className="rounded-xl border border-dashed py-16 text-center text-neutral-500">
-            <MapPin className="mx-auto h-10 w-10 text-neutral-300" />
-            <p className="mt-2">Ningún repartidor ha reportado ubicación todavía.</p>
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-ink-300 bg-surface-muted px-6 py-16 text-center">
+            <MapPin className="h-12 w-12 text-ink-300" />
+            <h3 className="mt-4 font-display text-lg font-bold text-ink-800">Sin ubicaciones</h3>
+            <p className="mt-1 text-sm text-ink-500">Ningún repartidor ha reportado su ubicación todavía.</p>
           </div>
         ) : (
-          <div className="relative h-[500px] overflow-hidden rounded-xl border border-neutral-200">
+          <div className="relative h-[500px] overflow-hidden rounded-2xl border border-ink-200 shadow-card">
             <MapContainer center={mapCenter} zoom={12} style={{ height: "100%", width: "100%" }}>
               <BaseTileLayer />
               {withLocation.map((d) => (
@@ -103,10 +133,10 @@ export function AdminDriversPage() {
                         eventHandlers={{ click: () => setSelected(d) }}>
                   <Popup>
                     <div className="text-sm">
-                      <div className="font-bold">{d.full_name}</div>
-                      <div className="text-xs text-neutral-500">{d.phone}</div>
+                      <div className="font-bold text-ink-900">{d.full_name}</div>
+                      <div className="text-xs text-ink-500">{d.phone}</div>
                       <button onClick={() => setSelected(d)}
-                              className="mt-1 text-xs text-brand-600 hover:underline">
+                              className="mt-1 text-xs font-semibold text-brand-600 hover:underline">
                         Ver detalle →
                       </button>
                     </div>
@@ -123,45 +153,46 @@ export function AdminDriversPage() {
             <button
               key={d.id}
               onClick={() => setSelected(d)}
-              className="card p-5 text-left transition hover:shadow-md"
+              className="card-hover group p-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2"
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 text-2xl">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-brand-50 to-brand-100 text-2xl">
                     {VEHICLE_ICONS[d.vehicle_type ?? ""] ?? "🛵"}
                   </div>
                   <div>
-                    <h3 className="font-semibold">{d.full_name ?? "—"}</h3>
-                    <p className="text-xs text-neutral-500">{d.phone ?? d.email}</p>
+                    <h3 className="text-base font-semibold leading-tight text-ink-900 transition group-hover:text-brand-600">
+                      {d.full_name ?? "—"}
+                    </h3>
+                    <p className="text-xs text-ink-500">{d.phone ?? d.email}</p>
                   </div>
                 </div>
-                <span className={cn("badge",
-                  d.is_available ? "bg-green-100 text-green-700" : "bg-neutral-200 text-neutral-700")}>
+                <span className={cn("badge", d.is_available ? "badge-success" : "bg-ink-100 text-ink-600")}>
                   {d.is_available ? "Disponible" : "Offline"}
                 </span>
               </div>
 
-              <div className="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
+              <div className="mt-4 grid grid-cols-3 gap-2 rounded-xl bg-surface-muted p-3 text-center text-sm">
                 <div>
-                  <div className="font-bold">{d.total_deliveries}</div>
-                  <div className="text-xs text-neutral-500">Entregas</div>
+                  <div className="font-display text-lg font-bold text-ink-900">{d.total_deliveries ?? 0}</div>
+                  <div className="text-xs text-ink-500">Entregas</div>
                 </div>
-                <div>
-                  <div className="flex items-center justify-center gap-1 font-bold">
-                    <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                    {d.average_rating.toFixed(1)}
+                <div className="border-x border-ink-200">
+                  <div className="flex items-center justify-center gap-1 font-display text-lg font-bold text-ink-900">
+                    <Star className="h-3.5 w-3.5 fill-warn-400 text-warn-400" />
+                    {(d.average_rating ?? 0).toFixed(1)}
                   </div>
-                  <div className="text-xs text-neutral-500">Rating</div>
+                  <div className="text-xs text-ink-500">Rating</div>
                 </div>
                 <div>
-                  <div className="font-bold">{formatCurrency(d.total_earnings)}</div>
-                  <div className="text-xs text-neutral-500">Ganado</div>
+                  <div className="font-display text-lg font-bold text-brand-600">{formatCurrency(d.total_earnings ?? 0)}</div>
+                  <div className="text-xs text-ink-500">Ganado</div>
                 </div>
               </div>
 
               {d.vehicle_plate && (
-                <div className="mt-3 flex items-center gap-1 text-xs text-neutral-500">
-                  <Car className="h-3 w-3" />
+                <div className="mt-3 flex items-center gap-1.5 text-xs text-ink-500">
+                  <Car className="h-3.5 w-3.5" />
                   {d.vehicle_brand} {d.vehicle_model} · {d.vehicle_plate}
                 </div>
               )}
@@ -172,42 +203,41 @@ export function AdminDriversPage() {
 
       {/* ─── Modal de detalle ────────────────────────────── */}
       {selected && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 p-4"
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink-900/50 p-4 backdrop-blur-sm"
              onClick={() => setSelected(null)}>
           <div onClick={(e) => e.stopPropagation()}
-               className="my-8 w-full max-w-3xl rounded-xl bg-white shadow-2xl">
+               className="my-8 w-full max-w-3xl overflow-hidden rounded-2xl bg-white shadow-pop">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-neutral-200 p-6">
+            <div className="flex items-center justify-between gap-4 border-b border-ink-200 p-6">
               <div className="flex items-center gap-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-orange-100 text-3xl">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-brand-50 to-brand-100 text-3xl">
                   {VEHICLE_ICONS[selected.vehicle_type ?? ""] ?? "🛵"}
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold">{selected.full_name}</h2>
-                  <p className="text-sm text-neutral-500">{selected.email}</p>
-                  <span className={cn("badge mt-1",
-                    selected.is_available ? "bg-green-100 text-green-700" : "bg-neutral-200 text-neutral-700")}>
+                  <h2 className="font-display text-xl font-bold text-ink-900">{selected.full_name}</h2>
+                  <p className="text-sm text-ink-500">{selected.email}</p>
+                  <span className={cn("badge mt-1.5", selected.is_available ? "badge-success" : "bg-ink-100 text-ink-600")}>
                     {selected.is_available ? "🟢 Disponible" : "⚫ Offline"}
                   </span>
                 </div>
               </div>
               <button onClick={() => setSelected(null)}
-                      className="rounded-lg p-2 hover:bg-neutral-100">
+                      className="rounded-lg p-2 text-ink-500 transition hover:bg-ink-100 hover:text-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300">
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             {/* KPIs */}
-            <div className="grid grid-cols-3 gap-4 border-b border-neutral-200 p-6">
-              <Stat label="Entregas" value={selected.total_deliveries} />
+            <div className="grid grid-cols-3 gap-4 border-b border-ink-200 bg-surface-muted p-6">
+              <Stat label="Entregas" value={selected.total_deliveries ?? 0} />
               <Stat label="Rating"
                     value={
                       <span className="inline-flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        {selected.average_rating.toFixed(1)}
+                        <Star className="h-4 w-4 fill-warn-400 text-warn-400" />
+                        {(selected.average_rating ?? 0).toFixed(1)}
                       </span>
                     } />
-              <Stat label="Ganado" value={formatCurrency(selected.total_earnings)} />
+              <Stat label="Ganado" value={formatCurrency(selected.total_earnings ?? 0)} />
             </div>
 
             {/* Secciones */}
@@ -262,7 +292,7 @@ export function AdminDriversPage() {
               )}
             </div>
 
-            <div className="flex justify-end gap-2 border-t border-neutral-200 p-4">
+            <div className="flex justify-end gap-2 border-t border-ink-200 p-4">
               <button onClick={() => setSelected(null)} className="btn-ghost">
                 Cerrar
               </button>
@@ -277,8 +307,8 @@ export function AdminDriversPage() {
 function Stat({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="text-center">
-      <div className="text-2xl font-bold">{value}</div>
-      <div className="text-xs text-neutral-500">{label}</div>
+      <div className="font-display text-2xl font-bold text-ink-900">{value}</div>
+      <div className="text-xs text-ink-500">{label}</div>
     </div>
   );
 }
@@ -288,7 +318,7 @@ function DetailSection({
 }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
     <div>
-      <h3 className="mb-2 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-neutral-500">
+      <h3 className="mb-2 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-ink-500">
         <span className="text-brand-500">{icon}</span>
         {title}
       </h3>
@@ -307,10 +337,10 @@ function DetailRow({
 }) {
   const display = value === null || value === undefined || value === "" ? "—" : value;
   return (
-    <div className="flex items-start gap-2 rounded-lg px-2 py-1.5 hover:bg-neutral-50">
-      {icon && <span className="mt-0.5 text-neutral-400">{icon}</span>}
-      <dt className="min-w-[110px] text-xs text-neutral-500">{label}</dt>
-      <dd className={cn("flex-1 text-sm", valueClassName, display === "—" && "text-neutral-300")}>
+    <div className="flex items-start gap-2 rounded-lg px-2 py-1.5 transition hover:bg-ink-50">
+      {icon && <span className="mt-0.5 text-ink-400">{icon}</span>}
+      <dt className="min-w-[110px] text-xs text-ink-500">{label}</dt>
+      <dd className={cn("flex-1 text-sm text-ink-800", valueClassName, display === "—" && "text-ink-300")}>
         {display}
       </dd>
     </div>
