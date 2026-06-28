@@ -1,9 +1,9 @@
-import { Link, NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
-import { Loader2, ShoppingCart, User, LogOut, Package, Home, Heart, MapPin, Star } from "lucide-react";
+import { Link, NavLink, Navigate, Outlet } from "react-router-dom";
+import { Loader2, ShoppingCart, Package, Home, Heart, MapPin, Star } from "lucide-react";
 import { useAuthStore, useAuthHydrated } from "@/store/auth";
 import { useCartStore } from "@/store/cart";
-import { useFavoritesStore } from "@/store/favorites";
 import { defaultHomeForRole } from "@/components/RoleGuard";
+import { UserMenu } from "@/components/UserMenu";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -16,12 +16,9 @@ const NAV = [
 
 export function Layout() {
   const hydrated = useAuthHydrated();
-  const fullName = useAuthStore((s) => s.fullName);
   const token = useAuthStore((s) => s.accessToken);
   const role = useAuthStore((s) => s.role);
-  const logout = useAuthStore((s) => s.logout);
   const cartCount = useCartStore((s) => s.count());
-  const navigate = useNavigate();
 
   // Esperar la rehidratación para no decidir con role=null transitorio.
   if (!hydrated) {
@@ -37,13 +34,6 @@ export function Layout() {
   if (role && role !== "customer") {
     return <Navigate to={defaultHomeForRole(role)} replace />;
   }
-
-  const handleLogout = () => {
-    logout();
-    useCartStore.getState().clear();
-    useFavoritesStore.getState().clear();
-    navigate("/login");
-  };
 
   return (
     <div className="flex min-h-screen flex-col bg-ink-50">
@@ -80,19 +70,7 @@ export function Layout() {
             </Link>
 
             {token ? (
-              <>
-                <Link
-                  to="/profile"
-                  className="hidden items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium text-ink-700 transition hover:bg-ink-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 sm:inline-flex"
-                >
-                  <User className="h-4 w-4" />
-                  <span className="max-w-[120px] truncate">{fullName ?? "Mi cuenta"}</span>
-                </Link>
-                <button onClick={handleLogout} className="btn-ghost !px-2.5 sm:!px-4" title="Cerrar sesión">
-                  <LogOut className="h-4 w-4" />
-                  <span className="hidden sm:inline">Salir</span>
-                </button>
-              </>
+              <UserMenu role={role} clearShopState showProfileLink />
             ) : (
               <Link to="/login" className="btn-primary">
                 Iniciar sesión

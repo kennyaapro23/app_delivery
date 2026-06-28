@@ -1,11 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, Plus, Heart, AlertCircle, SlidersHorizontal } from "lucide-react";
+import {
+  Search,
+  Plus,
+  Heart,
+  AlertCircle,
+  SlidersHorizontal,
+  Truck,
+  Wallet,
+  ShieldCheck,
+  Clock,
+  Star,
+  Flame,
+} from "lucide-react";
 import { listCategories, listProducts } from "@/services/products";
 import { useCartStore } from "@/store/cart";
 import { useFavoritesStore } from "@/store/favorites";
 import { formatCurrency, cn } from "@/lib/utils";
 import { getErrorMessage } from "@/lib/api";
+import { CouponsBanner } from "@/components/CouponsBanner";
 import type { Category, Product } from "@/types/api";
 
 export function CatalogPage() {
@@ -60,17 +73,62 @@ export function CatalogPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
-      <section className="mb-8 overflow-hidden rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 p-8 text-white shadow-pop sm:p-10">
-        <div className="max-w-xl">
-          <h1 className="font-display text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl">
+      {/* ===== HERO ===== */}
+      <section className="relative mb-6 overflow-hidden rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 p-8 text-white shadow-pop sm:p-10">
+        {/* decoraciones suaves */}
+        <div className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-16 right-24 h-40 w-40 rounded-full bg-brand-300/20 blur-2xl" />
+
+        <div className="relative max-w-xl">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold ring-1 ring-white/25 backdrop-blur">
+            <Flame className="h-3.5 w-3.5" />
+            Recién salido de la freidora
+          </span>
+          <h1 className="mt-4 font-display text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl">
             🍗 Pollo crocante a tu puerta
           </h1>
           <p className="mt-3 text-brand-50">
-            Pide en minutos. Recíbelo calientito. Gana puntos y sube de nivel.
+            Pide en minutos y recíbelo calientito. Paga con Yape o efectivo, gana
+            puntos y sube de nivel con cada pedido.
           </p>
+
+          {/* chips de propuesta de valor dentro del hero */}
+          <div className="mt-6 flex flex-wrap gap-2">
+            <HeroPill icon={<Clock className="h-3.5 w-3.5" />} label="Entrega en ~30 min" />
+            <HeroPill icon={<Wallet className="h-3.5 w-3.5" />} label="Yape o efectivo" />
+            <HeroPill icon={<Truck className="h-3.5 w-3.5" />} label="Seguimiento en vivo" />
+          </div>
         </div>
       </section>
 
+      {/* ===== NOTIFICACIÓN DE CUPONES ===== */}
+      <CouponsBanner />
+
+      {/* ===== POR QUÉ ELEGIRNOS ===== */}
+      <div className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <BenefitCard
+          icon={<Truck className="h-5 w-5" />}
+          title="Entrega rápida"
+          desc="Calientito en ~30 min"
+        />
+        <BenefitCard
+          icon={<Wallet className="h-5 w-5" />}
+          title="Pago flexible"
+          desc="Yape, tarjeta o efectivo"
+        />
+        <BenefitCard
+          icon={<ShieldCheck className="h-5 w-5" />}
+          title="Calidad garantizada"
+          desc="Ingredientes frescos"
+        />
+        <BenefitCard
+          icon={<Star className="h-5 w-5" />}
+          title="Gana puntos"
+          desc="Sube de nivel y ahorra"
+        />
+      </div>
+
+      {/* ===== BÚSQUEDA ===== */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-md">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
@@ -87,7 +145,8 @@ export function CatalogPage() {
         </p>
       </div>
 
-      <div className="mb-8 flex gap-2 overflow-x-auto pb-2">
+      {/* ===== CHIPS DE CATEGORÍA ===== */}
+      <div className="mb-8 -mx-1 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <CategoryChip
           active={activeCategory === null}
           onClick={() => setActiveCategory(null)}
@@ -112,10 +171,15 @@ export function CatalogPage() {
         </div>
       )}
 
+      {/* ===== DESTACADOS ===== */}
       {featured.length > 0 && !search && activeCategory === null && (
         <section className="mb-10">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="section-title">⭐ Destacados</h2>
+            <span className="inline-flex items-center gap-1 text-xs font-medium text-ink-500">
+              <Flame className="h-3.5 w-3.5 text-brand-500" />
+              Los más pedidos
+            </span>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {featured.map((p) => (
@@ -125,9 +189,15 @@ export function CatalogPage() {
         </section>
       )}
 
+      {/* ===== MENÚ ===== */}
       <section>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="section-title">Menú</h2>
+          {!loading && products.length > 0 && (
+            <span className="text-xs font-medium text-ink-500">
+              {products.length} {products.length === 1 ? "producto" : "productos"}
+            </span>
+          )}
         </div>
         {loading ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -154,6 +224,37 @@ export function CatalogPage() {
           </div>
         )}
       </section>
+    </div>
+  );
+}
+
+function HeroPill({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-medium ring-1 ring-white/20 backdrop-blur">
+      {icon}
+      {label}
+    </span>
+  );
+}
+
+function BenefitCard({
+  icon,
+  title,
+  desc,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+}) {
+  return (
+    <div className="card flex items-center gap-3 p-4">
+      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+        {icon}
+      </span>
+      <div className="min-w-0">
+        <p className="truncate text-sm font-semibold text-ink-900">{title}</p>
+        <p className="truncate text-xs text-ink-500">{desc}</p>
+      </div>
     </div>
   );
 }
@@ -222,10 +323,19 @@ function ProductCard({
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
           ) : (
-            <span>{product.icon}</span>
+            <span className="transition-transform duration-300 group-hover:scale-110">
+              {product.icon}
+            </span>
           )}
         </div>
-        {featured && <span className="badge badge-warn absolute left-2 top-2">Destacado</span>}
+        {/* overlay sutil al hover para dar profundidad */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        {featured && (
+          <span className="badge badge-warn absolute left-2 top-2 shadow-card">
+            <Star className="h-3 w-3 fill-warn-500 text-warn-500" />
+            Destacado
+          </span>
+        )}
         <button
           type="button"
           onClick={(e) => {

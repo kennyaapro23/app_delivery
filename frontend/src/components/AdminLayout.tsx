@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useAuthStore } from "@/store/auth";
+import { UserMenu } from "@/components/UserMenu";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -27,6 +28,7 @@ const NAV = [
 
 export function AdminLayout() {
   const fullName = useAuthStore((s) => s.fullName);
+  const role = useAuthStore((s) => s.role);
   const logout = useAuthStore((s) => s.logout);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -113,19 +115,25 @@ export function AdminLayout() {
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-ink-200 bg-white/80 px-4 backdrop-blur md:hidden">
-          <button
-            onClick={() => setOpen(true)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-ink-700 transition hover:bg-ink-50 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
-            aria-label="Abrir menú"
-          >
-            <Menu className="h-6 w-6" />
-          </button>
-          <Link to="/admin" className="flex items-center gap-2 font-display font-bold text-ink-900">
-            <span className="text-xl">🍗</span>
-            <span>Admin</span>
-          </Link>
-          <span className="h-10 w-10" aria-hidden="true" />
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-ink-200 bg-white/80 px-4 backdrop-blur">
+          <div className="flex min-w-0 items-center gap-2">
+            <button
+              onClick={() => setOpen(true)}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-ink-700 transition hover:bg-ink-50 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 md:hidden"
+              aria-label="Abrir menú"
+            >
+              <Menu className="h-6 w-6" />
+            </button>
+            <Link
+              to="/admin"
+              className="flex items-center gap-2 font-display font-bold text-ink-900 transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 rounded-lg md:hidden"
+            >
+              <span className="text-xl">🍗</span>
+              <span>Admin</span>
+            </Link>
+            <span className="hidden text-sm font-medium text-ink-500 md:block">Panel admin</span>
+          </div>
+          <UserMenu role={role} />
         </header>
 
         <main className="flex-1 p-4 sm:p-6">

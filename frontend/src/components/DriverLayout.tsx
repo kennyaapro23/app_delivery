@@ -1,9 +1,10 @@
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Bike, ListTodo, Wallet, LogOut, Power, Map as MapIcon, Star, Loader2 } from "lucide-react";
+import { Bike, ListTodo, Wallet, Power, Map as MapIcon, Star, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 import { toggleAvailability } from "@/services/delivery";
 import { useDriverLocationReporter } from "@/hooks/useDriverLocationReporter";
+import { UserMenu } from "@/components/UserMenu";
 import { cn } from "@/lib/utils";
 import { getErrorMessage } from "@/lib/api";
 
@@ -17,8 +18,7 @@ const NAV = [
 
 export function DriverLayout() {
   const fullName = useAuthStore((s) => s.fullName);
-  const logout = useAuthStore((s) => s.logout);
-  const navigate = useNavigate();
+  const role = useAuthStore((s) => s.role);
   const [available, setAvailable] = useState<boolean | null>(null);
   const [toggling, setToggling] = useState(false);
 
@@ -84,17 +84,7 @@ export function DriverLayout() {
               <Power className="h-3.5 w-3.5" />
               {available ? "Disponible" : "Offline"}
             </button>
-            <button
-              onClick={() => {
-                logout();
-                navigate("/login");
-              }}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-ink-600 transition hover:bg-ink-100 hover:text-ink-900 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
-              aria-label="Cerrar sesión"
-              title="Cerrar sesión"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
+            <UserMenu role={role} />
           </div>
         </div>
         <div className="border-t border-ink-100">
