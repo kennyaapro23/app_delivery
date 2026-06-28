@@ -28,6 +28,8 @@ class UserUpdate(BaseModel):
 
 class UserResponse(UserBase):
     id: int
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     role: str
     is_active: bool
     points: int

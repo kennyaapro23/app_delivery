@@ -35,10 +35,13 @@ def register_user(db: Session, data: RegisterRequest) -> User:
     if data.role not in valid_roles:
         raise BadRequestException(f"Rol inválido. Roles válidos: {valid_roles}")
 
+    full_name = f"{data.first_name} {data.last_name}".strip()
     user = User(
         email=data.email,
         hashed_password=hash_password(data.password),
-        full_name=data.full_name,
+        full_name=full_name,
+        first_name=data.first_name.strip(),
+        last_name=data.last_name.strip(),
         phone=data.phone,
         role=data.role,
     )
@@ -62,10 +65,13 @@ def register_driver(db: Session, data: DriverRegisterRequest) -> User:
             raise BadRequestException(f"Tipo de vehículo inválido. Válidos: {valid}")
         vehicle_enum = VehicleType(data.vehicle_type)
 
+    full_name = f"{data.first_name} {data.last_name}".strip()
     user = User(
         email=data.email,
         hashed_password=hash_password(data.password),
-        full_name=data.full_name,
+        full_name=full_name,
+        first_name=data.first_name.strip(),
+        last_name=data.last_name.strip(),
         phone=data.phone,
         role=UserRole.DELIVERY_DRIVER,
     )
@@ -101,6 +107,9 @@ def register_driver(db: Session, data: DriverRegisterRequest) -> User:
         bank_account=data.bank_account,
         bank_cci=data.bank_cci,
         bank_account_holder=data.bank_account_holder,
+        # Fotos de verificación
+        vehicle_photo=data.vehicle_photo,
+        dni_photo=data.dni_photo,
         is_available=False,
     )
     db.add(profile)

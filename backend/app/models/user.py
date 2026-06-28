@@ -40,6 +40,8 @@ class User(Base):
     email = Column(String(255), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
     full_name = Column(String(255), nullable=False)
+    first_name = Column(String(120), nullable=True)
+    last_name = Column(String(120), nullable=True)
     phone = Column(String(20), nullable=True)
     role = Column(
         SAEnum(UserRole, name="user_role", create_constraint=True),

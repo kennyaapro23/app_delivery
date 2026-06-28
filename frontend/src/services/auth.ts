@@ -12,7 +12,8 @@ export async function login(email: string, password: string) {
 export async function register(payload: {
   email: string;
   password: string;
-  full_name: string;
+  first_name: string;
+  last_name: string;
   phone?: string;
 }) {
   const { data } = await api.post<TokenResponse>("/auth/register", {
@@ -26,7 +27,8 @@ export interface DriverRegisterPayload {
   // Cuenta
   email: string;
   password: string;
-  full_name: string;
+  first_name: string;
+  last_name: string;
   phone?: string;
   // Personales
   document_id?: string;
@@ -55,6 +57,9 @@ export interface DriverRegisterPayload {
   bank_account?: string;
   bank_cci?: string;
   bank_account_holder?: string;
+  // Fotos (data URI base64 jpeg comprimido, opcionales)
+  vehicle_photo?: string;
+  dni_photo?: string;
 }
 
 export async function registerDriver(payload: DriverRegisterPayload) {

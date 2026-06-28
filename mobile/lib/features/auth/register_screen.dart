@@ -19,7 +19,8 @@ class RegisterScreen extends ConsumerStatefulWidget {
 
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _fullNameCtrl = TextEditingController();
+  final _firstNameCtrl = TextEditingController();
+  final _lastNameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
@@ -30,7 +31,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   void dispose() {
-    _fullNameCtrl.dispose();
+    _firstNameCtrl.dispose();
+    _lastNameCtrl.dispose();
     _emailCtrl.dispose();
     _phoneCtrl.dispose();
     _passwordCtrl.dispose();
@@ -48,11 +50,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     });
 
     final phone = _phoneCtrl.text.trim();
+    // El provider espera un único `fullName`; lo componemos a partir de los dos
+    // campos (Nombres + Apellidos). El backend lo recibe separado en
+    // `first_name` / `last_name` (ver AuthService.register).
+    final fullName =
+        '${_firstNameCtrl.text.trim()} ${_lastNameCtrl.text.trim()}'.trim();
     try {
       await ref.read(authProvider.notifier).register(
             email: _emailCtrl.text.trim(),
             password: _passwordCtrl.text,
-            fullName: _fullNameCtrl.text.trim(),
+            fullName: fullName,
             phone: phone.isEmpty ? null : phone,
           );
       if (!mounted) return;
@@ -109,20 +116,35 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Nombre completo
-                      _FieldLabel('Nombre completo'),
+                      // Nombres
+                      _FieldLabel('Nombres'),
                       const SizedBox(height: 6),
                       TextFormField(
-                        controller: _fullNameCtrl,
+                        controller: _firstNameCtrl,
                         enabled: !_loading,
                         textInputAction: TextInputAction.next,
                         textCapitalization: TextCapitalization.words,
-                        decoration: const InputDecoration(hintText: 'Juan Pérez'),
+                        decoration: const InputDecoration(hintText: 'Juan'),
                         autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (v) =>
-                            (v == null || v.trim().isEmpty)
-                                ? 'Ingresa tu nombre completo'
-                                : null,
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? 'Ingresa tus nombres'
+                            : null,
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Apellidos
+                      _FieldLabel('Apellidos'),
+                      const SizedBox(height: 6),
+                      TextFormField(
+                        controller: _lastNameCtrl,
+                        enabled: !_loading,
+                        textInputAction: TextInputAction.next,
+                        textCapitalization: TextCapitalization.words,
+                        decoration: const InputDecoration(hintText: 'Pérez García'),
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? 'Ingresa tus apellidos'
+                            : null,
                       ),
                       const SizedBox(height: 16),
 

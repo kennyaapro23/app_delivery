@@ -45,6 +45,10 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Chikenhot necesita acceso a tu cámara para que puedas tomar la foto de tu vehículo y de tu DNI al registrarte como repartidor.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Chikenhot necesita acceso a tu galería para que puedas seleccionar la foto de tu vehículo y de tu DNI al registrarte como repartidor.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Chikenhot usa tu ubicación para calcular el delivery y mostrar el seguimiento del pedido en el mapa.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>

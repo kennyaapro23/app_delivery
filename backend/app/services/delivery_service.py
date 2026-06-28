@@ -228,7 +228,9 @@ def get_all_drivers(db: Session):
     for p in profiles:
         result.append({
             "id": p.id, "user_id": p.user_id,
-            "full_name": p.user.full_name, "email": p.user.email,
+            "full_name": p.user.full_name,
+            "first_name": p.user.first_name, "last_name": p.user.last_name,
+            "email": p.user.email,
             "phone": p.user.phone,
             # Personales
             "document_id": p.document_id,
@@ -251,6 +253,9 @@ def get_all_drivers(db: Session):
             "license_expiry": p.license_expiry,
             "insurance_number": p.insurance_number,
             "insurance_expiry": p.insurance_expiry,
+            # Fotos de verificación (base64 data URI)
+            "vehicle_photo": p.vehicle_photo,
+            "dni_photo": p.dni_photo,
             # Banco
             "bank_name": p.bank_name,
             "bank_account_type": p.bank_account_type,

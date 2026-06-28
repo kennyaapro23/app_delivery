@@ -10,7 +10,8 @@ export function RegisterPage() {
   const setSession = useAuthStore((s) => s.setSession);
 
   const [form, setForm] = useState({
-    full_name: "",
+    first_name: "",
+    last_name: "",
     email: "",
     phone: "",
     password: "",
@@ -24,11 +25,16 @@ export function RegisterPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!form.first_name.trim() || !form.last_name.trim()) {
+      setError("Nombres y apellidos son obligatorios");
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
       const data = await register({
-        full_name: form.full_name,
+        first_name: form.first_name.trim(),
+        last_name: form.last_name.trim(),
         email: form.email,
         phone: form.phone || undefined,
         password: form.password,
@@ -60,18 +66,33 @@ export function RegisterPage() {
 
         <div className="p-8">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="label flex items-center gap-1.5">
-                <User className="h-3.5 w-3.5 text-ink-400" />
-                Nombre completo
-              </label>
-              <input
-                required
-                className="input-base"
-                placeholder="Juan Pérez"
-                value={form.full_name}
-                onChange={(e) => update("full_name", e.target.value)}
-              />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className="label flex items-center gap-1.5">
+                  <User className="h-3.5 w-3.5 text-ink-400" />
+                  Nombres
+                </label>
+                <input
+                  required
+                  className="input-base"
+                  placeholder="Juan"
+                  value={form.first_name}
+                  onChange={(e) => update("first_name", e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="label flex items-center gap-1.5">
+                  <User className="h-3.5 w-3.5 text-ink-400" />
+                  Apellidos
+                </label>
+                <input
+                  required
+                  className="input-base"
+                  placeholder="Pérez"
+                  value={form.last_name}
+                  onChange={(e) => update("last_name", e.target.value)}
+                />
+              </div>
             </div>
             <div>
               <label className="label flex items-center gap-1.5">

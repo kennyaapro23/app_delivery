@@ -13,7 +13,8 @@ class LoginRequest(BaseModel):
 class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
-    full_name: str
+    first_name: str
+    last_name: str
     phone: str | None = None
     role: str = "customer"  # admin, customer, delivery_driver
 
@@ -23,7 +24,8 @@ class DriverRegisterRequest(BaseModel):
     # ── Datos de la cuenta ──
     email: EmailStr
     password: str
-    full_name: str
+    first_name: str
+    last_name: str
     phone: str | None = None
 
     # ── Datos personales ──
@@ -56,6 +58,10 @@ class DriverRegisterRequest(BaseModel):
     bank_account: str | None = None
     bank_cci: str | None = None
     bank_account_holder: str | None = None
+
+    # ── Fotos de verificación (base64 data URI; el cliente las comprime) ──
+    vehicle_photo: str | None = None
+    dni_photo: str | None = None
 
 
 class TokenResponse(BaseModel):

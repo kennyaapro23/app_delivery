@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Star, MapPin, List, Map as MapIcon, X,
   Phone, Mail, FileText, Calendar, Heart, CreditCard, Car,
-  AlertCircle, Bike,
+  AlertCircle, Bike, ImageIcon, ImageOff,
 } from "lucide-react";
 import { MapContainer, Marker, Popup } from "react-leaflet";
 import { BaseTileLayer } from "@/components/BaseTileLayer";
@@ -12,6 +12,16 @@ import "leaflet/dist/leaflet.css";
 import { listAllDrivers, type DriverProfile } from "@/services/delivery";
 import { formatCurrency, cn } from "@/lib/utils";
 import { getErrorMessage } from "@/lib/api";
+
+// El endpoint GET /api/v1/delivery/drivers ahora devuelve estos campos
+// opcionales adicionales por repartidor. Se extienden localmente porque el
+// tipo base vive en otro módulo.
+type DriverWithDocs = DriverProfile & {
+  first_name?: string | null;
+  last_name?: string | null;
+  vehicle_photo?: string | null; // data URI o null
+  dni_photo?: string | null;     // data URI o null
+};
 
 const DEFAULT_CENTER: [number, number] = [-12.0464, -77.0428];
 
@@ -33,11 +43,13 @@ const VEHICLE_ICONS: Record<string, string> = {
 };
 
 export function AdminDriversPage() {
-  const [drivers, setDrivers] = useState<DriverProfile[]>([]);
+  const [drivers, setDrivers] = useState<DriverWithDocs[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<"list" | "map">("list");
-  const [selected, setSelected] = useState<DriverProfile | null>(null);
+  const [selected, setSelected] = useState<DriverWithDocs | null>(null);
+  // Imagen ampliada (lightbox). null = cerrado.
+  const [zoomedImage, setZoomedImage] = useState<{ src: string; label: string } | null>(null);
 
   useEffect(() => {
     listAllDrivers()
@@ -49,7 +61,7 @@ export function AdminDriversPage() {
   const withLocation = useMemo(
     () =>
       drivers.filter(
-        (d): d is DriverProfile & { latitude: number; longitude: number } =>
+        (d): d is DriverWithDocs & { latitude: number; longitude: number } =>
           d.latitude != null && d.longitude != null,
       ),
     [drivers],
@@ -274,6 +286,21 @@ export function AdminDriversPage() {
                           value={[selected.insurance_number, selected.insurance_expiry && `vence ${selected.insurance_expiry}`].filter(Boolean).join(" — ")} />
               </DetailSection>
 
+              <DetailSection title="Documentos" icon={<ImageIcon className="h-4 w-4" />}>
+                <div className="col-span-full grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <DocumentPhoto
+                    label="Foto del vehículo"
+                    src={selected.vehicle_photo}
+                    onZoom={setZoomedImage}
+                  />
+                  <DocumentPhoto
+                    label="Foto del DNI"
+                    src={selected.dni_photo}
+                    onZoom={setZoomedImage}
+                  />
+                </div>
+              </DetailSection>
+
               <DetailSection title="Información bancaria" icon={<CreditCard className="h-4 w-4" />}>
                 <DetailRow label="Banco" value={selected.bank_name} />
                 <DetailRow label="Tipo de cuenta" value={selected.bank_account_type} />
@@ -298,6 +325,70 @@ export function AdminDriversPage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ─── Lightbox de imagen ampliada ─────────────────── */}
+      {zoomedImage && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-ink-900/80 p-4 backdrop-blur-sm"
+          onClick={() => setZoomedImage(null)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative max-h-[90vh] max-w-3xl overflow-hidden rounded-2xl bg-white shadow-pop"
+          >
+            <div className="flex items-center justify-between gap-4 border-b border-ink-200 px-4 py-3">
+              <h3 className="text-sm font-semibold text-ink-900">{zoomedImage.label}</h3>
+              <button
+                onClick={() => setZoomedImage(null)}
+                className="rounded-lg p-1.5 text-ink-500 transition hover:bg-ink-100 hover:text-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+                aria-label="Cerrar imagen"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="flex max-h-[calc(90vh-3.5rem)] items-center justify-center overflow-auto bg-surface-muted p-4">
+              <img
+                src={zoomedImage.src}
+                alt={zoomedImage.label}
+                className="max-h-full max-w-full object-contain"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DocumentPhoto({
+  label, src, onZoom,
+}: {
+  label: string;
+  src?: string | null;
+  onZoom: (img: { src: string; label: string }) => void;
+}) {
+  return (
+    <div>
+      <div className="mb-1.5 text-xs text-ink-500">{label}</div>
+      {src ? (
+        <button
+          type="button"
+          onClick={() => onZoom({ src, label })}
+          title="Click para ampliar"
+          className="group block w-full overflow-hidden rounded-xl border border-ink-200 bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+        >
+          <img
+            src={src}
+            alt={label}
+            className="h-40 w-full object-cover transition duration-200 group-hover:scale-[1.03]"
+          />
+        </button>
+      ) : (
+        <div className="flex h-40 w-full flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-ink-300 bg-surface-muted text-ink-300">
+          <ImageOff className="h-6 w-6" />
+          <span className="text-xs font-medium">Sin foto</span>
         </div>
       )}
     </div>

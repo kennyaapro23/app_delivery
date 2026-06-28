@@ -17,6 +17,8 @@ import {
   ArrowLeft,
   ArrowRight,
   ShieldCheck,
+  Camera,
+  X,
 } from "lucide-react";
 import { registerDriver, type DriverRegisterPayload } from "@/services/auth";
 import { useAuthStore } from "@/store/auth";
@@ -45,7 +47,7 @@ const BANK_TYPES: { value: "ahorros" | "corriente"; label: string }[] = [
 
 const EMPTY: Form = {
   email: "", password: "", confirm_password: "",
-  full_name: "", phone: "",
+  first_name: "", last_name: "", phone: "",
   document_id: "", birth_date: "", gender: undefined,
   home_address: "", home_district: "",
   emergency_contact_name: "", emergency_contact_phone: "", emergency_contact_relation: "",
@@ -55,7 +57,42 @@ const EMPTY: Form = {
   insurance_number: "", insurance_expiry: "",
   bank_name: "", bank_account_type: "ahorros",
   bank_account: "", bank_cci: "", bank_account_holder: "",
+  vehicle_photo: undefined, dni_photo: undefined,
 };
+
+/**
+ * Lee un archivo de imagen, lo redimensiona vía <canvas> a un máximo de ~1000px
+ * de lado (preservando proporción) y lo exporta como JPEG comprimido (calidad 0.6)
+ * en formato data URI base64. Mantiene el POST por debajo del límite de Nginx (~1MB).
+ */
+async function fileToCompressedDataUri(file: File, maxSide = 1000, quality = 0.6): Promise<string> {
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error("No se pudo leer el archivo"));
+    reader.readAsDataURL(file);
+  });
+
+  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("No se pudo procesar la imagen"));
+    image.src = dataUrl;
+  });
+
+  const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+  const width = Math.round(img.width * scale);
+  const height = Math.round(img.height * scale);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("No se pudo procesar la imagen");
+  ctx.drawImage(img, 0, 0, width, height);
+
+  return canvas.toDataURL("image/jpeg", quality);
+}
 
 const STEPS = [
   { n: 1, title: "Cuenta", icon: UserIcon },
@@ -75,8 +112,22 @@ export function DriverRegisterPage() {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
+  async function handlePhoto(key: "vehicle_photo" | "dni_photo", file: File | null) {
+    if (!file) {
+      update(key, undefined);
+      return;
+    }
+    try {
+      const dataUri = await fileToCompressedDataUri(file);
+      update(key, dataUri);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    }
+  }
+
   function validateStep1(): string | null {
-    if (form.full_name.trim().length < 3) return "El nombre debe tener al menos 3 caracteres";
+    if (form.first_name.trim().length < 2) return "Los nombres deben tener al menos 2 caracteres";
+    if (form.last_name.trim().length < 2) return "Los apellidos deben tener al menos 2 caracteres";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return "Email inválido";
     if (form.password.length < 6) return "La contraseña debe tener al menos 6 caracteres";
     if (form.password !== form.confirm_password) return "Las contraseñas no coinciden";
@@ -120,7 +171,8 @@ export function DriverRegisterPage() {
       const payload: DriverRegisterPayload = {
         email: form.email,
         password: form.password,
-        full_name: form.full_name,
+        first_name: form.first_name.trim(),
+        last_name: form.last_name.trim(),
         phone: form.phone || undefined,
         document_id: form.document_id || undefined,
         birth_date: form.birth_date || undefined,
@@ -145,6 +197,8 @@ export function DriverRegisterPage() {
         bank_account: form.bank_account || undefined,
         bank_cci: form.bank_cci || undefined,
         bank_account_holder: form.bank_account_holder || undefined,
+        vehicle_photo: form.vehicle_photo || undefined,
+        dni_photo: form.dni_photo || undefined,
       };
       const data = await registerDriver(payload);
       setSession(data);
@@ -218,11 +272,18 @@ export function DriverRegisterPage() {
             {/* ── PASO 1: CUENTA ──────────────────────────── */}
             {step === 1 && (
               <Section title="Datos de la cuenta" icon={<UserIcon className="h-4 w-4" />}>
-                <Field label="Nombre completo" required>
-                  <input required className="input-base" placeholder="Juan Pérez"
-                         value={form.full_name}
-                         onChange={(e) => update("full_name", e.target.value)} />
-                </Field>
+                <Grid2>
+                  <Field label="Nombres" required>
+                    <input required className="input-base" placeholder="Juan"
+                           value={form.first_name}
+                           onChange={(e) => update("first_name", e.target.value)} />
+                  </Field>
+                  <Field label="Apellidos" required>
+                    <input required className="input-base" placeholder="Pérez"
+                           value={form.last_name}
+                           onChange={(e) => update("last_name", e.target.value)} />
+                  </Field>
+                </Grid2>
 
                 <Grid2>
                   <Field label="Email" required icon={<Mail className="h-3.5 w-3.5" />}>
@@ -317,6 +378,31 @@ export function DriverRegisterPage() {
                            value={form.emergency_contact_relation ?? ""}
                            onChange={(e) => update("emergency_contact_relation", e.target.value)} />
                   </Field>
+                </Section>
+
+                <Section title="Documentos (fotos)" icon={<Camera className="h-4 w-4" />}>
+                  <div className="flex items-start gap-2 rounded-lg border border-info-200 bg-info-50 px-4 py-3 text-xs text-info-700">
+                    <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
+                    <span>
+                      Las fotos son opcionales pero recomendadas: agilizan la
+                      verificación de tu cuenta. Se comprimen automáticamente
+                      antes de enviarse.
+                    </span>
+                  </div>
+                  <Grid2>
+                    <PhotoField
+                      label="Foto del DNI"
+                      value={form.dni_photo}
+                      onSelect={(file) => handlePhoto("dni_photo", file)}
+                      onClear={() => update("dni_photo", undefined)}
+                    />
+                    <PhotoField
+                      label="Foto del vehículo"
+                      value={form.vehicle_photo}
+                      onSelect={(file) => handlePhoto("vehicle_photo", file)}
+                      onClear={() => update("vehicle_photo", undefined)}
+                    />
+                  </Grid2>
                 </Section>
               </div>
             )}
@@ -569,4 +655,77 @@ function Field({
 
 function Grid2({ children }: { children: React.ReactNode }) {
   return <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{children}</div>;
+}
+
+function PhotoField({
+  label,
+  value,
+  onSelect,
+  onClear,
+}: {
+  label: string;
+  value?: string;
+  onSelect: (file: File | null) => void;
+  onClear: () => void;
+}) {
+  const inputId = `photo-${label.replace(/\s+/g, "-").toLowerCase()}`;
+  return (
+    <div>
+      <label className="label flex items-center gap-1">
+        <span className="text-ink-400">
+          <Camera className="h-3.5 w-3.5" />
+        </span>
+        {label}
+        <span className="ml-1 font-normal text-ink-400">(opcional)</span>
+      </label>
+
+      {value ? (
+        <div className="relative overflow-hidden rounded-xl border border-ink-200 bg-surface-muted">
+          <img
+            src={value}
+            alt={label}
+            className="h-40 w-full object-cover"
+          />
+          <div className="absolute right-2 top-2 flex gap-1.5">
+            <label
+              htmlFor={inputId}
+              className="inline-flex h-8 cursor-pointer items-center gap-1 rounded-full bg-white/90 px-2.5 text-xs font-semibold text-ink-700 shadow-card transition hover:bg-white active:scale-95"
+            >
+              <Camera className="h-3.5 w-3.5" /> Reemplazar
+            </label>
+            <button
+              type="button"
+              onClick={onClear}
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-danger-600 shadow-card transition hover:bg-white active:scale-95"
+              aria-label={`Quitar ${label}`}
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <label
+          htmlFor={inputId}
+          className="flex h-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-ink-300 bg-surface-muted text-center transition hover:border-brand-400 hover:bg-brand-50 focus-within:ring-2 focus-within:ring-brand-300"
+        >
+          <Camera className="h-6 w-6 text-ink-400" />
+          <span className="text-sm font-medium text-ink-600">Subir foto</span>
+          <span className="text-xs text-ink-400">JPG o PNG</span>
+        </label>
+      )}
+
+      <input
+        id={inputId}
+        type="file"
+        accept="image/*"
+        className="sr-only"
+        onChange={(e) => {
+          const file = e.target.files?.[0] ?? null;
+          onSelect(file);
+          // permite re-seleccionar el mismo archivo tras quitarlo
+          e.target.value = "";
+        }}
+      />
+    </div>
+  );
 }

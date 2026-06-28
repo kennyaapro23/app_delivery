@@ -8,9 +8,6 @@ import { getErrorMessage } from "@/lib/api";
 import { defaultHomeForRole } from "@/components/RoleGuard";
 import {
   Loader2,
-  ShieldCheck,
-  ShoppingBag,
-  Bike,
   LogOut,
   AlertCircle,
   Mail,
@@ -41,36 +38,6 @@ function persistSessionSync(data: TokenResponse) {
   };
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(payload));
 }
-
-const DEMO_ACCOUNTS: {
-  role: UserRole;
-  email: string;
-  password: string;
-  label: string;
-  icon: React.ReactNode;
-}[] = [
-  {
-    role: "admin",
-    email: "admin@chikenhot.pe",
-    password: "admin123",
-    label: "Admin",
-    icon: <ShieldCheck className="h-4 w-4" />,
-  },
-  {
-    role: "customer",
-    email: "cliente@chikenhot.pe",
-    password: "cliente123",
-    label: "Cliente",
-    icon: <ShoppingBag className="h-4 w-4" />,
-  },
-  {
-    role: "delivery_driver",
-    email: "delivery@chikenhot.pe",
-    password: "delivery123",
-    label: "Repartidor",
-    icon: <Bike className="h-4 w-4" />,
-  },
-];
 
 export function LoginPage() {
   const location = useLocation();
@@ -134,12 +101,6 @@ export function LoginPage() {
     await doLogin(email, password);
   }
 
-  function quickLogin(account: (typeof DEMO_ACCOUNTS)[number]) {
-    setEmail(account.email);
-    setPassword(account.password);
-    void doLogin(account.email, account.password);
-  }
-
   return (
     <div className="mx-auto flex min-h-[80vh] max-w-md flex-col justify-center px-4 py-12">
       <div className="card overflow-hidden">
@@ -151,7 +112,7 @@ export function LoginPage() {
           <h1 className="mt-4 font-display text-2xl font-bold leading-tight tracking-tight">
             Bienvenido de vuelta
           </h1>
-          <p className="mt-1 text-sm text-brand-50">Inicia sesión según tu rol</p>
+          <p className="mt-1 text-sm text-brand-50">Inicia sesión en tu cuenta</p>
         </div>
 
         <div className="p-8">
@@ -186,36 +147,6 @@ export function LoginPage() {
               </div>
             </div>
           )}
-
-          {/* Quick login para los 3 roles */}
-          <div>
-            <p className="label mb-2 text-center text-ink-500">
-              Acceso rápido de demostración
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              {DEMO_ACCOUNTS.map((acc) => (
-                <button
-                  key={acc.role}
-                  type="button"
-                  onClick={() => quickLogin(acc)}
-                  disabled={loading}
-                  className="flex flex-col items-center gap-1.5 rounded-xl border border-ink-200 bg-white p-3 text-xs font-semibold text-ink-700 shadow-card transition hover:-translate-y-0.5 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 hover:shadow-card-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
-                  title={acc.email}
-                >
-                  <span className="text-brand-500">{acc.icon}</span>
-                  {acc.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="my-6 flex items-center gap-3">
-            <div className="h-px flex-1 bg-ink-200" />
-            <span className="text-xs font-medium text-ink-400">
-              o usa tus credenciales
-            </span>
-            <div className="h-px flex-1 bg-ink-200" />
-          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

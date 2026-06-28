@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:chikenhot/core/api_client.dart';
 import 'package:chikenhot/core/theme.dart';
@@ -22,7 +26,8 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
   String? _error;
 
   // ── Paso 1: Cuenta ──────────────────────────────────────
-  final _fullName = TextEditingController();
+  final _firstName = TextEditingController();
+  final _lastName = TextEditingController();
   final _email = TextEditingController();
   final _phone = TextEditingController();
   final _password = TextEditingController();
@@ -49,6 +54,13 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
   String? _licenseExpiry;
   final _insuranceNumber = TextEditingController();
   String? _insuranceExpiry;
+
+  // ── Fotos (opcionales): bytes para la miniatura + data URI base64 ───────
+  final _picker = ImagePicker();
+  Uint8List? _vehiclePhotoBytes;
+  String? _vehiclePhotoDataUri;
+  Uint8List? _dniPhotoBytes;
+  String? _dniPhotoDataUri;
 
   // ── Paso 4: Banco ───────────────────────────────────────
   final _bankName = TextEditingController();
@@ -80,7 +92,8 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
 
   @override
   void dispose() {
-    _fullName.dispose();
+    _firstName.dispose();
+    _lastName.dispose();
     _email.dispose();
     _phone.dispose();
     _password.dispose();
@@ -107,8 +120,11 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
 
   // ── Validación por paso ─────────────────────────────────
   String? _validateStep1() {
-    if (_fullName.text.trim().length < 3) {
-      return 'El nombre debe tener al menos 3 caracteres';
+    if (_firstName.text.trim().length < 2) {
+      return 'Los nombres deben tener al menos 2 caracteres';
+    }
+    if (_lastName.text.trim().length < 2) {
+      return 'Los apellidos deben tener al menos 2 caracteres';
     }
     if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(_email.text.trim())) {
       return 'Email inválido';
@@ -192,6 +208,59 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
     }
   }
 
+  /// Selecciona una imagen (galería o cámara), la comprime vía image_picker
+  /// (maxWidth 1000, calidad 60) y la codifica como data URI base64. Guarda
+  /// los bytes para la miniatura y el data URI para el envío.
+  Future<void> _pickPhoto(
+    ImageSource source, {
+    required ValueChanged<(Uint8List, String)> onPicked,
+  }) async {
+    try {
+      final XFile? file = await _picker.pickImage(
+        source: source,
+        maxWidth: 1000,
+        imageQuality: 60,
+      );
+      if (file == null) return;
+      final bytes = await file.readAsBytes();
+      final dataUri = 'data:image/jpeg;base64,${base64Encode(bytes)}';
+      if (!mounted) return;
+      onPicked((bytes, dataUri));
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _error = 'No se pudo cargar la imagen: ${getErrorMessage(e)}');
+    }
+  }
+
+  /// Hoja inferior para elegir entre cámara y galería.
+  Future<void> _choosePhotoSource({
+    required ValueChanged<(Uint8List, String)> onPicked,
+  }) async {
+    if (_loading) return;
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera_outlined),
+              title: const Text('Tomar foto'),
+              onTap: () => Navigator.pop(ctx, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Elegir de la galería'),
+              onTap: () => Navigator.pop(ctx, ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (source == null) return;
+    await _pickPhoto(source, onPicked: onPicked);
+  }
+
   Future<void> _submit() async {
     setState(() {
       _loading = true;
@@ -201,7 +270,8 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
       final payload = <String, dynamic>{
         'email': _email.text.trim(),
         'password': _password.text,
-        'full_name': _fullName.text.trim(),
+        'first_name': _firstName.text.trim(),
+        'last_name': _lastName.text.trim(),
         'vehicle_type': _vehicleType,
         'bank_account_type': _bankAccountType,
       };
@@ -238,6 +308,14 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
       put('bank_account', _opt(_bankAccount));
       put('bank_cci', _opt(_bankCci));
       put('bank_account_holder', _opt(_bankAccountHolder));
+
+      // Fotos opcionales (data URI base64, ya comprimidas en _pickPhoto).
+      if (_vehiclePhotoDataUri != null) {
+        payload['vehicle_photo'] = _vehiclePhotoDataUri;
+      }
+      if (_dniPhotoDataUri != null) {
+        payload['dni_photo'] = _dniPhotoDataUri;
+      }
 
       await ref.read(authProvider.notifier).registerDriver(payload);
       if (!mounted) return;
@@ -400,11 +478,18 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
       'Datos de la cuenta',
       Icons.person_outline,
       [
-        _field(
-          label: 'Nombre completo',
-          required: true,
-          child: _input(_fullName, hint: 'Juan Pérez', textCap: true),
-        ),
+        _grid2([
+          _field(
+            label: 'Nombres',
+            required: true,
+            child: _input(_firstName, hint: 'Juan', textCap: true),
+          ),
+          _field(
+            label: 'Apellidos',
+            required: true,
+            child: _input(_lastName, hint: 'Pérez García', textCap: true),
+          ),
+        ]),
         _grid2([
           _field(
             label: 'Email',
@@ -599,6 +684,42 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
                         (v) => setState(() => _insuranceExpiry = v))),
               ),
             ]),
+            const SizedBox(height: 12),
+            _grid2([
+              _photoPicker(
+                label: 'Foto del vehículo',
+                bytes: _vehiclePhotoBytes,
+                onPick: () => _choosePhotoSource(
+                  onPicked: (r) => setState(() {
+                    _vehiclePhotoBytes = r.$1;
+                    _vehiclePhotoDataUri = r.$2;
+                  }),
+                ),
+                onRemove: () => setState(() {
+                  _vehiclePhotoBytes = null;
+                  _vehiclePhotoDataUri = null;
+                }),
+              ),
+              _photoPicker(
+                label: 'Foto del DNI',
+                bytes: _dniPhotoBytes,
+                onPick: () => _choosePhotoSource(
+                  onPicked: (r) => setState(() {
+                    _dniPhotoBytes = r.$1;
+                    _dniPhotoDataUri = r.$2;
+                  }),
+                ),
+                onRemove: () => setState(() {
+                  _dniPhotoBytes = null;
+                  _dniPhotoDataUri = null;
+                }),
+              ),
+            ]),
+            const SizedBox(height: 4),
+            const Text(
+              'Las fotos son opcionales pero agilizan la validación de tu cuenta.',
+              style: TextStyle(fontSize: 11, color: Neutral.n500),
+            ),
           ],
         ),
       ),
@@ -924,6 +1045,94 @@ class _DriverRegisterScreenState extends ConsumerState<DriverRegisterScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  /// Selector de foto con miniatura, botón para reemplazar y quitar.
+  Widget _photoPicker({
+    required String label,
+    required Uint8List? bytes,
+    required VoidCallback onPick,
+    required VoidCallback onRemove,
+  }) {
+    final has = bytes != null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(label,
+            style:
+                const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+        const SizedBox(height: 6),
+        if (has)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.memory(
+                  bytes,
+                  height: 96,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton.icon(
+                      onPressed: _loading ? null : onPick,
+                      icon: const Icon(Icons.refresh, size: 16),
+                      label: const Text('Cambiar',
+                          style: TextStyle(fontSize: 12)),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: TextButton.icon(
+                      onPressed: _loading ? null : onRemove,
+                      icon: const Icon(Icons.delete_outline,
+                          size: 16, color: Color(0xFFB91C1C)),
+                      label: const Text('Quitar',
+                          style: TextStyle(
+                              fontSize: 12, color: Color(0xFFB91C1C))),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          )
+        else
+          InkWell(
+            onTap: _loading ? null : onPick,
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              height: 96,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Neutral.n200, width: 2),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(Icons.add_a_photo_outlined,
+                      size: 22, color: Neutral.n400),
+                  SizedBox(height: 4),
+                  Text('Subir foto',
+                      style: TextStyle(fontSize: 12, color: Neutral.n500)),
+                ],
+              ),
+            ),
+          ),
+      ],
     );
   }
 

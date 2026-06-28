@@ -2,6 +2,9 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- image_picker: cámara para foto de vehículo/DNI. La galería en Android 13+
+         usa el selector del sistema (Photo Picker) y no requiere permiso. -->
+    <uses-permission android:name="android.permission.CAMERA"/>
     <application
         android:label="chikenhot"
         android:name="${applicationName}"

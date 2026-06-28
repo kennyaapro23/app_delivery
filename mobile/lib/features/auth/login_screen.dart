@@ -4,58 +4,11 @@ import 'package:go_router/go_router.dart';
 
 import 'package:chikenhot/core/api_client.dart';
 import 'package:chikenhot/core/theme.dart';
-import 'package:chikenhot/models/user.dart';
 import 'package:chikenhot/providers/auth_provider.dart';
 import 'package:chikenhot/providers/cart_provider.dart';
 import 'package:chikenhot/providers/favorites_provider.dart';
 import 'package:chikenhot/router/app_router.dart';
 import 'package:chikenhot/widgets/common.dart';
-
-/// Cuenta demo para el quick-login.
-class _DemoAccount {
-  const _DemoAccount({
-    required this.role,
-    required this.email,
-    required this.password,
-    required this.label,
-    required this.icon,
-    required this.color,
-  });
-
-  final UserRole role;
-  final String email;
-  final String password;
-  final String label;
-  final IconData icon;
-  final Color color;
-}
-
-const _demoAccounts = <_DemoAccount>[
-  _DemoAccount(
-    role: UserRole.admin,
-    email: 'admin@chikenhot.pe',
-    password: 'admin123',
-    label: 'Admin',
-    icon: Icons.verified_user_outlined,
-    color: Color(0xFF7C3AED),
-  ),
-  _DemoAccount(
-    role: UserRole.customer,
-    email: 'cliente@chikenhot.pe',
-    password: 'cliente123',
-    label: 'Cliente',
-    icon: Icons.shopping_bag_outlined,
-    color: Color(0xFF2563EB),
-  ),
-  _DemoAccount(
-    role: UserRole.deliveryDriver,
-    email: 'delivery@chikenhot.pe',
-    password: 'delivery123',
-    label: 'Repartidor',
-    icon: Icons.pedal_bike_outlined,
-    color: BrandColors.c600,
-  ),
-];
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -109,12 +62,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     await _doLogin(_emailCtrl.text.trim(), _passwordCtrl.text);
   }
 
-  void _quickLogin(_DemoAccount acc) {
-    _emailCtrl.text = acc.email;
-    _passwordCtrl.text = acc.password;
-    _doLogin(acc.email, acc.password);
-  }
-
   Future<void> _logout() async {
     await ref.read(authProvider.notifier).logout();
     ref.read(cartProvider.notifier).clear();
@@ -151,7 +98,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: 4),
                     const Text(
-                      'Inicia sesión según tu rol',
+                      'Inicia sesión para continuar',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 13, color: Neutral.n500),
                     ),
@@ -159,24 +106,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                     // ── Banner de sesión activa ──
                     if (hasSession) _buildSessionBanner(auth),
-
-                    // ── Quick login (3 roles) ──
-                    Row(
-                      children: [
-                        for (final acc in _demoAccounts) ...[
-                          Expanded(child: _buildQuickButton(acc)),
-                          if (acc != _demoAccounts.last)
-                            const SizedBox(width: 8),
-                        ],
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'o usa tus credenciales',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 12, color: Neutral.n400),
-                    ),
-                    const SizedBox(height: 16),
 
                     // ── Formulario ──
                     Form(
@@ -311,36 +240,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ],
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildQuickButton(_DemoAccount acc) {
-    return Tooltip(
-      message: acc.email,
-      child: OutlinedButton(
-        onPressed: _loading ? null : () => _quickLogin(acc),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: acc.color,
-          backgroundColor: acc.color.withValues(alpha: 0.08),
-          side: BorderSide(color: acc.color.withValues(alpha: 0.35)),
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(acc.icon, size: 18, color: acc.color),
-            const SizedBox(height: 4),
-            Text(
-              acc.label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: acc.color,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

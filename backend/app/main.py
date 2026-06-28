@@ -7,9 +7,31 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 
 from app.config import get_settings
 from app.database import engine, SessionLocal, Base
+
+
+# Mini-migración idempotente: create_all() crea tablas nuevas pero NO agrega
+# columnas a tablas ya existentes. Esto añade las columnas nuevas si faltan,
+# para que el deploy se auto-repare sin Alembic ni ALTER manual.
+_LIGHT_MIGRATIONS = [
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS first_name VARCHAR(120)",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_name VARCHAR(120)",
+    "ALTER TABLE delivery_profiles ADD COLUMN IF NOT EXISTS vehicle_photo TEXT",
+    "ALTER TABLE delivery_profiles ADD COLUMN IF NOT EXISTS dni_photo TEXT",
+    "ALTER TABLE delivery_profiles ADD COLUMN IF NOT EXISTS last_assigned_at TIMESTAMP",
+]
+
+
+def _run_light_migrations():
+    with engine.begin() as conn:
+        for stmt in _LIGHT_MIGRATIONS:
+            try:
+                conn.execute(text(stmt))
+            except Exception as e:  # noqa: BLE001
+                print(f"⚠️  migración omitida ({stmt}): {e}")
 
 # Importar todos los modelos para que SQLAlchemy los registre
 from app.models import (  # noqa: F401
@@ -29,6 +51,7 @@ async def lifespan(app: FastAPI):
     """Startup y shutdown events."""
     # Startup: crear tablas y seed data
     Base.metadata.create_all(bind=engine)
+    _run_light_migrations()
     print("✅ Tablas de base de datos creadas/verificadas")
 
     # Seed data

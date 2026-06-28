@@ -12,6 +12,7 @@ from sqlalchemy import (
     Boolean,
     DateTime,
     ForeignKey,
+    Text,
     Enum as SAEnum,
 )
 from sqlalchemy.orm import relationship
@@ -59,6 +60,10 @@ class DeliveryProfile(Base):
     license_expiry = Column(String(10), nullable=True)  # YYYY-MM-DD
     insurance_number = Column(String(50), nullable=True)
     insurance_expiry = Column(String(10), nullable=True)
+
+    # ─── Fotos de verificación (base64 data URI) ───────────────
+    vehicle_photo = Column(Text, nullable=True)  # foto del vehículo
+    dni_photo = Column(Text, nullable=True)       # foto del DNI / documento
 
     # ─── Banco ─────────────────────────────────────────────────
     bank_name = Column(String(100), nullable=True)
