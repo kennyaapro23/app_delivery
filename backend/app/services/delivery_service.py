@@ -27,25 +27,58 @@ def get_or_create_profile(db: Session, user: User) -> DeliveryProfile:
     return profile
 
 
-def pick_next_driver_round_robin(db: Session) -> Optional[User]:
-    """Devuelve el próximo repartidor para round-robin.
+# Estados en los que un pedido sigue "vivo" y ocupa al repartidor.
+ACTIVE_ORDER_STATUSES = [
+    OrderStatus.PENDING,
+    OrderStatus.ACCEPTED,
+    OrderStatus.PREPARING,
+    OrderStatus.READY,
+    OrderStatus.ON_THE_WAY,
+]
 
-    Estrategia: repartidor con is_available=True y last_assigned_at más antiguo
-    (NULLs primero — nunca ha recibido pedido). Devuelve None si no hay
-    disponibles.
+
+def pick_next_driver_round_robin(db: Session) -> Optional[User]:
+    """Elige al próximo repartidor considerando disponibilidad Y carga real.
+
+    Política (de mayor a menor prioridad):
+      1) Solo repartidores con is_available=True (activos y disponibles).
+      2) Se prefiere a los LIBRES (sin pedidos activos) sobre los OCUPADOS:
+         se ordena por número de pedidos activos ascendente, así un repartidor
+         con 0 pedidos siempre va antes que uno que ya está repartiendo.
+      3) Entre los que tienen la misma carga (p.ej. todos libres, o todos
+         ocupados con la misma cantidad), gana el que NUNCA recibió pedido y
+         luego el asignado hace más tiempo (round-robin justo).
+    Devuelve None si no hay ningún repartidor disponible (el pedido queda sin
+    asignar y un repartidor puede tomarlo manualmente).
     """
-    profile = (
+    # Pedidos activos por repartidor (subconsulta de carga).
+    active_load = (
+        db.query(
+            Order.delivery_driver_id.label("driver_user_id"),
+            func.count(Order.id).label("active_orders"),
+        )
+        .filter(Order.delivery_driver_id.isnot(None))
+        .filter(Order.status.in_(ACTIVE_ORDER_STATUSES))
+        .group_by(Order.delivery_driver_id)
+        .subquery()
+    )
+
+    load = func.coalesce(active_load.c.active_orders, 0)
+
+    row = (
         db.query(DeliveryProfile)
+        .outerjoin(active_load, active_load.c.driver_user_id == DeliveryProfile.user_id)
         .filter(DeliveryProfile.is_available == True)
         .order_by(
-            DeliveryProfile.last_assigned_at.is_(None).desc(),
-            DeliveryProfile.last_assigned_at.asc(),
+            load.asc(),                                          # libres (0) antes que ocupados
+            DeliveryProfile.last_assigned_at.is_(None).desc(),   # el que nunca recibió, primero
+            DeliveryProfile.last_assigned_at.asc(),              # luego el asignado hace más tiempo
         )
         .first()
     )
-    if not profile:
+    if not row:
         return None
-    return db.query(User).filter(User.id == profile.user_id).first()
+    return db.query(User).filter(User.id == row.user_id).first()
 
 
 def mark_driver_assigned(db: Session, driver: User) -> None:
