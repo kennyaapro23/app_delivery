@@ -1,0 +1,73 @@
+# Codemagic CI/CD — Chikenhot (app Flutter en la carpeta mobile/)
+# Compila Android (APK + AAB) e iOS (IPA) en la nube, sin necesidad de una Mac.
+# Docs: https://docs.codemagic.io/yaml-quick-start/building-a-flutter-app/
+#
+# PASOS ÚNICOS EN LA UI DE CODEMAGIC (una sola vez):
+#  1. Conecta este repositorio en https://codemagic.io
+#  2. Para iOS: Team settings → Integrations → App Store Connect → crea una API key
+#     y nómbrala EXACTAMENTE "CodemagicAppStoreKey" (o cambia el nombre abajo).
+#     Necesitas cuenta Apple Developer (USD $99/año) y el bundle id
+#     com.chikenhot.chikenhot registrado en tu cuenta.
+#  3. (Opcional) Para publicar en Play Store, sube la cuenta de servicio de Google Play.
+#
+# El APK de Android NO requiere firma de pago: sale listo para instalar directo.
+
+workflows:
+  android:
+    name: Chikenhot Android
+    max_build_duration: 60
+    instance_type: linux_x2
+    environment:
+      flutter: stable
+      java: 17
+    scripts:
+      - name: Flutter pub get
+        script: cd mobile && flutter pub get
+      - name: Build APK (release)
+        script: cd mobile && flutter build apk --release
+      - name: Build AAB (release — para Google Play)
+        script: cd mobile && flutter build appbundle --release
+    artifacts:
+      - mobile/build/app/outputs/flutter-apk/*.apk
+      - mobile/build/app/outputs/bundle/release/*.aab
+    publishing:
+      email:
+        recipients:
+          - francalizaya266@gmail.com
+        notify:
+          success: true
+          failure: true
+
+  ios:
+    name: Chikenhot iOS
+    max_build_duration: 90
+    instance_type: mac_mini_m2
+    integrations:
+      # Debe coincidir con el nombre de la API key de App Store Connect creada en Codemagic.
+      app_store_connect: CodemagicAppStoreKey
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      ios_signing:
+        distribution_type: app_store   # usa "ad_hoc" si quieres instalar en dispositivos sin App Store
+        bundle_identifier: com.chikenhot.chikenhot
+    scripts:
+      - name: Flutter pub get
+        script: cd mobile && flutter pub get
+      - name: Configurar firma (perfiles gestionados por Codemagic)
+        script: cd mobile && xcode-project use-profiles
+      - name: Pod install
+        script: cd mobile/ios && pod install
+      - name: Build IPA (release)
+        script: cd mobile && flutter build ipa --release --export-options-plist=$HOME/export_options.plist
+    artifacts:
+      - mobile/build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      email:
+        recipients:
+          - francalizaya266@gmail.com
+        notify:
+          success: true
+          failure: true
