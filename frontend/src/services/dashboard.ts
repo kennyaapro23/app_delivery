@@ -21,8 +21,31 @@ export interface DriverDashboard {
   efficiency: number;
 }
 
+export interface AdminReports {
+  range: { start: string; end: string };
+  summary: {
+    orders: number;
+    delivered: number;
+    canceled: number;
+    revenue: number;
+    avg_ticket: number;
+  };
+  daily: Array<{ date: string; orders: number; revenue: number }>;
+  top_products: Array<{ product_id: number; name: string; qty: number; revenue: number }>;
+  top_customers: Array<{ user_id: number; name: string; orders: number; spend: number }>;
+  by_status: Array<{ status: string; count: number }>;
+  by_payment: Array<{ method: string; count: number; revenue: number }>;
+}
+
 export async function getAdminDashboard() {
   const { data } = await api.get<AdminDashboard>("/dashboard/admin");
+  return data;
+}
+
+export async function getAdminReports(startDate: string, endDate: string) {
+  const { data } = await api.get<AdminReports>("/dashboard/reports", {
+    params: { start_date: startDate, end_date: endDate },
+  });
   return data;
 }
 

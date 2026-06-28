@@ -1,6 +1,7 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
+  BarChart3,
   Package,
   ShoppingBag,
   Users,
@@ -18,6 +19,7 @@ import { cn } from "@/lib/utils";
 
 const NAV = [
   { to: "/admin", end: true, label: "Dashboard", icon: LayoutDashboard },
+  { to: "/admin/reports", label: "Reportes", icon: BarChart3 },
   { to: "/admin/orders", label: "Pedidos", icon: ShoppingBag },
   { to: "/admin/products", label: "Productos", icon: Package },
   { to: "/admin/users", label: "Usuarios", icon: Users },

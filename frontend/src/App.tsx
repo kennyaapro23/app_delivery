@@ -23,6 +23,7 @@ import { ReviewsPage } from "@/pages/ReviewsPage";
 
 // Admin
 import { AdminDashboardPage } from "@/pages/admin/AdminDashboardPage";
+import { AdminReportsPage } from "@/pages/admin/AdminReportsPage";
 import { AdminOrdersPage } from "@/pages/admin/AdminOrdersPage";
 import { AdminOrderDetailPage } from "@/pages/admin/AdminOrderDetailPage";
 import { AdminProductsPage } from "@/pages/admin/AdminProductsPage";
@@ -77,6 +78,7 @@ export default function App() {
         <Route path="/admin" element={<RoleGuard allow={["admin"]} />}>
           <Route element={<AdminLayout />}>
             <Route index element={<AdminDashboardPage />} />
+            <Route path="reports" element={<AdminReportsPage />} />
             <Route path="orders" element={<AdminOrdersPage />} />
             <Route path="orders/:id" element={<AdminOrderDetailPage />} />
             <Route path="products" element={<AdminProductsPage />} />
