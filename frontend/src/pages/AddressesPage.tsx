@@ -87,7 +87,14 @@ export function AddressesPage() {
   function onMapPick(loc: Location) {
     setForm((f) =>
       f
-        ? { ...f, full_address: loc.address, latitude: loc.lat, longitude: loc.lon }
+        ? {
+            ...f,
+            // La dirección sigue al pin; si el geocoding falla (vacío), se
+            // conserva la anterior para no borrar lo que ya había.
+            full_address: loc.address.trim() ? loc.address : f.full_address,
+            latitude: loc.lat,
+            longitude: loc.lon,
+          }
         : f,
     );
   }

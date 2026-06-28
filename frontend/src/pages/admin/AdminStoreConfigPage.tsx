@@ -59,7 +59,10 @@ export function AdminStoreConfigPage() {
   }, []);
 
   // El LocationPicker entrega lat/lon y una dirección sugerida por el reverse
-  // geocoding; guardamos la ubicación y proponemos la dirección.
+  // geocoding. La dirección debe SEGUIR al pin: si el geocoding devuelve algo,
+  // actualizamos el texto (así no queda una dirección vieja de otra ciudad
+  // cuando se mueve el pin). Si el geocoding falla (vacío), conservamos la
+  // dirección previa para no perder texto.
   function handleLocationChange(loc: Location) {
     setForm((prev) =>
       prev
@@ -67,9 +70,7 @@ export function AdminStoreConfigPage() {
             ...prev,
             latitude: loc.lat,
             longitude: loc.lon,
-            // Solo autocompletamos la dirección si el campo está vacío, para no
-            // pisar una dirección que el admin ya escribió manualmente.
-            address: prev.address.trim() ? prev.address : loc.address,
+            address: loc.address.trim() ? loc.address : prev.address,
           }
         : prev,
     );
