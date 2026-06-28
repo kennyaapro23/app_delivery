@@ -84,7 +84,14 @@ export function LocationPicker({ value, onChange }: Props) {
     const handle = window.setTimeout(() => {
       reverseGeocode(position[0], position[1], controller.signal)
         .then((r) => {
-          if (r) onChange({ lat: r.lat, lon: r.lon, address: formatShortAddress(r) });
+          // Emitir SIEMPRE las coordenadas reales del pin (no las del geocoder,
+          // que las "encaja" al objeto más cercano). El reverse solo sirve para
+          // sugerir la dirección; si falla, igual conservamos lat/lon correctas.
+          onChange({
+            lat: position[0],
+            lon: position[1],
+            address: r ? formatShortAddress(r) : "",
+          });
         })
         .catch(() => {})
         .finally(() => setResolving(false));
