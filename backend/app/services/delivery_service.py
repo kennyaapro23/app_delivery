@@ -67,8 +67,10 @@ def pick_next_driver_round_robin(db: Session) -> Optional[User]:
 
     row = (
         db.query(DeliveryProfile)
+        .join(User, User.id == DeliveryProfile.user_id)
         .outerjoin(active_load, active_load.c.driver_user_id == DeliveryProfile.user_id)
         .filter(DeliveryProfile.is_available == True)
+        .filter(User.is_active == True)  # nunca asignar a un repartidor desactivado
         .order_by(
             load.asc(),                                          # libres (0) antes que ocupados
             DeliveryProfile.last_assigned_at.is_(None).desc(),   # el que nunca recibió, primero
