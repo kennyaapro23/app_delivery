@@ -1,4 +1,4 @@
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import {
   LayoutDashboard,
   BarChart3,
@@ -8,7 +8,6 @@ import {
   Bike,
   Ticket,
   Store,
-  LogOut,
   Menu,
   X,
 } from "lucide-react";
@@ -29,16 +28,8 @@ const NAV = [
 ];
 
 export function AdminLayout() {
-  const fullName = useAuthStore((s) => s.fullName);
   const role = useAuthStore((s) => s.role);
-  const logout = useAuthStore((s) => s.logout);
-  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
 
   return (
     <div className="flex min-h-screen bg-ink-50">
@@ -90,22 +81,6 @@ export function AdminLayout() {
             </NavLink>
           ))}
         </nav>
-
-        <div className="shrink-0 border-t border-ink-200 p-3">
-          <div className="mb-2 flex items-center gap-3 rounded-lg px-3 py-2">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-50 text-sm font-bold text-brand-700">
-              {(fullName ?? "A").charAt(0).toUpperCase()}
-            </div>
-            <div className="min-w-0 leading-tight">
-              <div className="truncate text-sm font-semibold text-ink-900">{fullName ?? "Admin"}</div>
-              <div className="text-xs text-ink-500">Administrador</div>
-            </div>
-          </div>
-          <button onClick={handleLogout} className="btn-ghost w-full">
-            <LogOut className="h-4 w-4" />
-            Cerrar sesión
-          </button>
-        </div>
       </aside>
 
       {open && (
