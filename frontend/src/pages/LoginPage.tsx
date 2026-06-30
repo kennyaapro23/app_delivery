@@ -72,14 +72,19 @@ export function LoginPage() {
     setLoading(true);
     setError(null);
     try {
-      // Limpia toda la sesión previa (estado en memoria + localStorage) ANTES
-      // de pegarle al backend. Si solo borramos localStorage, Zustand sigue
-      // teniendo el rol viejo en memoria mientras corre el await, y al volver
-      // setSession() el middleware persist puede arrastrar campos antiguos.
-      // También limpiamos carrito/favoritos para no heredar datos del usuario anterior.
+      // ¿Había una sesión autenticada ANTES de este login? Solo en ese caso
+      // (cambio de cuenta) limpiamos carrito/favoritos para no heredar datos
+      // del usuario anterior. Si es un INVITADO, conservamos su carrito para
+      // que no tenga que volver a elegir los productos tras iniciar sesión.
+      const wasLoggedIn = !!useAuthStore.getState().accessToken;
+
+      // Limpia la sesión previa (estado en memoria + localStorage) ANTES de
+      // pegarle al backend, para que setSession() no arrastre campos antiguos.
       useAuthStore.getState().logout();
-      useCartStore.getState().clear();
-      useFavoritesStore.getState().clear();
+      if (wasLoggedIn) {
+        useCartStore.getState().clear();
+        useFavoritesStore.getState().clear();
+      }
       localStorage.removeItem(AUTH_STORAGE_KEY);
 
       const data = await login(emailToUse, passwordToUse);
